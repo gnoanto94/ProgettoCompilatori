@@ -1,0 +1,351 @@
+/*
+ * shoot.t: a simple, character graphic, target shoot game in Toy.
+ */
+
+int
+    LINE_COUNT,         /* number of text lines on screen */
+    STATUS_LINE,        /* line we can put status info on */
+    MESSAGE_COLUMN,     /* the column for messages */
+    PROMPT_COLUMN,      /* column for input prompt */
+    MAXIMUM_COLUMN,     /* maximum column for display */
+    SCALE,              /* scale factor for fixed-point */
+    HORIZONTAL_SPEED;   /* speed of shot in horizontal direction */
+
+int
+    Seed,               /* seed for random number generator */
+    Score,              /* the current number of shots taken */
+    GunColumn,          /* column the gun is in */
+    TargetColumn;       /* column the target is in */
+
+bool
+    MessageShown;       /* true => a message is currently displayed */
+
+/*
+ * random - return a pseudo-random number in the given range.
+ */
+
+proc random(int rang)int:
+
+    Seed := Seed * 2137 + 173;
+    if Seed < 0 then
+        Seed := -Seed;
+    fi;
+    -> Seed - Seed / rang * rang
+corp;
+
+/*
+ * clearScreen - clear the display screen.
+ */
+
+proc clearScreen()void:
+
+    write("\(12)");
+    ->
+corp;
+
+/*
+ * disableCursor - turn the cursor off - makes output faster.
+ */
+
+proc disableCursor()void:
+
+    write("\(155)0 p");
+    ->
+corp;
+
+/*
+ * enableCursor - turn the cursor on.
+ *      NOTE: there seems to be a minor bug in the Amiga's CON: handler here.
+ *      It isn't supposed to matter whether an output control sequence uses
+ *      the CSI (decimal 155) or ESC-[ to start a control sequence. However,
+ *      using the CSI mode here works if the program is compiled with toy,
+ *      but not if it's compiled with Draco - probably relating to the fact
+ *      that the Draco run-time system buffers the output.
+ */
+
+proc enableCursor()void:
+
+    write("\(27)[ p");
+    ->
+corp;
+
+/*
+ * moveTo - move the cursor to the specified row and column.
+ */
+
+proc moveTo(int row, col)void:
+
+    write("\(155)", row, ";", col, "H");
+    ->
+corp;
+
+/*
+ * setSpecial2 - set the character display to boldface, colour 2.
+ */
+
+proc setSpecial2()void:
+
+    write("\(155)1;32m");
+    ->
+corp;
+
+/*
+ * setSpecial3 - set the character display to boldface, colour 3.
+ */
+
+proc setSpecial3()void:
+
+    write("\(155)1;33m");
+    ->
+corp;
+
+/*
+ * setNormal - reset character display back to normal.
+ */
+
+proc setNormal()void:
+
+    write("\(155)0m");
+    ->
+corp;
+
+/*
+ * writeScore - write the current score to the status line.
+ */
+
+proc writeScore()void:
+
+    moveTo(STATUS_LINE, 8);
+    write(Score);
+    ->
+corp;
+
+/*
+ * drawGround - draw the ground as normal colour '_'s.
+ */
+
+proc drawGround()void:
+    int i;
+
+    moveTo(STATUS_LINE - 1, 1);
+    i := 1;
+    while i < MAXIMUM_COLUMN
+    do
+        i := i + 1;
+        write("-");
+    od;
+    ->
+corp;
+
+/*
+ * drawGun - draw the gun at the proper position.
+ */
+
+proc drawGun()void:
+
+    moveTo(STATUS_LINE - 4, GunColumn - 2);
+    write("+-I-+");
+    moveTo(STATUS_LINE - 3, GunColumn - 2);
+    write("|   |");
+    moveTo(STATUS_LINE - 2, GunColumn - 2);
+    write("|   |");
+    moveTo(STATUS_LINE - 1, GunColumn - 2);
+    write("$$$$$");
+    ->
+corp;
+
+/*
+ * clearMessage - clear any message now shown.
+ */
+
+proc clearMessage()void:
+
+    if MessageShown then
+        MessageShown := false;
+        moveTo(STATUS_LINE, MESSAGE_COLUMN);
+        write("                   ");
+    fi;
+    ->
+corp;
+
+/*
+ * drawTarget - draw the target at the proper position.
+ */
+
+proc drawTarget()void:
+
+    moveTo(STATUS_LINE - 4, TargetColumn);
+    write("^");
+    moveTo(STATUS_LINE - 3, TargetColumn - 1);
+    write("< >");
+    moveTo(STATUS_LINE - 2, TargetColumn);
+    write("V");
+    ->
+corp;
+
+/*
+ * missed - issue "Missed!" as a message.
+ */
+
+proc missed()void:
+
+    moveTo(STATUS_LINE, MESSAGE_COLUMN);
+    setSpecial3();
+    write("Missed!");
+    setNormal();
+    MessageShown := true;
+    ->
+corp;
+
+/*
+ * hitTarget - fire a shell and see if it hits. Return true if it does.
+ */
+
+proc hitTarget(int speed)bool:
+    int row, col, oldRow, oldCol;
+    bool notDone, hit;
+
+    setSpecial2();
+    row := STATUS_LINE - 5 * SCALE;
+    col := GunColumn * SCALE;
+    hit := false;
+    notDone := true;
+    while notDone
+    do
+        if row / SCALE > 0 then
+            moveTo(row / SCALE, col / SCALE);
+            write("*");
+        fi;
+        oldRow := row;
+        oldCol := col;
+        col := col + HORIZONTAL_SPEED;
+        row := row - speed;
+        speed := speed - 1;
+        if oldRow / SCALE > 0 then
+            moveTo(oldRow / SCALE, oldCol / SCALE);
+        else
+            moveTo(0, 0);
+        fi;
+        write(" ");
+        if row / SCALE > 0 then
+            if row / SCALE < STATUS_LINE - 1 then
+                moveTo(row / SCALE, col / SCALE);
+                write("*");
+            else
+                moveTo(0, 0);
+                write(" ");
+            fi;
+        fi;
+        if row / SCALE >= STATUS_LINE - 1 then
+            /* shell has hit the ground */
+            moveTo(STATUS_LINE - 2, col / SCALE - 2);
+            write("BOOOM");
+            missed();
+            notDone := false;
+        elif col / SCALE >= MAXIMUM_COLUMN - 1 then
+            /* shell has gone off the right of the screen */
+            moveTo(row / SCALE, col / SCALE);
+            write(" ");
+            missed();
+            notDone := false;
+        elif col / SCALE = TargetColumn then
+            if row / SCALE = STATUS_LINE - 3 then
+                /* hit the target! */
+                hit := true;
+                drawTarget();
+                moveTo(STATUS_LINE, MESSAGE_COLUMN);
+                setSpecial3();
+                write("Hit!");
+                setNormal();
+                MessageShown := true;
+                notDone := false;
+            fi;
+        fi;
+    od;
+    -> hit
+corp;
+
+/*
+ * getSpeed - prompt for and read the next speed value.
+ */
+
+proc getSpeed()int:
+    int speed;
+
+    moveTo(STATUS_LINE, PROMPT_COLUMN);
+    write("speed (1-99): ");
+    enableCursor();
+    readln(speed);
+    disableCursor();
+    moveTo(STATUS_LINE, PROMPT_COLUMN);
+    write("                  ");
+    clearMessage();
+    -> speed
+corp;
+
+proc main()void:
+    int speed;
+    bool notDone;
+
+    MESSAGE_COLUMN := 15;
+    PROMPT_COLUMN := 58;
+    MAXIMUM_COLUMN := 76;
+    SCALE := 100;
+    HORIZONTAL_SPEED := 40;
+    MessageShown := false;
+    while
+        write("How many text lines on your screen? ");
+        readln(LINE_COUNT);
+        notDone := LINE_COUNT < 10;
+        if LINE_COUNT > 50 then
+            notDone := true;
+        fi;
+        -> notDone
+    do
+        write("Value out of range (10 - 50), try again.\n");
+    od;
+    STATUS_LINE := LINE_COUNT - 1;
+    write("Enter random number seed: ");
+    readln(Seed);
+    disableCursor();
+    clearScreen();
+    GunColumn := 4 + random(10);
+    TargetColumn := 30 + random(40);
+    setSpecial3();
+    drawGround();
+    drawGun();
+    drawTarget();
+    setNormal();
+    Score := 0;
+    moveTo(STATUS_LINE, 0);
+    write("Score: ");
+    writeScore();
+    notDone := true;
+    while notDone do
+        speed := getSpeed();
+        if speed > 0 then
+            if speed >= 100 then
+                moveTo(STATUS_LINE, MESSAGE_COLUMN);
+                setSpecial3();
+                write("Too large.");
+                setNormal();
+                MessageShown := true;
+            else
+                if hitTarget(speed) then
+                    notDone := false;
+                else
+                    setSpecial3();
+                    drawTarget();
+                    setNormal();
+                fi;
+                Score := Score + 1;
+                writeScore();
+            fi;
+        else
+            notDone := false;
+        fi;
+    od;
+    enableCursor();
+    moveTo(STATUS_LINE + 1, 1);
+    ->
+corp;

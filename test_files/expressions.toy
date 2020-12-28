@@ -1,0 +1,80 @@
+/*
+ * Scrivere un programma Toy che:
+ *  - visualizzi un menu in cui un utente può scegliere l' operazione aritmetica da svolgere
+ *  - richieda all'utente gli input (interi o float) necessari per svolgere l'operazione scelta
+ *  - esegua l'operazione, restituisca il risultato e chieda se si vuol continuare
+ *  - all'input 0 oppure 1 il programma conclude oppure mostra il menu iniziale, rispettivamente.
+ * N.B. si utilizzino almeno due funzioni. In generale, si cerchi di utilizzare tutte
+ * le caratteristiche del linguaggio
+ */
+
+int op := 1;
+
+proc main() void:
+
+    int i_left, i_right, i_result, opType;
+    float f_left, f_right, f_result;
+
+while
+  write("Scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
+  readln(op);
+-> op <> 0 /*condizione del while*/
+
+    do
+        write("Tipo di operazione: 0 = operazione tra int, 1 = operazione tra float \n");
+        readln(opType);
+        write("Scegli il primo valore\n");
+
+        if opType = 0 then
+            readln(i_left);
+            write("Scegli il secondo valore\n");
+            readln(i_right);
+            i_result := i_expr(i_left, i_right);
+            write("Il risultato è", i_result);
+
+        else
+            readln(f_left);
+            write("Scegli il secondo valore\n");
+            readln(f_right);
+            f_result := f_expr(f_left, f_right);
+            write("Il risultato è", f_result);
+
+        fi;
+        write("Premere 0 per chiudere il programma oppure 1 per continuare\n");
+        readln(op);
+    od;
+->
+corp;
+
+proc f_expr(float left, right) float:
+
+float result;
+    if op = 2 then /*somma*/
+        result := left + right;
+    elif op = 3 then /*sottrazione*/
+        result := left - right;
+    elif op = 4 then /*moltiplicazione*/
+        result := left * right;
+    elif op = 5 then /*divisione*/
+        result := left / right;
+    fi;
+->result
+corp;
+
+
+
+proc i_expr(int left, right) int:
+
+int result;
+    if op = 2 then /*somma*/
+        result := left + right;
+    elif op = 3 then /*sottrazione*/
+        result := left - right;
+    elif op = 4 then /*moltiplicazione*/
+        result := left * right;
+    elif op = 5 then /*divisione*/
+        result := left / right;
+
+    fi;
+->result
+corp;
