@@ -16,12 +16,6 @@ import java.io.IOException;
 %eofval}
 
 %{
-    private SymbolTable symTab;
-
-    public void setSymTab(SymbolTable symTab){
-
-    }
-
     StringBuffer string = new StringBuffer();
 
     private Symbol generateToken(int type){
@@ -31,12 +25,6 @@ import java.io.IOException;
     private Symbol generateToken(int type, Object value){
         return new Symbol(type, value);
     }
-
-public void printStringTable(){
-    System.out.println("\nSTRING TABLE");
-    System.out.println("-----------------------------------------------");
-    System.out.println(symTab);
-}
 %}
 
 //MACRO
@@ -62,20 +50,14 @@ CommentString = [^\*\/]*
     /* NULL */
      "null"     {return generateToken(sym.NULL);}
     /* identifiers */
-    {Identifier} {
-                    //questa variabile contiene un intero che è il riferimento
-                    //alla keyword se yytext() è una keyword, -1 altrimenti
-                    int isKeyword = symTab.retrieveKeyword(yytext());
-                    if(symTab.contain(yytext())){
-                        if( isKeyword != -1){
-                            return generateToken(isKeyword);
-                        } else {
-                            return generateToken(sym.ID, yytext());
-                        }
-                    } else {
-                        symTab.add(yytext(), sym.ID);
-                        return generateToken(sym.ID, yytext());
-                    }
+    {Identifier} { //questa variabile contiene un intero che è il riferimento
+                   //alla keyword se yytext() è una keyword, -1 altrimenti
+                   int isKeyword = SymbolTable.retrieveKeyword(yytext());
+                   if( isKeyword != -1){
+                       return generateToken(isKeyword);
+                   } else {
+                       return generateToken(sym.ID, yytext());
+                   }
     }
 
     /* literals */

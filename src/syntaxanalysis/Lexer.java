@@ -319,8 +319,6 @@ class Lexer implements java_cup.runtime.Scanner {
   private boolean zzEOFDone;
 
   /* user code: */
-    private SymbolTable symTab;
-
     StringBuffer string = new StringBuffer();
 
     private Symbol generateToken(int type){
@@ -331,12 +329,6 @@ class Lexer implements java_cup.runtime.Scanner {
         return new Symbol(type, value);
     }
 
-public void printStringTable(){
-    System.out.println("\nSTRING TABLE");
-    System.out.println("-----------------------------------------------");
-    System.out.println(symTab);
-}
-
 
   /**
    * Creates a new scanner
@@ -344,7 +336,6 @@ public void printStringTable(){
    * @param   in  the java.io.Reader to read input from.
    */
   Lexer(java.io.Reader in) {
-      symTab = new SymbolTable();
     this.zzReader = in;
   }
 
@@ -853,18 +844,13 @@ public void printStringTable(){
           case 58: break;
           case 19:
             { //questa variabile contiene un intero che è il riferimento
-                    //alla keyword se yytext() è una keyword, -1 altrimenti
-                    int isKeyword = symTab.retrieveKeyword(yytext());
-                    if(symTab.contain(yytext())){
-                        if( isKeyword != -1){
-                            return generateToken(isKeyword);
-                        } else {
-                            return generateToken(sym.ID, yytext());
-                        }
-                    } else {
-                        symTab.add(yytext(), sym.ID);
-                        return generateToken(sym.ID, yytext());
-                    }
+                   //alla keyword se yytext() è una keyword, -1 altrimenti
+                   int isKeyword = SymbolTable.retrieveKeyword(yytext());
+                   if( isKeyword != -1){
+                       return generateToken(isKeyword);
+                   } else {
+                       return generateToken(sym.ID, yytext());
+                   }
             }
             // fall through
           case 59: break;

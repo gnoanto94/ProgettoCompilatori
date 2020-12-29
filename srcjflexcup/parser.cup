@@ -1,14 +1,13 @@
 package syntaxanalysis;
 
-import java_cup.runtime.*;
-import java.io.FileReader;
+//import java_cup.runtime.*;
+//import java.io.FileReader;
 import java.util.ArrayList;
 import tree.*;
 
 parser code{:public ProgramOp root;
-             public Env top, saved;
+             public Env currentTable = StackEnv.push(new Env(null));
            :}
-
 scan with {: return getScanner().next_token(); :};
 
 /* Terminals (tokens returned by the scanner). */
@@ -24,6 +23,7 @@ non terminal ProgramOp              program;
 non terminal ArrayList<VarDeclOp>   var_decl_list;
 non terminal ArrayList<ProcOp>      proc_list;
 non terminal ProcOp                 proc;
+non terminal ProcOpBody             proc_body;
 non terminal VarDeclOp              var_decl;
 non terminal CallProcOp             call_proc;
 non terminal IdListInitOp           id_list_init;
@@ -57,9 +57,8 @@ precedence left UMINUS, NOT;
 start with program;
 
 //Program
-program ::= var_decl_list:v proc_list:p {:root = new ProgramOp(v, p);
+program ::=  var_decl_list:v proc_list:p {:root = new ProgramOp(v, p);
                                           RESULT = root;
-                                          top = null;
                                         :}
           ;
 
@@ -87,52 +86,63 @@ proc_list ::= proc:p                {:ArrayList<ProcOp> list = new ArrayList<>()
             ;
 
 //Proc
-proc ::= PROC ID:i LPAR param_decl_list:p_list RPAR result_type_list:r_list
+
+proc_body ::= var_decl_list:v_list stat_list:s_list RETURN return_exprs:r_exprs CORP SEMI
+              {:RESULT = new ProcOpBody(v_list, s_list, r_exprs);:}
+            |  var_decl_list:v_list RETURN return_exprs:r_exprs CORP SEMI
+              {:RESULT = new ProcOpBody(v_list, null, r_exprs);:}
+            ;
+proc ::= PROC ID:i LPAR {:currentTable = StackEnv.push(new Env(StackEnv.top()));:}
+           param_decl_list:p_list RPAR result_type_list:r_list COLON proc_body:p_body
+          {:RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID)), p_list, r_list, p_body);
+            currentTable = StackEnv.pop();:}
+        | PROC ID:i LPAR RPAR {://System.out.println("CT (globale): " + currentTable);
+                                currentTable = StackEnv.push(new Env(StackEnv.top()));
+                                //System.out.println("CT (procedura): " + currentTable);
+                              :}
+          result_type_list:r_list COLON proc_body:p_body
+          {:RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID)), null, r_list, p_body);
+            currentTable = StackEnv.pop();:}
+/*
+PROC ID:i LPAR param_decl_list:p_list RPAR result_type_list:r_list
          COLON var_decl_list:v_list stat_list:s_list RETURN return_exprs:r_exprs CORP SEMI
-         {:RESULT = new ProcOp(new IdLeaf(i), p_list, r_list, new ProcOpBody(v_list, s_list, r_exprs));
-           saved = top;
-           top = new Env(saved);
-           getScanner().setSymTab(top.getTable());
+         {: RESULT = new ProcOp(new IdLeaf(i, currentTable.add(i, sym.ID)), p_list, r_list, new ProcOpBody(v_list, s_list, r_exprs));
+            //currentTable = Env.pop();
           :}
 
         | PROC ID:i LPAR param_decl_list:p_list RPAR result_type_list:r_list
           COLON var_decl_list:v_list RETURN return_exprs:r_exprs CORP SEMI
-          {:RESULT = new ProcOp(new IdLeaf(i), p_list, r_list, new ProcOpBody(v_list, null, r_exprs));
-            saved = top;
-            top = new Env(saved);
-            getScanner().setSymTab(top.getTable());
+          {: IdLeaf l = new IdLeaf(i, currentTable.add(i, sym.ID));
+            RESULT = new ProcOp(l, p_list, r_list, new ProcOpBody(v_list, null, r_exprs));
+            currentTable = Env.pop();
           :}
 
-        |PROC ID:i LPAR RPAR result_type_list:r_list COLON var_decl_list:v_list
+        | PROC ID:i LPAR RPAR result_type_list:r_list COLON var_decl_list:v_list
          stat_list:s_list RETURN return_exprs:r_exprs CORP SEMI
-         {:RESULT = new ProcOp(new IdLeaf(i), null, r_list, new ProcOpBody(v_list, s_list, r_exprs));
-            saved = top;
-            top = new Env(saved);
-            getScanner().setSymTab(top.getTable());
+         {:RESULT = new ProcOp(new IdLeaf(i, currentTable.add(i, sym.ID)), null, r_list, new ProcOpBody(v_list, s_list, r_exprs));
+           //currentTable = Env.pop();
          :}
 
-        |PROC ID:i LPAR RPAR result_type_list:r_list COLON
+        | PROC ID:i LPAR RPAR result_type_list:r_list COLON
          var_decl_list:v_list RETURN return_exprs:r_exprs CORP SEMI
-         {:RESULT = new ProcOp(new IdLeaf(i), null, r_list, new ProcOpBody(v_list, null, r_exprs));
-            saved = top;
-            top = new Env(saved);
-            getScanner().setSymTab(top.getTable());
-         :}
+         {:RESULT = new ProcOp(new IdLeaf(i, currentTable.add(i, sym.ID)), null, r_list, new ProcOpBody(v_list, null, r_exprs));
+           //currentTable = Env.pop();
+         :}*/
         ;
 
 //IdListInit
 id_list_init ::= ID:i                                       {: ArrayList<IdListInit> list = new ArrayList<>();
-                                                               list.add(new IdLeaf(i));
+                                                               list.add(new IdLeaf(i, currentTable.add(i, sym.ID)));
                                                                RESULT = new IdListInitOp(list);
                                                             :}
-               | id_list_init:list COMMA ID:i               {:list.add(new IdLeaf(i));
+               | id_list_init:list COMMA ID:i               {:list.add(new IdLeaf(i, currentTable.add(i, sym.ID)));
                                                               RESULT = list;
                                                             :}
                | ID:i ASSIGN expr:e                         {:ArrayList<IdListInit> list = new ArrayList<>();
-                                                              list.add(new SimpleAssignOp(new IdLeaf(i), e));
+                                                              list.add(new SimpleAssignOp(new IdLeaf(i, currentTable.add(i, sym.ID)), e));
                                                               RESULT = new IdListInitOp(list);
                                                             :}
-               | id_list_init:list COMMA ID:i ASSIGN expr:e {:list.add(new SimpleAssignOp(new IdLeaf(i), e));
+               | id_list_init:list COMMA ID:i ASSIGN expr:e {:list.add(new SimpleAssignOp(new IdLeaf(i, currentTable.add(i, sym.ID)), e));
                                                               RESULT = list;
                                                             :}
                ;
@@ -156,9 +166,10 @@ param_decl_list ::= par_decl:p {:ArrayList<ParamDeclOp> list = new ArrayList<>()
                                  list.add(p);
                                  RESULT = list;
                                :}
-                  | param_decl_list:list SEMI par_decl:p {:list.add(p);
-                                                           RESULT = list;
-                                                         :}
+                  | param_decl_list:list SEMI par_decl:p
+                    {:list.add(p);
+                       RESULT = list;
+                    :}
                   ;
 //ParDecl
 par_decl ::= type:t id_list:list {:RESULT = new ParamDeclOp(t, list);:}
@@ -194,8 +205,7 @@ stat    ::= if_stat:s       {:RESULT = s;:}
 
 //IfStat
 if_stat   ::= IF expr:expr THEN stat_list:statList
-              elif_list:elifList else:elseOp FI {: RESULT = new IfOp(expr, statList, elifList, elseOp);
-                                                :}
+              elif_list:elifList else:elseOp FI {: RESULT = new IfOp(expr, statList, elifList, elseOp); :}
             ;
 
 //ElifList
@@ -223,11 +233,11 @@ while_stat ::= WHILE stat_list:list_1 RETURN
              ;
 //ID List
 id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>();
-                                      list.add(new IdLeaf(i));
+                                      list.add(new IdLeaf(i, currentTable.add(i, sym.ID)));
                                       RESULT = list;
                                     :}
 
-          | id_list:list COMMA ID:i {:list.add(new IdLeaf(i));
+          | id_list:list COMMA ID:i {:list.add(new IdLeaf(i, currentTable.add(i, sym.ID)));
                                       RESULT = list;
                                     :}
           ;
@@ -243,8 +253,8 @@ assign_stat ::= id_list:idList ASSIGN expr_list:exprList {:RESULT = new Multiple
              ;
 
 //Call Procedure
-call_proc ::= ID:i LPAR expr_list:e RPAR     {: RESULT = new CallProcOp(new IdLeaf(i), e); :}
-             | ID:i LPAR RPAR                {: RESULT = new CallProcOp(new IdLeaf(i), null); :}
+call_proc ::= ID:i LPAR expr_list:e RPAR     {: RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID)), e); :}
+             | ID:i LPAR RPAR                {: RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID)), null); :}
              ;
 
 //Expression list
@@ -299,7 +309,7 @@ expr      ::=  expr:e1 PLUS  expr:e2         {: RESULT = new PlusOp(e1, e2); :}
 
              |         FALSE:f               {: RESULT = new FalseLeaf(); :}
 
-             |         ID:i                  {: RESULT = new IdLeaf(i); :}
+             |         ID:i                  {: RESULT = new IdLeaf(i, currentTable.add(i, sym.ID)); :}
 
              |         NULL:n                {: RESULT = new NullLeaf(); :}
              ;

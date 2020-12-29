@@ -3,18 +3,13 @@ package syntaxanalysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SymbolTable {
-    private ArrayList<SymbolTableRow> symTab;
-    private HashMap<String, Integer> keywords;
-    private String arr_keywords[] = {"int", "string", "float", "bool", "proc", "corp", "void",
-            "if", "then", "elif", "fi", "else", "while", "do", "od", "readln", "write"};
-    private int symTabId;
-
-    public SymbolTable() {
-        symTabId = 0;
-        this.symTab = new ArrayList<>();
-
+    private static HashMap<String, Integer> keywords;
+    public static boolean global;
+    static {
+        global = true;
         //inserimento delle keywords
         keywords = new HashMap<>(Map.of(
                 "int", sym.INT,
@@ -36,15 +31,35 @@ public class SymbolTable {
                 "od", sym.OD,
                 "readln", sym.READ,
                 "write", sym.WRITE));
+    }
+    private ArrayList<SymbolTableRow> symTab;
+    private String arr_keywords[] = {"int", "string", "float", "bool", "proc", "corp", "void",
+            "if", "then", "elif", "fi", "else", "while", "do", "od", "readln", "write"};
+    private int symTabId;
 
-        for(String s: arr_keywords){
-            add(s, keywords.get(s));
+    public SymbolTable() {
+        symTabId = 0;
+        this.symTab = new ArrayList<>();
+        if(global) {
+            for (String s : arr_keywords) {
+                add(s, keywords.get(s));
+            }
+            global = false;
         }
 
     }
 
-    public boolean add(String lessema, int token){
-        return symTab.add(new SymbolTableRow(symTabId++, lessema, token));
+    public SymbolTableRow add(String lessema, int token){
+        SymbolTableRow row = new SymbolTableRow(symTabId++, lessema, token);
+        if(symTab.add(row)){
+            return row;
+        }
+        return null;
+    }
+
+    public SymbolTableRow get(String lessema){
+        int index = symTab.indexOf(new SymbolTableRow(0, lessema, 0));
+        return symTab.get(index);
     }
 
     public boolean contain(String lessema){
@@ -56,12 +71,20 @@ public class SymbolTable {
         return false;
     }
 
-    public int retrieveKeyword(String lessema){
+    public static int retrieveKeyword(String lessema){
         if(keywords.containsKey(lessema)){
             return keywords.get(lessema);
         } else {
             return -1;
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this.symTab.equals(((SymbolTable) obj).symTab)){
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -74,7 +97,7 @@ public class SymbolTable {
         return out;
     }
 
-    class SymbolTableRow {
+    public class SymbolTableRow {
         private int id;
         private String lessema;
         private int token;
@@ -100,6 +123,14 @@ public class SymbolTable {
 
         public void setToken(int token) {
             this.token = token;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SymbolTableRow)) return false;
+            SymbolTableRow that = (SymbolTableRow) o;
+            return lessema.equals(that.lessema);
         }
 
         @Override

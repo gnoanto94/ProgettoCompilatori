@@ -1,12 +1,16 @@
 package tree;
 
+import syntaxanalysis.SymbolTable;
+
 public class IdLeaf extends Node implements Expr, IdListInit, Visitable{
 
     private String idEntry;
+    private SymbolTable.SymbolTableRow tableEntry;
 
-    public IdLeaf(String idEntry) {
+    public IdLeaf(String idEntry, SymbolTable.SymbolTableRow tableEntry) {
         super(Components.ID);
         this.idEntry = idEntry;
+        this.tableEntry = tableEntry;
     }
 
     public String getIdEntry() {

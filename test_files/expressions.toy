@@ -65,7 +65,7 @@ corp;
 
 proc i_expr(int left, right) int:
 
-int result;
+int result, prova;
     if op = 2 then /*somma*/
         result := left + right;
     elif op = 3 then /*sottrazione*/
