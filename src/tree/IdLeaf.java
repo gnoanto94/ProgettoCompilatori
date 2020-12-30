@@ -17,6 +17,14 @@ public class IdLeaf extends Node implements Expr, IdListInit, Visitable{
         return idEntry;
     }
 
+    public SymbolTable.SymbolTableRow getTableEntry() {
+        return tableEntry;
+    }
+
+    public void setTableEntry(SymbolTable.SymbolTableRow tableEntry) {
+        this.tableEntry = tableEntry;
+    }
+
     public void setIdEntry(String idEntry) {
         this.idEntry = idEntry;
     }

@@ -22,11 +22,9 @@ public class Tester {
         p.parse();
 
         System.out.println("SYMBOL TABLE \n =====================");
-//        for(Env e = p.currentTable; e != null; e = e.getNext()){
-//            System.out.println(e.getTable());
-//        }
         System.out.println("Taglia dello stack: " + StackEnv.stack.size());
         for(Env e: StackEnv.stack){
+            System.out.println(e.getName());
             System.out.println(e.getTable());
         }
 

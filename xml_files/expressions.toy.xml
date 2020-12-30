@@ -313,7 +313,6 @@
             <IdListInitOp>
               <IdList>
                 <id>result</id>
-                <id>prova</id>
               </IdList>
             </IdListInitOp>
           </VarDeclOp>

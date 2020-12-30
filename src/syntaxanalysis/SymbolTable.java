@@ -1,9 +1,10 @@
 package syntaxanalysis;
 
+import tree.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class SymbolTable {
     private static HashMap<String, Integer> keywords;
@@ -32,6 +33,7 @@ public class SymbolTable {
                 "readln", sym.READ,
                 "write", sym.WRITE));
     }
+
     private ArrayList<SymbolTableRow> symTab;
     private String arr_keywords[] = {"int", "string", "float", "bool", "proc", "corp", "void",
             "if", "then", "elif", "fi", "else", "while", "do", "od", "readln", "write"};
@@ -42,15 +44,30 @@ public class SymbolTable {
         this.symTab = new ArrayList<>();
         if(global) {
             for (String s : arr_keywords) {
-                add(s, keywords.get(s));
+                add(s, keywords.get(s), Kind.KEYWORD);
             }
             global = false;
         }
-
     }
 
-    public SymbolTableRow add(String lessema, int token){
-        SymbolTableRow row = new SymbolTableRow(symTabId++, lessema, token);
+    public SymbolTableRow add(String lessema, int token, Kind kind){
+        SymbolTableRow row;
+        switch (kind){
+            case KEYWORD:
+                row = new SymbolTableRow(symTabId++, lessema, token);
+                break;
+
+            case VARIABLE:
+                row = new VarRow(symTabId++, lessema, token);
+                break;
+
+            case PROCEDURE:
+                row = new ProcRow(symTabId++, lessema, token);
+                break;
+
+            default: row = new SymbolTableRow(symTabId++, lessema, token);
+        }
+
         if(symTab.add(row)){
             return row;
         }
@@ -101,12 +118,33 @@ public class SymbolTable {
         private int id;
         private String lessema;
         private int token;
-        //aggiungere type variabile e type parametri/return
+        private boolean fref; //flag per controlli su dichiarazioni e utilizzi
+        //fref si imposta a true quando troviamo un utilizzo senza dichiarazione, false altrimenti
+
+        //aggiungere type variabile e type proc ( parametri/return )
+
+        public SymbolTableRow(){}
 
         public SymbolTableRow(int id, String lessema, int token) {
             this.id = id;
             this.lessema = lessema;
             this.token = token;
+        }
+
+        public boolean isFref() {
+            return fref;
+        }
+
+        public void setFref(boolean fref) {
+            this.fref = fref;
+        }
+
+        public String getLessema() {
+            return lessema;
+        }
+
+        public void setLessema(String lessema) {
+            this.lessema = lessema;
         }
 
         public int getId() {
@@ -136,6 +174,85 @@ public class SymbolTable {
         @Override
         public String toString() {
             return "ID: " + id + "\t | Lessema: " + lessema;
+        }
+    }
+
+    public class VarRow extends SymbolTableRow{
+        private Type varType;
+
+        public VarRow(int id, String lessema, int token, Type varType) {
+            super(id, lessema, token);
+            this.varType = varType;
+        }
+
+        public VarRow(int id, String lessema, int token) {
+            super(id, lessema, token);
+            this.varType = null;
+        }
+
+        public Type getVarType() {
+            return varType;
+        }
+
+        public void setVarType(Type varType) {
+            this.varType = varType;
+        }
+
+        @Override
+        public String toString() {
+            return "VarRow{" +
+                    "id=" + getId() +
+                    ", lessema='" + getLessema() + '\'' +
+                    ", token=" + getToken() +
+                    ", fref=" + isFref() +
+                    ", varType=" + varType +
+                    '}';
+        }
+    }
+
+    public class ProcRow extends SymbolTableRow{
+        private ArrayList<ResultTypeOp> returnTypes;
+        private ArrayList<Type> paramTypes;
+
+        public ProcRow(int id, String lessema, int token) {
+            super(id, lessema, token);
+            this.returnTypes = null;
+            this.paramTypes = null;
+        }
+
+        public ProcRow(int id, String lessema, int token, ArrayList<ResultTypeOp> returnTypes,
+                       ArrayList<Type> paramTypes) {
+            super(id, lessema, token);
+            this.returnTypes = returnTypes;
+            this.paramTypes = paramTypes;
+        }
+
+        public ArrayList<ResultTypeOp> getReturnTypes() {
+            return returnTypes;
+        }
+
+        public void setReturnTypes(ArrayList<ResultTypeOp> returnTypes) {
+            this.returnTypes = returnTypes;
+        }
+
+        public ArrayList<Type> getParamTypes() {
+            return paramTypes;
+        }
+
+        public void setParamTypes(ArrayList<Type> paramTypes) {
+            this.paramTypes = paramTypes;
+        }
+
+        @Override
+        public String toString() {
+            return "ProcRow{" +
+                    "id=" + getId() +
+                    ", lessema='" + getLessema() + '\'' +
+                    ", token=" + getToken() +
+                    ", fref=" + isFref() +
+                    ", paramTypes=" + paramTypes +
+                    ", returnTypes=" + returnTypes +
+                    '}';
         }
     }
 }
