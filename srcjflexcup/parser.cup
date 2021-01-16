@@ -3,6 +3,7 @@ package syntaxanalysis;
 
 import java.util.ArrayList;
 import tree.*;
+import java.lang.Exception;
 
 parser code{:public ProgramOp root;
              public Env currentTable = StackEnv.push(new Env(null, "global"));
@@ -135,7 +136,7 @@ id_list_init ::= ID:i                                       {: ArrayList<IdListI
                                                                   row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                   temp = new IdLeaf(i,row);
                                                                }
-                                                               else{System.err.println("Errore variabile già dichiarata");}
+                                                               else{throw new Exception("Errore variabile già dichiarata");}
                                                                list.add(temp);
                                                                RESULT = new IdListInitOp(list);
                                                             :}
@@ -146,7 +147,7 @@ id_list_init ::= ID:i                                       {: ArrayList<IdListI
                                                                  row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                  temp = new IdLeaf(i,row);
                                                               }
-                                                              else{System.err.println("Errore variabile già dichiarata");}
+                                                              else{throw new Exception("Errore variabile già dichiarata");}
                                                               list.add(temp);
                                                               RESULT = list;
                                                             :}
@@ -157,7 +158,7 @@ id_list_init ::= ID:i                                       {: ArrayList<IdListI
                                                                 row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                 temp = new IdLeaf(i,row);
                                                               }else{
-                                                               System.err.println("Errore variabile già dichiarata");
+                                                               throw new Exception("Errore variabile già dichiarata");
                                                                }
                                                               list.add(new SimpleAssignOp(temp, e));
                                                               RESULT = new IdListInitOp(list);
@@ -168,7 +169,7 @@ id_list_init ::= ID:i                                       {: ArrayList<IdListI
                                                              row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                              temp = new IdLeaf(i,row);
                                                              }else{
-                                                              System.err.println("Errore variabile già dichiarata");
+                                                              throw new Exception("Errore variabile già dichiarata");
                                                              }
                                                              list.add(new SimpleAssignOp(temp, e));
                                                              RESULT = list;
@@ -271,7 +272,6 @@ while_stat ::= WHILE stat_list:list_1 RETURN
 
 id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>();
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("idList, row dopo lookup: "+row);
                                       if(row == null){
                                          list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                       }
@@ -283,7 +283,6 @@ id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>()
 
           | id_list:list COMMA ID:i {:
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("idList, row dopo lookup: "+row);
                                       if(row == null){
                                        list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                       }
@@ -295,13 +294,25 @@ id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>()
           ;
 
 par_id_list ::= ID:i                {:ArrayList<IdLeaf> list = new ArrayList<>();
-                                      list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                      SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                      if(row == null){
+                                         list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                      }
+                                      else{
+                                        throw new Exception("Errore: Variabile già dichiarata");
+                                      }
                                       RESULT = list;
-                                    :}
+                                     :}
 
-          | id_list:list COMMA ID:i {:list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
-                                      RESULT = list;
-                                    :}
+          | id_list:list COMMA ID:i {:SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                     if(row == null){
+                                        list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                     }
+                                     else{
+                                       throw new Exception("Errore: Variabile già dichiarata");
+                                     }
+                                     RESULT = list;
+                                     :}
           ;
 
 //Read Operation

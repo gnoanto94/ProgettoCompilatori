@@ -3,9 +3,8 @@
 */ 
 
 string nome := "Michele";
-int x;
 
-proc main(int x; float x)void :
+proc main()void :
 	int a, b, c:=0;
 	a, b, c := multAddDiff();
 	write ("Ciao ", nome);
@@ -17,7 +16,6 @@ corp;
 
 proc multAddDiff ()int, int, int :
 	int primo, secondo, mul, add, diff;
-	
 	write("Inserire il primo argomento:\n");
 	readln(primo);
 	write("Inserire il secondo argomento:\n");
