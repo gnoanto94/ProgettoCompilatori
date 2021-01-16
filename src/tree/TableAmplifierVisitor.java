@@ -5,10 +5,113 @@ import syntaxanalysis.StackEnv;
 import syntaxanalysis.SymbolTable;
 
 import java.util.ArrayList;
+import java.util.function.ObjDoubleConsumer;
 
 public class TableAmplifierVisitor implements Visitor {
 
-    Env globalTable = StackEnv.top();
+    @Override
+    public Object visit(ProgramOp p) {
+        ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
+        ArrayList<ProcOp> procList = p.getProcOpList();
+
+        for(VarDeclOp v: varDeclList){
+            v.accept(this);
+        }
+
+        for(ProcOp o: procList){
+            o.accept(this);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object visit(VarDeclOp v) {
+        Type type = v.getType();
+        IdListInitOp idListOp = v.getIdListInit();
+        ArrayList<IdListInit> idList = idListOp.getIdListInit();
+        SymbolTable.SymbolTableRow check;
+        IdLeaf idTemp;
+
+        for(IdListInit i : idList){
+            if(i instanceof IdLeaf){
+                check = (SymbolTable.SymbolTableRow) ((IdLeaf) i).accept(this);
+                if(check instanceof SymbolTable.VarRow){
+                    ((SymbolTable.VarRow)check).setVarType(type);
+                }
+            }
+            if(i instanceof SimpleAssignOp){
+                idTemp = ((SimpleAssignOp) i).getId();
+                check = (SymbolTable.SymbolTableRow) idTemp.accept(this);
+                if(check instanceof SymbolTable.VarRow){
+                    ((SymbolTable.VarRow)check).setVarType(type);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(ProcOp p) {
+        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
+        ArrayList<ParamDeclOp> paramDeclList = p.getParamDeclList();
+
+        ArrayList<Type> paramTypes = new ArrayList<>();
+        //Ciclo per inserire correttamente i tipi dei parametri nelle entry a loro associate
+        if(paramDeclList != null){
+            for(ParamDeclOp par : paramDeclList){
+                paramTypes.addAll((ArrayList<Type>)par.accept(this));
+            }
+        }
+
+        //Si recupera la table entry (nella tabella globale) della procedura corrente
+        //e si inseriscono le informazioni mancanti sul tipo dei parametri e sui tipi di ritorno
+        SymbolTable.SymbolTableRow t = p.getProcSymbolTable().getPrev().lookup(p.getId().getIdEntry());
+        if(t instanceof SymbolTable.ProcRow){
+            ((SymbolTable.ProcRow) t).setReturnTypes(resultTypeList);
+            ((SymbolTable.ProcRow) t).setParamTypes(paramTypes);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(ProcOpBody p) {
+        ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
+
+        if(varDeclList != null){
+            for(VarDeclOp v: varDeclList){
+                v.accept(this);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object visit(ParamDeclOp p) {
+        ArrayList<IdLeaf> idList = p.getIdList();
+        Type type = p.getType();
+        SymbolTable.SymbolTableRow check;
+
+        ArrayList<Type> paramTypes = new ArrayList<>();
+
+        //Aggiungiamo alla SymbolTable il tipo associato ad ogni parametro nella lista
+        for(IdLeaf i : idList) {
+            if (i != null) {
+                check = (SymbolTable.SymbolTableRow) i.accept(this);
+                if (check instanceof SymbolTable.VarRow) {
+                    ((SymbolTable.VarRow) check).setVarType(type);
+                }
+                paramTypes.add(type);
+            }
+        }
+        return paramTypes;
+    }
+
+    @Override
+    public Object visit(ResultTypeOp r) {
+        return r;
+    }
 
     @Override
     public Object visit(FloatConstLeaf f)  {
@@ -22,17 +125,8 @@ public class TableAmplifierVisitor implements Visitor {
 
     @Override
     public Object visit(IdLeaf i) {
-        SymbolTable.SymbolTableRow row = i.getTableEntry();
-
-        if (row instanceof SymbolTable.VarRow){
-            return ((SymbolTable.VarRow) row);
-        }
-
-        if (row instanceof SymbolTable.ProcRow){
-            return ((SymbolTable.ProcRow) row);
-        }
-
-        return null;
+        //restituisce la entry nella symbol table di questo idLeaf
+        return i.getTableEntry();
     }
 
     @Override
@@ -55,6 +149,7 @@ public class TableAmplifierVisitor implements Visitor {
         return new Type(Type.BOOL);
     }
 
+    /***************************************************************************************************/
     @Override
     public Object visit(PlusOp p) {
         return null;
@@ -181,87 +276,12 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ParamDeclOp p) {
-        ArrayList<IdLeaf> idList = p.getIdList();
-        Type type = p.getType();
-        SymbolTable.SymbolTableRow check;
-
-        for(IdLeaf i : idList) {
-            if (i instanceof IdLeaf) {
-                check = (SymbolTable.SymbolTableRow) i.accept(this);
-                if (check instanceof SymbolTable.VarRow) {
-                    ((SymbolTable.VarRow) check).setVarType(type);
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Object visit(ResultTypeOp r) {
-        return r;
-    }
-
-    @Override
-    public Object visit(ProcOp p) {
-        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
-        ArrayList<ParamDeclOp> paramDeclList = p.getParamDeclList();
-        //modificare aggiungendo variabile symtable all'interno di procop
-        //per poi modificare la tabella specifica della procop
-        //al posto di usare la globaltable definita sopra
-        for(ResultTypeOp r : resultTypeList){
-            r.accept(this);
-        }
-        for(ParamDeclOp par : paramDeclList){
-            par.accept(this);
-        }
-
-        return null;
-    }
-
-    @Override
-    public Object visit(ProcOpBody p) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ProgramOp p) {
-        return null;
-    }
-
-    @Override
     public Object visit(ReturnExprs r) {
         return null;
     }
 
     @Override
     public Object visit(Type t) {
-        return null;
-    }
-
-    @Override
-    public Object visit(VarDeclOp v) {
-        Type type = v.getType();
-        IdListInitOp idListOp = v.getIdListInit();
-        ArrayList<IdListInit> idList = idListOp.getIdListInit();
-        SymbolTable.SymbolTableRow check;
-        IdLeaf idTemp;
-
-        for(IdListInit i : idList){
-            if(i instanceof IdLeaf){
-                check = (SymbolTable.SymbolTableRow) ((IdLeaf) i).accept(this);
-                if(check instanceof SymbolTable.VarRow){
-                    ((SymbolTable.VarRow)check).setVarType(type);
-                }
-            }
-            if(i instanceof SimpleAssignOp){
-                idTemp = ((SimpleAssignOp) i).getId();
-                check = (SymbolTable.SymbolTableRow) idTemp.accept(this);
-                if(check instanceof SymbolTable.VarRow){
-                    ((SymbolTable.VarRow)check).setVarType(type);
-                }
-            }
-        }
         return null;
     }
 }

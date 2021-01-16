@@ -94,13 +94,36 @@ proc_body ::= var_decl_list:v_list stat_list:s_list RETURN return_exprs:r_exprs 
             ;
 proc ::= PROC ID:i LPAR {:currentTable = StackEnv.push(new Env(StackEnv.top(), i));:}
            param_decl_list:p_list RPAR result_type_list:r_list COLON proc_body:p_body
-          {:RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE)), p_list, r_list, p_body);
-            currentTable = StackEnv.pop();:}
+          {: SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+             IdLeaf f;
+             if(temp == null){ //la procedura non è stata ancora dichiarata
+                 temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+             } else {
+                //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
+                //ora invece la dichiarazione è stata trovata
+                ((SymbolTable.ProcRow) temp).setFref(false);
+             }
+             f = new IdLeaf(i, temp);
+            RESULT = new ProcOp(f, p_list, r_list, p_body, currentTable);
+            currentTable = StackEnv.pop();
+
+          :}
         | PROC ID:i LPAR RPAR
           {: currentTable = StackEnv.push(new Env(StackEnv.top(), i));:}
           result_type_list:r_list COLON proc_body:p_body
-          {:RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE)), null, r_list, p_body);
-            currentTable = StackEnv.pop();:}
+          {: SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+              IdLeaf f;
+              if(temp == null){ //la procedura non è stata ancora dichiarata
+                  temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+              } else {
+                 //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
+                 //ora invece la dichiarazione è stata trovata
+                 ((SymbolTable.ProcRow) temp).setFref(false);
+              }
+              f = new IdLeaf(i, temp);
+            RESULT = new ProcOp(f, null, r_list, p_body, currentTable);
+            currentTable = StackEnv.pop();
+          :}
         ;
 
 //IdListInit
@@ -216,7 +239,6 @@ while_stat ::= WHILE stat_list:list_1 RETURN
 
 id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>();
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("lookup row:" +row);
                                       RESULT = list;
                                       if(row == null){
                                          list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
@@ -229,7 +251,6 @@ id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>()
 
           | id_list:list COMMA ID:i {:
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("lookup row:" +row);
                                       if(row == null){
                                        list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                       }
@@ -263,8 +284,24 @@ assign_stat ::= id_list:idList ASSIGN expr_list:exprList {:RESULT = new Multiple
              ;
 
 //Call Procedure
-call_proc ::= ID:i LPAR expr_list:e RPAR     {: RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.PROCEDURE)), e); :}
-             | ID:i LPAR RPAR                {: RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.PROCEDURE)), null); :}
+call_proc ::= ID:i LPAR expr_list:e RPAR     {: SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+                                                IdLeaf f;
+                                                if(temp == null){ //la procedura non è stata ancora dichiarata
+                                                    temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+                                                    ((SymbolTable.ProcRow) temp).setFref(true);
+                                                }
+                                                f = new IdLeaf(i, temp);
+                                                RESULT = new CallProcOp(f, e);
+                                             :}
+             | ID:i LPAR RPAR                {: SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+                                                IdLeaf f;
+                                                if(temp == null){ //la procedura non è stata ancora dichiarata
+                                                   temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+                                                   ((SymbolTable.ProcRow) temp).setFref(true);
+                                                }
+                                                f = new IdLeaf(i, temp);
+                                               RESULT = new CallProcOp(f, null);
+                                             :}
              ;
 
 //Expression list
@@ -320,7 +357,6 @@ expr      ::=  expr:e1 PLUS  expr:e2         {: RESULT = new PlusOp(e1, e2); :}
              |         FALSE:f               {: RESULT = new FalseLeaf(); :}
 
              |         ID:i                  {: SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                                System.out.println("lookup row:" +row);
                                                 if(row == null){
                                                     RESULT = new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE));
                                                 }

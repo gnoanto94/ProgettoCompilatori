@@ -15,6 +15,69 @@
   </VarDeclList>
   <ProcOpList>
     <ProcOp>
+      <id>main</id>
+      <ParamDeclList>null</ParamDeclList>
+      <ResultTypeList>
+        <ResultTypeOp>void</ResultTypeOp>
+      </ResultTypeList>
+      <ProcBodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <TypeOp>int</TypeOp>
+            <IdListInitOp>
+              <IdList>
+                <id>a</id>
+                <id>b</id>
+                <SimpleAssignOp>
+                  <id>c</id>
+                  <IntConst>0</IntConst>
+                </SimpleAssignOp>
+              </IdList>
+            </IdListInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <MultipleAssignOp>
+            <IdList>
+              <id>a</id>
+              <id>b</id>
+              <id>c</id>
+            </IdList>
+            <ExprList>
+              <CallProcOp>
+                <id>multAddDiff</id>
+                <ExprList>null</ExprList>
+              </CallProcOp>
+            </ExprList>
+          </MultipleAssignOp>
+          <WriteOp>
+            <ExprList>
+              <StringConst>Ciao</StringConst>
+              <id>nome</id>
+            </ExprList>
+          </WriteOp>
+          <CallProcOp>
+            <id>writeNewLines</id>
+            <ExprList>
+              <IntConst>2</IntConst>
+            </ExprList>
+          </CallProcOp>
+          <WriteOp>
+            <ExprList>
+              <StringConst>I tuoi valori sono:</StringConst>
+              <id>a</id>
+              <StringConst>per la moltiplicazione</StringConst>
+              <id>b</id>
+              <StringConst>per la somma, e</StringConst>
+              <id>c</id>
+              <StringConst>per la differenza</StringConst>
+            </ExprList>
+          </WriteOp>
+        </StatList>
+        <ReturnExprs>null</ReturnExprs>
+      </ProcBodyOp>
+    </ProcOp>
+    <ProcOp>
       <id>multAddDiff</id>
       <ParamDeclList>null</ParamDeclList>
       <ResultTypeList>
@@ -132,69 +195,6 @@
               </StatList>
             </DoOp>
           </WhileOp>
-        </StatList>
-        <ReturnExprs>null</ReturnExprs>
-      </ProcBodyOp>
-    </ProcOp>
-    <ProcOp>
-      <id>main</id>
-      <ParamDeclList>null</ParamDeclList>
-      <ResultTypeList>
-        <ResultTypeOp>void</ResultTypeOp>
-      </ResultTypeList>
-      <ProcBodyOp>
-        <VarDeclList>
-          <VarDeclOp>
-            <TypeOp>int</TypeOp>
-            <IdListInitOp>
-              <IdList>
-                <id>a</id>
-                <id>b</id>
-                <SimpleAssignOp>
-                  <id>c</id>
-                  <IntConst>0</IntConst>
-                </SimpleAssignOp>
-              </IdList>
-            </IdListInitOp>
-          </VarDeclOp>
-        </VarDeclList>
-        <StatList>
-          <MultipleAssignOp>
-            <IdList>
-              <id>a</id>
-              <id>b</id>
-              <id>c</id>
-            </IdList>
-            <ExprList>
-              <CallProcOp>
-                <id>multAddDiff</id>
-                <ExprList>null</ExprList>
-              </CallProcOp>
-            </ExprList>
-          </MultipleAssignOp>
-          <WriteOp>
-            <ExprList>
-              <StringConst>Ciao</StringConst>
-              <id>nome</id>
-            </ExprList>
-          </WriteOp>
-          <CallProcOp>
-            <id>writeNewLines</id>
-            <ExprList>
-              <IntConst>2</IntConst>
-            </ExprList>
-          </CallProcOp>
-          <WriteOp>
-            <ExprList>
-              <StringConst>I tuoi valori sono:</StringConst>
-              <id>a</id>
-              <StringConst>per la moltiplicazione</StringConst>
-              <id>b</id>
-              <StringConst>per la somma, e</StringConst>
-              <id>c</id>
-              <StringConst>per la differenza</StringConst>
-            </ExprList>
-          </WriteOp>
         </StatList>
         <ReturnExprs>null</ReturnExprs>
       </ProcBodyOp>

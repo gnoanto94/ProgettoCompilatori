@@ -118,10 +118,6 @@ public class SymbolTable {
         private int id;
         private String lessema;
         private int token;
-        private boolean fref; //flag per controlli su dichiarazioni e utilizzi
-        //fref si imposta a true quando troviamo un utilizzo senza dichiarazione, false altrimenti
-
-        //aggiungere type variabile e type proc ( parametri/return )
 
         public SymbolTableRow(){}
 
@@ -129,14 +125,6 @@ public class SymbolTable {
             this.id = id;
             this.lessema = lessema;
             this.token = token;
-        }
-
-        public boolean isFref() {
-            return fref;
-        }
-
-        public void setFref(boolean fref) {
-            this.fref = fref;
         }
 
         public String getLessema() {
@@ -204,7 +192,6 @@ public class SymbolTable {
                     "id=" + getId() +
                     ", lessema='" + getLessema() + '\'' +
                     ", token=" + getToken() +
-                    ", fref=" + isFref() +
                     ", varType=" + varType +
                     '}';
         }
@@ -213,18 +200,21 @@ public class SymbolTable {
     public class ProcRow extends SymbolTableRow{
         private ArrayList<ResultTypeOp> returnTypes;
         private ArrayList<Type> paramTypes;
+        private boolean fref;
 
         public ProcRow(int id, String lessema, int token) {
             super(id, lessema, token);
             this.returnTypes = null;
             this.paramTypes = null;
+            this.fref = false;
         }
 
         public ProcRow(int id, String lessema, int token, ArrayList<ResultTypeOp> returnTypes,
-                       ArrayList<Type> paramTypes) {
+                       ArrayList<Type> paramTypes, boolean fref) {
             super(id, lessema, token);
             this.returnTypes = returnTypes;
             this.paramTypes = paramTypes;
+            this.fref = fref;
         }
 
         public ArrayList<ResultTypeOp> getReturnTypes() {
@@ -241,6 +231,14 @@ public class SymbolTable {
 
         public void setParamTypes(ArrayList<Type> paramTypes) {
             this.paramTypes = paramTypes;
+        }
+
+        public boolean isFref() {
+            return fref;
+        }
+
+        public void setFref(boolean fref) {
+            this.fref = fref;
         }
 
         @Override

@@ -4,6 +4,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import tree.TableAmplifierVisitor;
 import tree.TreeVisitor;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -28,8 +29,8 @@ public class Tester {
             System.out.println(e.getTable());
         }
 
-        TreeVisitor visitor = new TreeVisitor();
-        Element root = (Element) p.root.accept(visitor);
+        TreeVisitor treeVisitor = new TreeVisitor();
+        Element root = (Element) p.root.accept(treeVisitor);
         Document doc = new Document();
         doc.setRootElement(root);
 
@@ -46,6 +47,17 @@ public class Tester {
         }
         catch(Exception e){
             e.printStackTrace();
+        }
+
+        TableAmplifierVisitor tableVisitor = new TableAmplifierVisitor();
+        p.root.accept(tableVisitor);
+
+        System.out.println("DOPO ARRICCHIMENTO:");
+        System.out.println("SYMBOL TABLE \n =====================");
+        System.out.println("Taglia dello stack: " + StackEnv.stack.size());
+        for(Env e: StackEnv.stack){
+            System.out.println(e.getName());
+            System.out.println(e.getTable());
         }
     }
 }

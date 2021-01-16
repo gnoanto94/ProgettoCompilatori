@@ -600,8 +600,20 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int p_bodyleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int p_bodyright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ProcOpBody p_body = (ProcOpBody)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE)), p_list, r_list, p_body);
+		 SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+             IdLeaf f;
+             if(temp == null){ //la procedura non è stata ancora dichiarata
+                 temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+             } else {
+                //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
+                //ora invece la dichiarazione è stata trovata
+                ((SymbolTable.ProcRow) temp).setFref(false);
+             }
+             f = new IdLeaf(i, temp);
+            RESULT = new ProcOp(f, p_list, r_list, p_body, currentTable);
             currentTable = StackEnv.pop();
+
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("proc",3, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-8)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -633,8 +645,19 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int p_bodyleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int p_bodyright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ProcOpBody p_body = (ProcOpBody)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = new ProcOp(new IdLeaf(i, currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE)), null, r_list, p_body);
+		 SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+              IdLeaf f;
+              if(temp == null){ //la procedura non è stata ancora dichiarata
+                  temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+              } else {
+                 //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
+                 //ora invece la dichiarazione è stata trovata
+                 ((SymbolTable.ProcRow) temp).setFref(false);
+              }
+              f = new IdLeaf(i, temp);
+            RESULT = new ProcOp(f, null, r_list, p_body, currentTable);
             currentTable = StackEnv.pop();
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("proc",3, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1098,7 +1121,6 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		ArrayList<IdLeaf> list = new ArrayList<>();
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("lookup row:" +row);
                                       RESULT = list;
                                       if(row == null){
                                          list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
@@ -1124,7 +1146,6 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                      System.out.println("lookup row:" +row);
                                       if(row == null){
                                        list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                       }
@@ -1218,7 +1239,15 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		ArrayList<Expr> e = (ArrayList<Expr>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.PROCEDURE)), e); 
+		 SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+                                                IdLeaf f;
+                                                if(temp == null){ //la procedura non è stata ancora dichiarata
+                                                    temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+                                                    ((SymbolTable.ProcRow) temp).setFref(true);
+                                                }
+                                                f = new IdLeaf(i, temp);
+                                                RESULT = new CallProcOp(f, e);
+                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("call_proc",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1230,7 +1259,15 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		 RESULT = new CallProcOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.PROCEDURE)), null); 
+		 SymbolTable.SymbolTableRow temp = currentTable.lookup(i);
+                                                IdLeaf f;
+                                                if(temp == null){ //la procedura non è stata ancora dichiarata
+                                                   temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
+                                                   ((SymbolTable.ProcRow) temp).setFref(true);
+                                                }
+                                                f = new IdLeaf(i, temp);
+                                               RESULT = new CallProcOp(f, null);
+                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("call_proc",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1551,7 +1588,6 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 SymbolTable.SymbolTableRow row = currentTable.lookup(i);
-                                                System.out.println("lookup row:" +row);
                                                 if(row == null){
                                                     RESULT = new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE));
                                                 }
