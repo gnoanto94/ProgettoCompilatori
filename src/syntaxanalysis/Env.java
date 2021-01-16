@@ -28,6 +28,13 @@ public class Env {
         return null;
     }
 
+    public SymbolTable.SymbolTableRow currentLookup(String lessema){
+        if (this.table.contain(lessema)) {
+            return this.table.get(lessema);
+        }
+        return null;
+    }
+
     public SymbolTable getTable() {
         return table;
     }

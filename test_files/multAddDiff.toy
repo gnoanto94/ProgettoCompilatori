@@ -3,8 +3,9 @@
 */ 
 
 string nome := "Michele";
+int x;
 
-proc main()void :
+proc main(int x; float x)void :
 	int a, b, c:=0;
 	a, b, c := multAddDiff();
 	write ("Ciao ", nome);

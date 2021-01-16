@@ -2,6 +2,8 @@ package tree;
 
 import syntaxanalysis.SymbolTable;
 
+import java.util.Objects;
+
 public class IdLeaf extends Node implements Expr, IdListInit, Visitable{
 
     private String idEntry;
@@ -40,4 +42,19 @@ public class IdLeaf extends Node implements Expr, IdListInit, Visitable{
                 "idEntry='" + idEntry + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IdLeaf)){
+            return false;
+        }
+        IdLeaf leaf = (IdLeaf) o;
+
+        if(leaf.getTableEntry().equals(this.getTableEntry()) && leaf.getIdEntry().equals(this.idEntry)){
+            return true;
+        }
+        return false;
+
+    }
+
 }

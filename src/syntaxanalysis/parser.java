@@ -404,6 +404,8 @@ public class parser extends java_cup.runtime.lr_parser {
 
 public ProgramOp root;
              public Env currentTable = StackEnv.push(new Env(null, "global"));
+
+
            
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -670,7 +672,14 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 ArrayList<IdListInit> list = new ArrayList<>();
-                                                               list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                                               SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                                               IdLeaf temp = new IdLeaf(i,row);
+                                                               if(row == null){
+                                                                  row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
+                                                                  temp = new IdLeaf(i,row);
+                                                               }
+                                                               else{System.err.println("Errore variabile già dichiarata");}
+                                                               list.add(temp);
                                                                RESULT = new IdListInitOp(list);
                                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("id_list_init",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -687,7 +696,15 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+		
+                                                              SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                                              IdLeaf temp = new IdLeaf(i,row);
+                                                              if(row == null){
+                                                                 row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
+                                                                 temp = new IdLeaf(i,row);
+                                                              }
+                                                              else{System.err.println("Errore variabile già dichiarata");}
+                                                              list.add(temp);
                                                               RESULT = list;
                                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("id_list_init",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -705,7 +722,15 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		ArrayList<IdListInit> list = new ArrayList<>();
-                                                              list.add(new SimpleAssignOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)), e));
+                                                              SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                                              IdLeaf temp = new IdLeaf(i,row);
+                                                              if(row == null){
+                                                                row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
+                                                                temp = new IdLeaf(i,row);
+                                                              }else{
+                                                               System.err.println("Errore variabile già dichiarata");
+                                                               }
+                                                              list.add(new SimpleAssignOp(temp, e));
                                                               RESULT = new IdListInitOp(list);
                                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("id_list_init",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -725,8 +750,16 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		list.add(new SimpleAssignOp(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)), e));
-                                                              RESULT = list;
+		SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+                                                             IdLeaf temp = new IdLeaf(i,row);
+                                                             if(row == null){
+                                                             row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
+                                                             temp = new IdLeaf(i,row);
+                                                             }else{
+                                                              System.err.println("Errore variabile già dichiarata");
+                                                             }
+                                                             list.add(new SimpleAssignOp(temp, e));
+                                                             RESULT = list;
                                                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("id_list_init",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1121,6 +1154,7 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		ArrayList<IdLeaf> list = new ArrayList<>();
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
+                                      System.out.println("idList, row dopo lookup: "+row);
                                       RESULT = list;
                                       if(row == null){
                                          list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
@@ -1146,6 +1180,7 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
+                                      System.out.println("idList, row dopo lookup: "+row);
                                       if(row == null){
                                        list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                       }

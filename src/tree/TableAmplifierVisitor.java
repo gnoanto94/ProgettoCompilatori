@@ -1,11 +1,8 @@
 package tree;
 
-import syntaxanalysis.Env;
-import syntaxanalysis.StackEnv;
 import syntaxanalysis.SymbolTable;
-
 import java.util.ArrayList;
-import java.util.function.ObjDoubleConsumer;
+
 
 public class TableAmplifierVisitor implements Visitor {
 
@@ -71,6 +68,8 @@ public class TableAmplifierVisitor implements Visitor {
             ((SymbolTable.ProcRow) t).setReturnTypes(resultTypeList);
             ((SymbolTable.ProcRow) t).setParamTypes(paramTypes);
         }
+
+        p.getProcBody().accept(this); //per chiamare la visit sul procbody
         return null;
     }
 

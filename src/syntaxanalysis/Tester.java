@@ -22,13 +22,7 @@ public class Tester {
         parser p = new parser(new Lexer(new FileReader(filePath)));
         p.parse();
 
-        System.out.println("SYMBOL TABLE \n =====================");
-        System.out.println("Taglia dello stack: " + StackEnv.stack.size());
-        for(Env e: StackEnv.stack){
-            System.out.println(e.getName());
-            System.out.println(e.getTable());
-        }
-
+        //Chiamata al visitor per la costruzione dell'albero
         TreeVisitor treeVisitor = new TreeVisitor();
         Element root = (Element) p.root.accept(treeVisitor);
         Document doc = new Document();
@@ -49,10 +43,10 @@ public class Tester {
             e.printStackTrace();
         }
 
+        //Chiamata al visitor per arricchimento symboltable
         TableAmplifierVisitor tableVisitor = new TableAmplifierVisitor();
         p.root.accept(tableVisitor);
 
-        System.out.println("DOPO ARRICCHIMENTO:");
         System.out.println("SYMBOL TABLE \n =====================");
         System.out.println("Taglia dello stack: " + StackEnv.stack.size());
         for(Env e: StackEnv.stack){

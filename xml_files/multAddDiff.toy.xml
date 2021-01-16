@@ -12,11 +12,32 @@
         </IdList>
       </IdListInitOp>
     </VarDeclOp>
+    <VarDeclOp>
+      <TypeOp>int</TypeOp>
+      <IdListInitOp>
+        <IdList>
+          <id>x</id>
+        </IdList>
+      </IdListInitOp>
+    </VarDeclOp>
   </VarDeclList>
   <ProcOpList>
     <ProcOp>
       <id>main</id>
-      <ParamDeclList>null</ParamDeclList>
+      <ParamDeclList>
+        <ParamDeclOp>
+          <TypeOp>int</TypeOp>
+          <IdList>
+            <id>x</id>
+          </IdList>
+        </ParamDeclOp>
+        <ParamDeclOp>
+          <TypeOp>float</TypeOp>
+          <IdList>
+            <id>x</id>
+          </IdList>
+        </ParamDeclOp>
+      </ParamDeclList>
       <ResultTypeList>
         <ResultTypeOp>void</ResultTypeOp>
       </ResultTypeList>
