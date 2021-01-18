@@ -14,24 +14,28 @@
 \usepackage{setspace} % per l'interlinea
 \onehalfspacing
 \usepackage[english, italian]{babel}
-\title{Progetto Compilatori A.A. 2020/2021}
+\newcommand\resw[1]{\mathtt{#1}}
+\newcommand\mi[1]{\mathit{#1}}
+\title{Progetto Compilatori \\ \normalsize{A.A. 2020/2021}}
 \author{Gaetano Antonucci \and Alessio Romano}
 \date{\today}
 \begin{document}
     \maketitle
     \tableofcontents
+    \newpage
+    
     \section{Regole di Type Checking implementate}
     \subsection{Tipi Primitivi}
     \[
-        \Gamma \vdash null \colon null \quad
-        \Gamma \vdash true \colon boolean \quad
-        \Gamma \vdash false \colon boolean \quad
+        \Gamma \vdash null \colon null \qquad
+        \Gamma \vdash true \colon boolean \qquad
+        \Gamma \vdash false \colon boolean \qquad
     \]
     \[
-        \Gamma \vdash \mathit{int} \colon int \quad
-        \Gamma \vdash \mathit{float} \colon float \quad
-        \Gamma \vdash \mathit{string} \colon string \quad
-        \Gamma \vdash \mathit{bool}    \colon boolean \quad
+        \Gamma \vdash \mi{int} \colon int \qquad
+        \Gamma \vdash \mi{float} \colon float \qquad
+        \Gamma \vdash \mi{string} \colon string \qquad
+        \Gamma \vdash \mi{bool}    \colon boolean \qquad
     \]
     \subsection{Dichiarazioni di Variabili}
     \[
@@ -39,19 +43,56 @@
     \]
     \subsection{Operazioni Unarie}
     \[
-        \frac {\Gamma \vdash \mathit{e} \colon \tau_1 \quad optype1(op,\tau_1) = \tau} %
-              {\Gamma \vdash (op,\mathit{e}) \colon \tau}
+        \frac {\Gamma \vdash \mi{e} \colon \tau_1 \quad optype1(op,\tau_1) = \tau} %
+              {\Gamma \vdash (op \, \mi{e}) \colon \tau}
     \]
     \subsection{Operazioni Binarie}
     \[
-        \frac {\Gamma \vdash \mathit{e_1} \colon \tau_1 \quad \Gamma \vdash \mathit{e_2} \colon \tau_2  \quad optype2(op,\tau_1 \tau_2) = \tau} %
-        {\Gamma \vdash (\mathit{e_1} op \mathit{e_2}) \colon \tau}
+        \frac {\Gamma \vdash \mi{e_1} \colon \tau_1 \quad \Gamma \vdash \mi{e_2} \colon \tau_2  \quad optype2(op,\tau_1, \tau_2) = \tau} %
+        {\Gamma \vdash (\mi{e_1}\, op \, \mi{e_2}) \colon \tau}
     \]
-    \subsection{Chiamata a Procedure}
+    \subsection{Chiamata a Procedura}
     \[
-        \frac {\Gamma \vdash \mathit{f} \colon \tau_i^{i \in 1 \dots n} \to \tau_j^{j \in 1 \dots m} \quad \Gamma \vdash \mathit{e_i} \colon \tau_i^{i \in 1 \dots n}} %
-        {\Gamma \vdash (\mathit{f}(\mathit{e}_i^{i \in 1 \dots n})\colon \tau_j^{j \in 1 \dots m}}
+        \frac {\Gamma \vdash \mi{f} \colon \tau_i^{\,i \, \in \,1 \, \dots \, n} \to \tau_j^{\,j \, \in \, 1 \, \dots \, m} \quad \Gamma \vdash \mi{e_i} \colon %
+        \tau_i^{\, i \, \in \, 1 \, \dots \, n}} %
+        {\Gamma \vdash \mi{f}(\mi{e}_i^{\, i \, \in \, 1 \, \dots \, n})\colon \tau_j^{\, j \, \in \, 1 \, \dots \, m}}
     \]
-
+    
+    \subsection{Statement}
+    	\subsubsection{if-then}
+	\[
+		\frac{\Gamma \vdash \mi{e} \colon boolean \quad \Gamma \vdash \mi{stmt}}%
+		{\Gamma \vdash \resw{if} \, \mi{e} \, \resw{then} \, \mi{stmt} \, \resw{fi}}
+	\]
+	\subsubsection{if-then-else}
+	\[
+		\frac{\Gamma \vdash \mi{e} \colon boolean \quad \Gamma \vdash \mi{stmt}_{1} \quad \Gamma \vdash \mi{stmt}_{2}}%
+		{\Gamma \vdash \resw{if} \, \mi{e} \, \resw{then} \, \mi{stmt}_{1} \, \resw{else} \, \mi{stmt}_{2} \, \resw{fi}}
+	\]
+	\subsubsection{if-then-elif-else}
+	\[
+		\frac{\Gamma \vdash \mi{e}_{j}^{\, j \, \in \, 1 \, \dots \, m} \colon boolean \quad %
+		\Gamma \vdash \mi{stmt}_{i}^{i \, \in \, 1 \, \dots \, 3}}%
+		{%denominatore
+		\Gamma \vdash  \resw{if} \, \mi{e}_{1} \, \resw{then} \, \mi{stmt}_{1}  \,
+		 (\resw{elif} \, \mi{e}_{j}^{\, j \, \in \, 2 \, \dots \, m} \, \resw{then} \, \mi{stmt}_{2}\,)_{t}^{t \, \in \, 1 \, \dots \, k} \,
+		  \resw{else} \, \mi{stmt}_{3} \, \resw{fi}
+		}%
+	\]
+	\subsubsection{while}
+	\[
+		\frac{\Gamma \vdash \mi{e} \colon boolean \quad \Gamma \vdash \mi{stmt}}%
+		{\Gamma \vdash \resw{while} \, \mi{e} \, \resw{do}\, \mi{stmt} \, \resw{od}}
+	\]
+	\subsubsection{while-return}
+	\[
+		\frac{\Gamma \vdash \mi{e} \colon boolean \quad \Gamma \vdash \mi{stmt}_{1} \quad \Gamma \vdash \mi{stmt}_{2}}%
+		{\Gamma \vdash \resw{while} \, \mi{stmt}_{1}  \resw{-\!\!>}\, \mi{e} \, \resw{do}\, \mi{stmt}_{2} \, \resw{od}}
+	\]
+	\subsubsection{readln}
+	\[
+		\frac{(x_{i}^{\, i \, \in \, 1 \, \dots \, n} \colon \tau_{i}^{\, i \, \in \, 1 \, \dots \, n}) \, \in \, \Gamma}%
+		{\Gamma \vdash \resw{readln(} \mi{x}_{i}^{\, i \, \in \, 1 \, \dots \, n} \resw{)}}
+	\]
 
 \end{document}
