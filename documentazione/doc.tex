@@ -1,0 +1,57 @@
+% !TEX encoding = UTF-8 Unicode
+% !TEX TS-program = pdflatex
+% !TeX spellcheck = it-IT
+% Preambolo
+\documentclass[a4paper,12pt]{article}
+\pagestyle{plain}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath} % per i simboli matematici
+\geometry{a4paper,top=2.5cm,bottom=2.5cm,left=2cm,right=2cm,heightrounded,bindingoffset=5mm}
+\usepackage{microtype} % per migliorare il riempimento delle righe
+\usepackage{setspace} % per l'interlinea
+\onehalfspacing
+\usepackage[english, italian]{babel}
+\title{Progetto Compilatori A.A. 2020/2021}
+\author{Gaetano Antonucci \and Alessio Romano}
+\date{\today}
+\begin{document}
+    \maketitle
+    \tableofcontents
+    \section{Regole di Type Checking implementate}
+    \subsection{Tipi Primitivi}
+    \[
+        \Gamma \vdash null \colon null \quad
+        \Gamma \vdash true \colon boolean \quad
+        \Gamma \vdash false \colon boolean \quad
+    \]
+    \[
+        \Gamma \vdash \mathit{int} \colon int \quad
+        \Gamma \vdash \mathit{float} \colon float \quad
+        \Gamma \vdash \mathit{string} \colon string \quad
+        \Gamma \vdash \mathit{bool}    \colon boolean \quad
+    \]
+    \subsection{Dichiarazioni di Variabili}
+    \[
+        \frac{(x \colon \tau) \in \Gamma}{\Gamma \vdash x \colon \tau}
+    \]
+    \subsection{Operazioni Unarie}
+    \[
+        \frac {\Gamma \vdash \mathit{e} \colon \tau_1 \quad optype1(op,\tau_1) = \tau} %
+              {\Gamma \vdash (op,\mathit{e}) \colon \tau}
+    \]
+    \subsection{Operazioni Binarie}
+    \[
+        \frac {\Gamma \vdash \mathit{e_1} \colon \tau_1 \quad \Gamma \vdash \mathit{e_2} \colon \tau_2  \quad optype2(op,\tau_1 \tau_2) = \tau} %
+        {\Gamma \vdash (\mathit{e_1} op \mathit{e_2}) \colon \tau}
+    \]
+    \subsection{Chiamata a Procedure}
+    \[
+        \frac {\Gamma \vdash \mathit{f} \colon \tau_i^{i \in 1 \dots n} \to \tau_j^{j \in 1 \dots m} \quad \Gamma \vdash \mathit{e_i} \colon \tau_i^{i \in 1 \dots n}} %
+        {\Gamma \vdash (\mathit{f}(\mathit{e}_i^{i \in 1 \dots n})\colon \tau_j^{j \in 1 \dots m}}
+    \]
+
+
+\end{document}
