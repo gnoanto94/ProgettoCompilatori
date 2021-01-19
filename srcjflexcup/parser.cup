@@ -268,12 +268,10 @@ while_stat ::= WHILE stat_list:list_1 RETURN
              ;
 
 //ID List
-
-
 id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>();
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
                                       if(row == null){
-                                         list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                         list.add(new IdLeaf(i, null));
                                       }
                                       else{
                                          list.add(new IdLeaf(i,row));
@@ -284,7 +282,7 @@ id_list ::= ID:i                    {:ArrayList<IdLeaf> list = new ArrayList<>()
           | id_list:list COMMA ID:i {:
                                       SymbolTable.SymbolTableRow row = currentTable.lookup(i);
                                       if(row == null){
-                                       list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
+                                       list.add(new IdLeaf(i, null));
                                       }
                                       else{
                                          list.add(new IdLeaf(i, row));
@@ -304,7 +302,7 @@ par_id_list ::= ID:i                {:ArrayList<IdLeaf> list = new ArrayList<>()
                                       RESULT = list;
                                      :}
 
-          | id_list:list COMMA ID:i {:SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
+          | par_id_list:list COMMA ID:i {:SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
                                      if(row == null){
                                         list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
                                      }

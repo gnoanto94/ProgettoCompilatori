@@ -33,7 +33,7 @@ public class MultipleAssignOp extends StatOp implements Visitable{
     //ad esempio: idList.get(i) := exprList.get(i)
 
     @Override
-    public Object accept(Visitor v) {
+    public Object accept(Visitor v) throws Exception {
         return v.visit(this);
     }
 

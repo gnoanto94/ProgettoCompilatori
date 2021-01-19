@@ -9,7 +9,7 @@ public class ResultTypeOp extends Type implements Visitable{
     }
 
     @Override
-    public Object accept(Visitor v) {
+    public Object accept(Visitor v) throws Exception {
         return v.visit(this);
     }
     //vengono utilizzati i metodi get/set del padre

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class TreeVisitor implements Visitor{
 
-    public Object visit(ProgramOp v){
+    public Object visit(ProgramOp v) throws Exception {
         Element programOp = new Element(Components.PROGRAM_OP);
         Element procOpList = new Element(Components.PROC_OP_LIST);
         Element expr;
@@ -22,13 +22,13 @@ public class TreeVisitor implements Visitor{
     }
 
 
-    public Object visit(ReturnExprs v){
+    public Object visit(ReturnExprs v) throws Exception {
         Element returnExprs = new Element(Components.RETURN_EXPRS);
         returnExprs.addContent(exprList(v.getExprList()));
         return returnExprs;
     }
 
-    public Object visit(ProcOp v){
+    public Object visit(ProcOp v) throws Exception {
         Element procOp = new Element(Components.PROC_OP);
         Element id = (Element) ((Visitable) v.getId()).accept(this);
         Element paramDeclList = new Element(Components.PARAM_DECL_LIST);
@@ -56,7 +56,7 @@ public class TreeVisitor implements Visitor{
         return procOp;
     }
 
-    public Object visit(ProcOpBody v){
+    public Object visit(ProcOpBody v) throws Exception {
         Element procOpBody = new Element(Components.PROC_BODY_OP);
         Element returnExprs = new Element(Components.RETURN_EXPRS);
 
@@ -73,7 +73,7 @@ public class TreeVisitor implements Visitor{
 
 
     /*Declarations*/
-    public Object visit(VarDeclOp v){
+    public Object visit(VarDeclOp v) throws Exception {
         Element varDeclOp = new Element(Components.VAR_DECL_OP);
         Element type = (Element) ((Visitable) v.getType()).accept(this);
         Element idListInit = (Element) ((Visitable) v.getIdListInit()).accept(this);
@@ -83,7 +83,7 @@ public class TreeVisitor implements Visitor{
         return varDeclOp;
     }
 
-    public Object visit(ParamDeclOp v){
+    public Object visit(ParamDeclOp v) throws Exception {
         Element paramDeclOp = new Element(Components.PARAM_DECL_OP);
         Element type = (Element) ((Visitable) v.getType()).accept(this);
         paramDeclOp.addContent(type);
@@ -92,7 +92,7 @@ public class TreeVisitor implements Visitor{
     }
 
 
-    public Object visit(IdListInitOp v){
+    public Object visit(IdListInitOp v) throws Exception {
         Element idListInitOp = new Element(Components.ID_LIST_INIT_OP);
         Element idListInit = new Element(Components.ID_LIST);
         Element expr;
@@ -108,7 +108,7 @@ public class TreeVisitor implements Visitor{
 
     /*Statement*/
 
-    public Object visit(CallProcOp v){
+    public Object visit(CallProcOp v) throws Exception {
         Element callProcOp = new Element(Components.CALL_PROC_OP);
         Element id = (Element) ((Visitable) v.getId()).accept(this);
 
@@ -117,7 +117,7 @@ public class TreeVisitor implements Visitor{
         return callProcOp;
     }
 
-    public Object visit(WhileOp v){
+    public Object visit(WhileOp v) throws Exception {
         Element whileOp = new Element(Components.WHILE_OP);
         Element expr = (Element) ((Visitable) v.getExpr()).accept(this);
         Element doOp = (Element) ((Visitable) v.getDoOp()).accept(this);
@@ -128,25 +128,25 @@ public class TreeVisitor implements Visitor{
         return whileOp;
     }
 
-    public Object visit(WriteOp v){
+    public Object visit(WriteOp v) throws Exception {
         Element writeOp = new Element(Components.WRITE_OP);
         writeOp.addContent(exprList(v.getExprList()));
         return writeOp;
     }
 
-    public Object visit(ReadOp v){
+    public Object visit(ReadOp v) throws Exception {
         Element readOp = new Element(Components.READ_OP);
         readOp.addContent(idList(v.getIdList()));
         return readOp;
     }
 
-    public Object visit(DoOp v){
+    public Object visit(DoOp v) throws Exception {
         Element doOp = new Element(Components.DO_OP);
         doOp.addContent(statList(v.getStatList()));
         return doOp;
     }
 
-    public Object visit(ElifOp v){
+    public Object visit(ElifOp v) throws Exception {
         Element elifOp = new Element(Components.ELIF_OP);
         Element expr = (Element) ((Visitable) v.getExpr()).accept(this);
 
@@ -155,14 +155,14 @@ public class TreeVisitor implements Visitor{
         return elifOp;
     }
 
-    public Object visit(ElseOp v){
+    public Object visit(ElseOp v) throws Exception {
         Element elseOp = new Element(Components.ELSE_OP);
 
         elseOp.addContent(statList(v.getStatList()));
         return elseOp;
     }
 
-    public Object visit(IfOp v){
+    public Object visit(IfOp v) throws Exception {
         Element ifOp = new Element(Components.IF_OP);
         Element elifList = new Element(Components.ELIF_LIST);
         Element elseOp = new Element(Components.ELSE_OP);
@@ -192,7 +192,7 @@ public class TreeVisitor implements Visitor{
     }
 
 
-    public Object visit(SimpleAssignOp v){
+    public Object visit(SimpleAssignOp v) throws Exception {
         Element simpleAssignOp = new Element(Components.SIMPLE_ASSIGN);
         Element id, expr;
         id = (Element) ((Visitable) v.getId()).accept(this);
@@ -203,7 +203,7 @@ public class TreeVisitor implements Visitor{
         return simpleAssignOp;
     }
 
-    public Object visit(MultipleAssignOp v){
+    public Object visit(MultipleAssignOp v) throws Exception {
         Element multipleAssignOp = new Element(Components.MULTIPLE_ASSIGN_OP);
         multipleAssignOp.addContent(idList(v.getIdList()));
         multipleAssignOp.addContent(exprList(v.getExprList()));
@@ -211,7 +211,7 @@ public class TreeVisitor implements Visitor{
     }
 
     /*Operatori Relazionali*/
-    public Object visit(GeOp v){
+    public Object visit(GeOp v) throws Exception {
         Element geOp = new Element(Components.GE_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -222,7 +222,7 @@ public class TreeVisitor implements Visitor{
         return geOp;
     }
 
-    public Object visit(GtOp v){
+    public Object visit(GtOp v) throws Exception {
         Element gtOp = new Element(Components.GT_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -232,7 +232,7 @@ public class TreeVisitor implements Visitor{
         gtOp.addContent(right);
         return gtOp;
     }
-    public Object visit(LeOp v){
+    public Object visit(LeOp v) throws Exception {
         Element leOp = new Element(Components.LE_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -243,7 +243,7 @@ public class TreeVisitor implements Visitor{
         return leOp;
     }
 
-    public Object visit(LtOp v){
+    public Object visit(LtOp v) throws Exception {
         Element ltOp = new Element(Components.LT_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -254,7 +254,7 @@ public class TreeVisitor implements Visitor{
         return ltOp;
     }
 
-    public Object visit(NeOp v){
+    public Object visit(NeOp v) throws Exception {
         Element neOp = new Element(Components.NE_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -266,7 +266,7 @@ public class TreeVisitor implements Visitor{
     }
 
     /*Operatori Aritmetici */
-    public Object visit(PlusOp v){
+    public Object visit(PlusOp v) throws Exception {
         Element plusOp = new Element(Components.PLUS_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -277,7 +277,7 @@ public class TreeVisitor implements Visitor{
         return plusOp;
     }
 
-    public Object visit(UMinusOp v){
+    public Object visit(UMinusOp v) throws Exception {
         Element uminusOp = new Element(Components.UMINUS_OP);
         Element expr;
         expr = (Element) ((Visitable) v.getE1()).accept(this);
@@ -286,7 +286,7 @@ public class TreeVisitor implements Visitor{
         return uminusOp;
     }
 
-    public Object visit(MultOp v){
+    public Object visit(MultOp v) throws Exception {
         Element multOp = new Element(Components.MULT_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -297,7 +297,7 @@ public class TreeVisitor implements Visitor{
         return multOp;
     }
 
-    public Object visit(DivOp v){
+    public Object visit(DivOp v) throws Exception {
         Element divOp = new Element(Components.DIV_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -308,7 +308,7 @@ public class TreeVisitor implements Visitor{
         return divOp;
     }
 
-    public Object visit(MinusOp v){
+    public Object visit(MinusOp v) throws Exception {
         Element minusOp = new Element(Components.MINUS_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -319,7 +319,7 @@ public class TreeVisitor implements Visitor{
         return minusOp;
     }
 
-    public Object visit(EqOp v){
+    public Object visit(EqOp v) throws Exception {
         Element eqOp = new Element(Components.EQ_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -332,7 +332,7 @@ public class TreeVisitor implements Visitor{
 
 
     /*Operatori Logici*/
-    public Object visit(AndOp v) {
+    public Object visit(AndOp v) throws Exception {
         Element andOp = new Element(Components.AND_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -343,7 +343,7 @@ public class TreeVisitor implements Visitor{
         return andOp;
     }
 
-    public Object visit(OrOp v){
+    public Object visit(OrOp v) throws Exception {
         Element orOp = new Element(Components.OR_OP);
         Element left, right;
         left = (Element) ((Visitable) v.getE1()).accept(this);
@@ -354,7 +354,7 @@ public class TreeVisitor implements Visitor{
         return orOp;
     }
 
-    public Object visit(NotOp v){
+    public Object visit(NotOp v) throws Exception {
         Element notOp = new Element(Components.NOT_OP);
         Element expr;
         expr = (Element) ((Visitable) v.getE1()).accept(this);
@@ -413,7 +413,7 @@ public class TreeVisitor implements Visitor{
         return resultTypeOp;
     }
 
-    private Element statList(ArrayList<StatOp> list){
+    private Element statList(ArrayList<StatOp> list) throws Exception {
 
         Element statList = new Element(Components.STAT_LIST);
         Element stat;
@@ -430,7 +430,7 @@ public class TreeVisitor implements Visitor{
         return statList;
     }
 
-    private Element exprList(ArrayList<Expr> list){
+    private Element exprList(ArrayList<Expr> list) throws Exception {
         Element exprList = new Element(Components.EXPR_LIST);
         Element expr;
 
@@ -447,7 +447,7 @@ public class TreeVisitor implements Visitor{
         return exprList;
     }
 
-    private Element varDeclList(ArrayList<VarDeclOp> list){
+    private Element varDeclList(ArrayList<VarDeclOp> list) throws Exception {
 
         Element varDeclList = new Element(Components.VAR_DECL_LIST);
         Element expr;
@@ -464,7 +464,7 @@ public class TreeVisitor implements Visitor{
         return varDeclList;
     }
 
-    private Element idList(ArrayList<IdLeaf> list){
+    private Element idList(ArrayList<IdLeaf> list) throws Exception {
         Element idList = new Element(Components.ID_LIST);
         Element expr;
 

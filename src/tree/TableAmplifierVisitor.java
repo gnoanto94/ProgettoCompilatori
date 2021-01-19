@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class TableAmplifierVisitor implements Visitor {
 
     @Override
-    public Object visit(ProgramOp p) {
+    public Object visit(ProgramOp p) throws Exception {
         ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
         ArrayList<ProcOp> procList = p.getProcOpList();
 
@@ -49,7 +49,7 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ProcOp p) {
+    public Object visit(ProcOp p) throws Exception {
         ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
         ArrayList<ParamDeclOp> paramDeclList = p.getParamDeclList();
 
@@ -74,7 +74,7 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ProcOpBody p) {
+    public Object visit(ProcOpBody p) throws Exception {
         ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
 
         if(varDeclList != null){

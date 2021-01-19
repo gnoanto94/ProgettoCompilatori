@@ -97,7 +97,16 @@
         <ResultTypeOp>void</ResultTypeOp>
       </ResultTypeList>
       <ProcBodyOp>
-        <VarDeclList>null</VarDeclList>
+        <VarDeclList>
+          <VarDeclOp>
+            <TypeOp>int</TypeOp>
+            <IdListInitOp>
+              <IdList>
+                <id>e</id>
+              </IdList>
+            </IdListInitOp>
+          </VarDeclOp>
+        </VarDeclList>
         <StatList>
           <WhileOp>
             <StatList>

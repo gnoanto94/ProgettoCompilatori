@@ -1,9 +1,13 @@
 package tree;
 
+import syntaxanalysis.Env;
+import syntaxanalysis.StackEnv;
 import syntaxanalysis.SymbolTable;
 import java.util.ArrayList;
 
 public class TypeCheckingVisitor implements Visitor{
+
+    private Env currentTable = StackEnv.top();
 
     /* Le visit dei nodi foglia ritornano sempre il loro type*/
     @Override
@@ -152,13 +156,34 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(ReadOp r) {
-        return null;
+    public Object visit(ReadOp r) throws Exception {
+        //Si va a verificare che i parametri passati alla readln siano stati dichiarati prima del loro utilizzo
+        for(IdLeaf i: r.getIdList()){
+            //Si effettua il controllo con null, in quanto il parser metterà null come entry della symbol table
+            //se non trova la dichiarazione della variabile.
+            if(i.getTableEntry() == null){
+                throw new Exception("Errore Semantico: utilizzo di variabile non dichiarata in readln");
+            }
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(WriteOp w) {
-        return null;
+    public Object visit(WriteOp w) throws Exception {
+
+        for(Expr e: w.getExprList()){
+            //Si effettua un controllo solo sugli elementi che sono variabili, in quanto è necessario assicurarsi
+            //che siano state precedentemente dichiarate.
+            if(e instanceof IdLeaf){
+                //Si effettua il controllo con null, in quanto il parser metterà null come entry della symbol table
+                //se non trova la dichiarazione della variabile.
+                if(((IdLeaf) e).getTableEntry() == null){
+                    throw new Exception("Errore Semantico: utilizzo di variabile non dichiarata in write");
+                }
+                //negli altri casi non è necessario effettuare alcun controllo.
+            }
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement write non ha un tipo di ritorno
     }
 
     @Override
@@ -167,15 +192,26 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(CallProcOp c) {
-        /*
-            Bisogna effettuare la lookup nella tabella globale per verificare
-            che la procedura chiamata sia stata definita.
-            Se NON è definita si lancia un'eccezione.
-            Se è definita, bisogna recuperare l'array con i tipi di ritorno dalla
-            tabella dei simboli
-         */
-        return null;
+    public Object visit(CallProcOp c) throws Exception {
+        //Bisogna verificare che la procedura chiamata sia stata definita.
+
+        SymbolTable.ProcRow procRow = null;
+        //Si recupera la symbol table entry riferita alla procedura
+        SymbolTable.SymbolTableRow row = c.getId().getTableEntry();
+
+        //Si verifica che la riga ottenuta sia quella di una procedure
+        if(row instanceof SymbolTable.ProcRow){
+            procRow = (SymbolTable.ProcRow) row;
+        }
+
+        //Se è definita, bisogna recuperare l'array con i tipi di ritorno dalla
+        //entry della symbol table
+        if(procRow != null){
+            return procRow.getReturnTypes();
+        }
+
+        //Se NON è definita si lancia un'eccezione.
+        throw new Exception("Errore Semantico: Procedura non definita");
     }
 
     @Override
@@ -235,18 +271,6 @@ public class TypeCheckingVisitor implements Visitor{
         return null;
     }
 
-//    private Object relopCheckType(Visitable left, Visitable right){
-//        Object leftType;
-//        Object rightType;
-//        SymbolTable.SymbolTableRow leftId;
-//
-//        leftType = left.accept(this);
-//        rightType = right.accept(this);
-//
-//
-//        return null;
-//    }
-
     private Object optype1(Operator op, Expr first) throws Exception{
 
         String type = null;
@@ -278,25 +302,30 @@ public class TypeCheckingVisitor implements Visitor{
 
         switch (op) {
             case UMINUS:
+                //Per poter utilizzare il meno unario, è necessario che l'operando sia di tipo integer o float.
+
+                //Se l'operando NON è di tipo integer o float, lancia eccezione.
+                //È implicito il controllo su null
                 if (!(type.equals(ResultTypeOp.INT) || type.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
-                if(type != null){
-                    return type;
-                }
-                throw new Exception("Errore Semantico: Type Mismatch");
+                //A questo punto l'operando è del tipo corretto e viene restituito il tipo.
+                return type;
 
             case NOT:
+                //Per poter utilizzare il not logico, è necessario che l'operando sia di tipo bool.
+
+                //Se l'operando NON è di tipo bool, lancia eccezione
+                //È implicito il controllo su null
                 if(!type.equals(ResultTypeOp.BOOL)) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
-                if(type != null){
-                    return type;
-                }
-                throw new Exception("Errore Semantico: Type Mismatch");
+               //A questo punto l'operando è del tipo corretto e viene restituito il tipo.
+                return type;
         }
+        //caso generale, non dovrebbe mai accadere.
         throw new Exception("Errore Semantico");
     }
 
@@ -371,23 +400,29 @@ public class TypeCheckingVisitor implements Visitor{
         }
 
         switch (op) {
+            //operazioni aritmetiche
             case SUM, SUB, MUL, DIV:
 
+                //Per poter effettuare un'operazione aritmetica è necessario che i due operandi
+                //siano integer o float
+
+                //Se il primo operando NON è di tipo integer o un float, lancia eccezione
+                //È implicito il controllo su null
                 if (!(type1.equals(ResultTypeOp.INT) || type1.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
+
+                //Il primo operando è del tipo corretto, si passa a verificare il secondo.
+                //Se il secondo operando NON è di tipo integer o un float, lancia eccezione
+                //È implicito il controllo su null
                 if (!(type2.equals(ResultTypeOp.INT) || type2.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
                 }
 
-                if (type1 != null && type2 != null) {
-                    if (type1.equals(type2)) {
-                        return type1;
-                    }
-                }
-
+                //Prima di procedere oltre, è necessario effettuare una verifica solo per l'operando DIV
+                //per escludere che si stia tentando una divisione per zero.
                 if (op == Operator.DIV) {
-                    if ((type1 == ResultTypeOp.INT) && (type2 == ResultTypeOp.INT)) {
+                    if ((type1.equals(ResultTypeOp.INT)) && (type2.equals(ResultTypeOp.INT))) {
                         IntConstLeaf s = (IntConstLeaf) second;
                         int v = s.getValue();
                         if (v == 0) {
@@ -395,49 +430,77 @@ public class TypeCheckingVisitor implements Visitor{
                         }
                     }
                 }
-                //nel caso in cui i tipi sono diversi, vale quello "più grande", ossia float
+
+                //Ora è possibile procedere per tutte le altre operazioni.
+                //A questo punto i due operandi sono del tipo corretto e quindi è necessario solo verificare
+                //se abbiano lo stesso tipo oppure no
+                if (type1.equals(type2)) {
+                    return type1; //si restituisce il primo in quanto uno vale l'altro in quanto uguali
+                }
+
+                //nel caso in cui i tipi del primo e del secondo operando sono diversi,
+                // vale quello "più grande", ossia float
                 return ResultTypeOp.FLOAT;
 
-            case AND, OR: //true false idleaf callproc
+            //operazioni logiche
+            case AND, OR:
 
+                //Per poter effettuare un'operazione logica è necessario che i due operandi siano di tipo bool
+
+                //Se il primo operando NON è di tipo bool, lancia eccezione
+                //È implicito il controllo su null
                 if(!type1.equals(ResultTypeOp.BOOL)){
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
+                //Il primo operando è del tipo corretto, si passa a verificare il secondo.
+                //Se il secondo operando NON è di tipo bool, lancia eccezione.
+                //È implicito il controllo su null
                 if(!type2.equals(ResultTypeOp.BOOL)){
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
                 }
 
-                if(type1 != null && type2 != null) {
-                    return ResultTypeOp.BOOL;
-                }
+                return ResultTypeOp.BOOL;
 
             case EQ,NE,GT,GE,LT,LE:
 
+                //Per poter effettuare una comparazione, è necessario che i due operandi siano di tipo integer, float
+                //oppure string.
+                //Se il primo operando NON è di tipo integer, float o string, lancia eccezione
+                //È implicito il controllo su null
                 if (!(type1.equals(ResultTypeOp.INT) || type1.equals(ResultTypeOp.FLOAT) || type1.equals(ResultTypeOp.STRING))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
+                //A questo punto il primo operando è del tipo corretto, si passa a verificare il secondo.
+                //Se il secondo operando NON è di tipo integer, float o string, lancia eccezione
+                //È implicito il controllo su null
                 if (!(type2.equals(ResultTypeOp.INT) || type2.equals(ResultTypeOp.FLOAT) || type1.equals(ResultTypeOp.STRING))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
                 }
 
-                if(type1 != null && type2 != null) {
-                    if (type1.equals(ResultTypeOp.STRING)) {
-                        if (type2.equals(ResultTypeOp.STRING)) {
-                            return ResultTypeOp.BOOL;
-                        }
-                        throw new Exception("Errore Semantico: Type Mismatch");
-                    }
-
-                    if (!(type1.equals(ResultTypeOp.STRING))) {
-                        if (type2.equals(ResultTypeOp.STRING)) {
-                            throw new Exception("Errore Semantico: Type Mismatch");
-                        }
+                //È necessario effettuare ulteriori controlli se il tipo del primo operando è string.
+                if (type1.equals(ResultTypeOp.STRING)) {
+                    //in questo caso, in quanto il primo operando è string, per effettuare la comparazione,
+                    //è strettamente necessario che anche il secondo operando sia di tipo string.
+                    if (type2.equals(ResultTypeOp.STRING)) {
                         return ResultTypeOp.BOOL;
                     }
+                    //altrimenti lancia eccezione
+                    throw new Exception("Errore Semantico: Type Mismatch");
                 }
+
+                //Se il primo operando non è di tipo string, allora effettuiamo il controllo sul secondo
+                if (type2.equals(ResultTypeOp.STRING)) {
+                    //in questo lancia eccezione in questo non sono entrambi string
+                    throw new Exception("Errore Semantico: Type Mismatch");
+                }
+
+                //negli altri casi le comparazioni sono ammesse e il tipo risultante sarà bool.
+                return ResultTypeOp.BOOL;
+
         }//end switch
+        //caso generale, non dovrebbe mai accadere.
         throw new Exception("Errore Semantico");
     }
 

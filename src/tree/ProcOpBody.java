@@ -41,7 +41,7 @@ public class ProcOpBody extends Node implements Visitable{
     }
 
     @Override
-    public Object accept(Visitor v) {
+    public Object accept(Visitor v) throws Exception {
         return v.visit(this);
     }
 

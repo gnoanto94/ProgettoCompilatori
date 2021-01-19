@@ -20,7 +20,7 @@ public class DoOp extends StatOp implements Visitable{
     }
 
     @Override
-    public Object accept(Visitor v) {
+    public Object accept(Visitor v) throws Exception {
         return v.visit(this);
     }
 

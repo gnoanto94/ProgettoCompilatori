@@ -29,7 +29,7 @@ public class DivOp extends Node implements Expr, Visitable{
     }
 
     @Override
-    public Object accept(Visitor v) {
+    public Object accept(Visitor v) throws Exception {
         return v.visit(this);
     }
 
