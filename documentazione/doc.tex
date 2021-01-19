@@ -94,5 +94,16 @@
 		\frac{(x_{i}^{\, i \, \in \, 1 \, \dots \, n} \colon \tau_{i}^{\, i \, \in \, 1 \, \dots \, n}) \, \in \, \Gamma}%
 		{\Gamma \vdash \resw{readln(} \mi{x}_{i}^{\, i \, \in \, 1 \, \dots \, n} \resw{)}}
 	\]
+    \subsubsection{write}
+    \[
+        \frac{\Gamma \vdash \mi{e} \colon \tau}%
+        {\Gamma \vdash \resw{write(} \mi{e} \colon \tau \resw{)}}
+    \]
+    \subsubsection{assign}
+    \[
+        \frac{(\mi{x} \colon \tau) \, \in \, \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
+        {\Gamma \vdash \mi{x} \, \resw{:=} \, \mi{e}}
+    \]
+
 
 \end{document}

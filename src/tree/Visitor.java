@@ -10,20 +10,20 @@ public interface Visitor {
     Object visit(FalseLeaf f);
 
     /* Nodi degli Operatori */
-    Object visit(PlusOp p);
-    Object visit(MinusOp m);
-    Object visit(UMinusOp u);
-    Object visit(MultOp m);
-    Object visit(DivOp d);
-    Object visit(AndOp a);
-    Object visit(OrOp o);
-    Object visit(NotOp n);
-    Object visit(LtOp l);
-    Object visit(LeOp l);
-    Object visit(GtOp g);
-    Object visit(GeOp g);
-    Object visit(NeOp n);
-    Object visit(EqOp e);
+    Object visit(PlusOp p) throws Exception;
+    Object visit(MinusOp m) throws Exception;
+    Object visit(UMinusOp u) throws Exception;
+    Object visit(MultOp m) throws Exception;
+    Object visit(DivOp d) throws Exception;
+    Object visit(AndOp a) throws Exception;
+    Object visit(OrOp o) throws Exception;
+    Object visit(NotOp n) throws Exception;
+    Object visit(LtOp l) throws Exception;
+    Object visit(LeOp l) throws Exception;
+    Object visit(GtOp g) throws Exception;
+    Object visit(GeOp g) throws Exception;
+    Object visit(NeOp n) throws Exception;
+    Object visit(EqOp e) throws Exception;
     Object visit(SimpleAssignOp s);
 
     /* Nodi degli Statement */
