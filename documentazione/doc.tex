@@ -13,9 +13,23 @@
 \usepackage{microtype} % per migliorare il riempimento delle righe
 \usepackage{setspace} % per l'interlinea
 \onehalfspacing
+\usepackage{xcolor}
+% per i link
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true,    % Colours links instead of ugly boxes
+  urlcolor     = blue,    % Colour for external hyperlinks
+  linkcolor    = black,    % Colour of internal links
+  citecolor    = red      % Colour of citations
+}
 \usepackage[english, italian]{babel}
 \newcommand\resw[1]{\mathtt{#1}}
 \newcommand\mi[1]{\mathit{#1}}
+%Comandi per Grammatica
+\newcommand\nonterm[1]{\texttt{\textcolor{violet}{#1}}}
+\newcommand\term[1]{\texttt{\textcolor{teal}{#1}}}
+\newcommand\production[1]{\texttt{#1} \texttt{:=}}
+\newcommand\emptyprod{\texttt{\textcolor{teal}{/* empty */}}}
 \title{Progetto Compilatori \\ \normalsize{A.A. 2020/2021}}
 \author{Gaetano Antonucci \and Alessio Romano}
 \date{\today}
@@ -24,6 +38,88 @@
     \tableofcontents
     \newpage
     
+    \section{Grammatica Utilizzata}
+    \begin{tabular}{rl}
+    	\production{Program}     & \nonterm{VarDeclList} \nonterm{ProcList} \\
+	\production{VarDeclList} & \nonterm{VarDecl} \nonterm{VarDeclList} \\
+	                                     | & \emptyprod \\
+	\production{VarDecl}      & \nonterm{Type} \nonterm{IdListInit} \term{SEMI} \\
+	\production{Type}           & \term{INT} \\ 
+					   | &\term{BOOL} \\ 
+					   | &\term{FLOAT} \\
+					   | &\term{STRING} \\
+	\production{IdListInit}     &\term{ID} \\
+					   |&\nonterm{IdListInit} \term{COMMA} \term{ID} \\
+					   |&\term{ID} \term{ASSIGN} \nonterm{Expr} \\
+					   |&\nonterm{IdListInit} \term{COMMA} \term{ID} \term{ASSIGN} \nonterm{Expr} \\
+	\production{ProcList}    &\nonterm{Proc} \\
+					  |&\nonterm{Proc} \nonterm{ProcList} \\
+	\production{Proc}         & \term{PROC} \term{ID} \term{LPAR} \nonterm{ParamDeclList} \term{RPAR} \nonterm{ResultTypeList} \term{COLON} %
+						\nonterm{ProcBody}\\
+					  |& \term{PROC} \term{ID} \term{LPAR} \term{RPAR} \nonterm{ResultTypeList} \term{COLON} \nonterm{ProcBody}\\
+	\production{ProcBody} & \nonterm{VarDeclList} \nonterm{StatList} \term{RETURN} \nonterm{ReturnExprs} \term{CORP} \term{SEMI} \\
+	 				  |& \nonterm{VarDeclList} \term{RETURN} \nonterm{ReturnExprs} \term{CORP} \term{SEMI} \\
+	\production{ParamDeclList} & \nonterm{ParDecl} \\
+						  |& \nonterm{ParamDeclList} \term{SEMI} \nonterm{ParDecl} \\
+	\production{ParDecl}            & \nonterm{Type} \nonterm{ParIdList} \\
+	\production{ParIdList}           & \term{ID} \\
+						  |& \nonterm{ParIdList} \term{COMMA} \term{ID} \\
+	\production{ResultTypeList} & \nonterm{ResultType} \\
+						  |& \nonterm{ResultType} \term{COMMA} \nonterm{ResultTypeList} \\
+	\production{ResultType}       & \nonterm{Type} \\
+						  |& \term{VOID} \\
+	\production{StatList} 		   & \nonterm{Stat} \term{SEMI} \\
+						  |& \nonterm{Stat} \term{SEMI} \nonterm{StatList} \\
+	\production{Stat}                  & \nonterm{IfStat} \\
+						  |& \nonterm{WhileStat} \\
+						  |& \nonterm{ReadlnStat} \\
+						  |& \nonterm{AssignStat} \\
+						  |& \nonterm{CallProc} \\
+    \production{IfStat}                   & \term{IF} \nonterm{Expr} \term{THEN} \nonterm{StatList} \nonterm{ElifList} \nonterm{Else} \term{FI} \\
+    \production{ElifList}                 & \nonterm{Elif} \nonterm{ElifList} \\
+    						|& \emptyprod \\
+    \end{tabular}
+    %
+    \begin{tabular}{rl}
+   \production{Elif}			 & \term{ELIF} \nonterm{Expr} \term{THEN} \nonterm{StatList} \\
+   \production{Else}   			 & \term{ELSE} \nonterm{StatList} \\
+   						|& \emptyprod \\
+   \production{WhileStat}             & \term{WHILE} \nonterm{StatList} \term{RETURN} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
+   						|& \term{WHILE} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
+  \production{ReadlnStat}           & \term{READ} \term{LPAR} \nonterm{IdList} \term{RPAR} \\
+  \production{IdList}                    & \term{ID} \\
+					        |& \nonterm{IdList} \term{COMMA} \term{ID} \\
+  \production{WriteStat}              & \term{WRITE} \term{LPAR} \nonterm{ExprList} \term{RPAR} \\
+  \production{AssignStat}           & \nonterm{IdList} \term{ASSIGN} \nonterm{ExprList} \\
+  \production{CallProc}         & \term{ID} \term{LPAR} \nonterm{ExprList} \term{RPAR} \\
+						|& \term{ID} \term{LPAR} \term{RPAR} \\
+  \production{ReturnExprs}    & \nonterm{ExprList} \\
+						 |& \emptyprod \\
+	\production{ExprList}           & \nonterm{Expr} \\
+						 |& \nonterm{Expr} \term{COMMA} \nonterm{ExprList} \\
+   \production{Expr}                    & \term{NULL} \\
+						|& \term{TRUE} \\
+						|& \term{FALSE} \\
+						|& \term{INT\_CONST} \\
+						|& \term{FLOAT\_CONST} \\
+						|& \term{STRING\_CONST} \\
+						|& \term{ID} \\
+    				                 |& \term{MINUS} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{PLUS} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{MINUS} \nonterm{Expr} \\ 
+						|& \nonterm{Expr} \term{TIMES} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{DIV} \nonterm{Expr} \\
+    						|& \term{NOT} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{AND} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{OR} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{GT} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{GE} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{LT} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{LE} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{EQ} \nonterm{Expr} \\
+						|& \nonterm{Expr} \term{NE} \nonterm{Expr} \\
+						|& \nonterm{CallProc} \\
+    \end{tabular}
     \section{Regole di Type Checking implementate}
     \subsection{Tipi Primitivi}
     \[
@@ -99,10 +195,21 @@
         \frac{\Gamma \vdash \mi{e} \colon \tau}%
         {\Gamma \vdash \resw{write(} \mi{e} \colon \tau \resw{)}}
     \]
-    \subsubsection{assign}
+    \subsubsection{simple-assign}
     \[
         \frac{(\mi{x} \colon \tau) \, \in \, \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
         {\Gamma \vdash \mi{x} \, \resw{:=} \, \mi{e}}
+    \]
+    \subsubsection{multiple-assign}
+     \[
+        \frac{(\mi{x}_{i}^{\, i \, \in \, 1 \, \dots \, n} \colon \tau_{i}^{\, i \, \in \, 1 \, \dots \, n}) \, \in \, \Gamma \quad \Gamma \vdash \mi{e}_{j}^{\, j \, \in \, 1 \, \dots \, n}% 
+        \colon \tau_{j}^{\, j \, \in \, 1 \, \dots \, n}}%
+        {\Gamma \vdash \mi{x}_{i}^{\, i \, \in \, 1 \, \dots \, n} \, \resw{:=} \, \mi{e}_{j}^{\, j \, \in \, 1 \, \dots \, n}}
+    \]
+    \subsubsection{return}
+    \[
+    	\frac{(\$\mi{ret} \colon \tau) \in \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
+	{\Gamma \vdash \resw{-\!\!>} \mi{e}}
     \]
 
 
