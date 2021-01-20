@@ -3,6 +3,8 @@ package tree;
 import syntaxanalysis.Env;
 import syntaxanalysis.StackEnv;
 import syntaxanalysis.SymbolTable;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class TypeCheckingVisitor implements Visitor{
@@ -126,8 +128,17 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(SimpleAssignOp s) {
-        return null;
+    public Object visit(SimpleAssignOp s) throws Exception {
+
+        String type1, type2;
+        type1 = (String) s.getId().accept(this);
+        type2 = (String) ((Visitable) s.getExpr()).accept(this);
+
+        if(!type1.equals(type2)){
+            throw new Exception("Errore Semantico: Type Mismatch in Simple Assign");
+        }
+
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
     }
 
     @Override
@@ -171,15 +182,28 @@ public class TypeCheckingVisitor implements Visitor{
     @Override
     public Object visit(WriteOp w) throws Exception {
 
+        ArrayList<ResultTypeOp> resultTypeList;
+
         for(Expr e: w.getExprList()){
             //Si effettua un controllo solo sugli elementi che sono variabili, in quanto è necessario assicurarsi
             //che siano state precedentemente dichiarate.
             if(e instanceof IdLeaf){
                 //Si effettua il controllo con null, in quanto il parser metterà null come entry della symbol table
                 //se non trova la dichiarazione della variabile.
-                if(((IdLeaf) e).getTableEntry() == null){
+                if(((IdLeaf) e).getTableEntry() == null) {
                     throw new Exception("Errore Semantico: utilizzo di variabile non dichiarata in write");
                 }
+            if(e instanceof CallProcOp){
+                // Bisogna controllare se si ha a che fare con una chiamata a procedura
+                // per verificare che non restituisca VOID
+                resultTypeList = (ArrayList<ResultTypeOp>) ((CallProcOp) e).accept(this);
+                if(resultTypeList.size() == 1){
+                    //Si ha una procedura con un solo valore di ritorno, bisogna verificare che non sia void
+                    if(resultTypeList.get(0).equals(ResultTypeOp.VOID)){
+                        throw new Exception("Errore Semantico: Write non accetta valore void");
+                    }
+                }
+            }
                 //negli altri casi non è necessario effettuare alcun controllo.
             }
         }
@@ -187,8 +211,38 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(MultipleAssignOp m) {
-        return null;
+    public Object visit(MultipleAssignOp m) throws Exception {
+
+        String type1, type2;
+        ArrayList<IdLeaf> idList = m.getIdList();
+        ArrayList<Expr> exprList = m.getExprList();
+        int exprListSize = 0;
+
+        for(Expr e : exprList){
+            if(e instanceof CallProcOp){
+                //Nel caso in cui la exprList contiene delle chiamate a procedure bisogna aumentare la size
+                //in base al numero di valori di ritorno ritornati dalle procedure in questione
+                exprListSize += ((ArrayList<Type>) ((CallProcOp) e).accept(this)).size();
+            }
+            exprListSize++;
+        }
+
+        System.out.println("Multiple assign, exprList size: " +exprListSize);
+        System.out.println("Multiple assign, idList size: " +idList.size());
+
+        if(idList.size() != exprList.size()){
+            throw new Exception("Errore Semantico: il numero di argomenti nell'assegnazione multipla non coincide");
+        }
+
+        for (int i = 0; i < exprListSize ; i++){
+            type1 = (String) idList.get(i).accept(this);
+            type2 = (String) ((Visitable) exprList.get(i)).accept(this);
+            if(!(type1.equals(type2))){
+                throw new Exception("Errore Semantico: Type Mismatch in MultipleAssign");
+            }
+        }
+
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
     }
 
     @Override
@@ -226,13 +280,26 @@ public class TypeCheckingVisitor implements Visitor{
 
     @Override
     public Object visit(ResultTypeOp r) {
-        return null;
+        return r.getValue();
     }
 
     @Override
-    public Object visit(ProcOp p) {
+    public Object visit(ProcOp p) throws Exception{
 
-        return null;
+        ArrayList<String> returnTypes = (ArrayList<String>) p.getProcBody().getReturnExprs().accept(this);
+        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
+
+        if(returnTypes.size() != resultTypeList.size()){
+            throw new Exception("Errore Semantico: I valori restituiti dalla procedura non sono in numero eguale " +
+                    "a quelli definiti nella firma della procedura");
+        }
+        for(int i = 0; i < returnTypes.size(); i++){
+            if(!(returnTypes.get(i).equals(resultTypeList.get(i).accept(this)))){
+                throw new Exception("Errore Semantico: Type Mismatch in procedure - " +
+                        "i tipi di ritorno non coincidono con quelli della firma");
+            }
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto la visit la procedure non ha un tipo di ritorno
     }
 
     @Override
@@ -246,13 +313,18 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(ReturnExprs r) {
-        return null;
+    public Object visit(ReturnExprs r) throws Exception{
+        ArrayList<String> returnTypes = new ArrayList<>();
+        //Vengono recuperati tutti i tipi delle espressioni dopo il return
+        for (Expr e: r.getExprList()){
+            returnTypes.add((String) ((Visitable) e).accept(this));
+        }
+        return returnTypes;
     }
 
     @Override
     public Object visit(Type t) {
-        return null;
+        return t.getValue();
     }
 
     @Override
@@ -273,32 +345,7 @@ public class TypeCheckingVisitor implements Visitor{
 
     private Object optype1(Operator op, Expr first) throws Exception{
 
-        String type = null;
-
-        //first = IntConstLeaf
-        if(first instanceof IntConstLeaf) {//first è un intero
-            type = (String) ((IntConstLeaf) first).accept(this);
-        }
-        //first = FloatConstLeaf
-        if(first instanceof FloatConstLeaf){
-            type = (String) ((FloatConstLeaf) first).accept(this);
-        }
-        //first = CallProcOp
-        if(first instanceof CallProcOp){
-            type = getCpReturnType((CallProcOp) first);
-        }
-        //first = idLeaf
-        if(first instanceof IdLeaf){
-            type = (String) ((IdLeaf) first).accept(this);
-        }
-        //first = trueLeaf
-        if(first instanceof TrueLeaf){
-            type = (String)((TrueLeaf) first).accept(this);
-        }
-        //first = falseLeaf
-        if(first instanceof FalseLeaf){
-            type = (String)((FalseLeaf) first).accept(this);
-        }
+        String type = (String) ((Visitable) first).accept(this);
 
         switch (op) {
             case UMINUS:
@@ -333,71 +380,11 @@ public class TypeCheckingVisitor implements Visitor{
     private Object optype2(Operator op, Expr first, Expr second) throws Exception {
 
         ArrayList<ResultTypeOp> resultTypeOp; //tipi di ritorno di CallProcOp
-        String type1 = null, type2 = null;
+        String type1, type2;
 
-        //controllo dei tipi di first
-
-        //first = TrueLeaf
-        if(first instanceof TrueLeaf){
-            type1 = (String)((TrueLeaf) first).accept(this);
-        }
-        //first = FalseLeaf
-        if(first instanceof FalseLeaf){
-            type1 = (String)((FalseLeaf) first).accept(this);
-        }
-        //first = IntConstLeaf
-        if(first instanceof IntConstLeaf) {//first è un intero
-            type1 = (String) ((IntConstLeaf) first).accept(this);
-        }
-        //first = FloatConstLeaf
-        if(first instanceof FloatConstLeaf){
-            type1 = (String) ((FloatConstLeaf) first).accept(this);
-        }
-        //first = FloatConstLeaf
-        if(first instanceof StringConstLeaf){
-            type1 = (String) ((StringConstLeaf) first).accept(this);
-        }
-        //first = CallProcOp
-        if(first instanceof CallProcOp){
-            type1 = getCpReturnType((CallProcOp) first);
-        }
-        //first = idLeaf
-        if(first instanceof IdLeaf){
-            type1 = (String) ((IdLeaf) first).accept(this);
-        }
-
-        //controllo dei tipi di second
-
-        //second = TrueLeaf
-        if(second instanceof TrueLeaf){
-            type2 = (String)((TrueLeaf) second).accept(this);
-        }
-
-        //second = FalseLeaf
-        if(second instanceof FalseLeaf){
-            type2 = (String)((FalseLeaf) second).accept(this);
-        }
-
-        //second = IntConstLeaf
-        if(second instanceof IntConstLeaf){
-            type2 = (String) ((IntConstLeaf) second).accept(this);
-        }
-        //second = FloatConstLeaf
-        if(second instanceof FloatConstLeaf){
-            type2 = (String) ((FloatConstLeaf) second).accept(this);
-        }
-        //second = StringConstLeaf
-        if(second instanceof StringConstLeaf){
-            type2 = (String) ((StringConstLeaf) second).accept(this);
-        }
-        //second = CallProcOp
-        if(second instanceof CallProcOp){
-            type2 = getCpReturnType((CallProcOp) second);
-        }
-        //second = idLeaf
-        if(second instanceof IdLeaf){
-            type2 = (String) ((IdLeaf) second).accept(this);
-        }
+        //Ricavo i tipi degli operandi
+        type1 = (String)((Visitable) first).accept(this);
+        type2 = (String) ((Visitable) second).accept(this);
 
         switch (op) {
             //operazioni aritmetiche
@@ -487,13 +474,13 @@ public class TypeCheckingVisitor implements Visitor{
                         return ResultTypeOp.BOOL;
                     }
                     //altrimenti lancia eccezione
-                    throw new Exception("Errore Semantico: Type Mismatch");
+                    throw new Exception("Errore Semantico: Type Mismatch in operazione binaria");
                 }
 
                 //Se il primo operando non è di tipo string, allora effettuiamo il controllo sul secondo
                 if (type2.equals(ResultTypeOp.STRING)) {
                     //in questo lancia eccezione in questo non sono entrambi string
-                    throw new Exception("Errore Semantico: Type Mismatch");
+                    throw new Exception("Errore Semantico: Type Mismatch in operazione binaria");
                 }
 
                 //negli altri casi le comparazioni sono ammesse e il tipo risultante sarà bool.
