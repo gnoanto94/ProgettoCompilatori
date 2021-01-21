@@ -13,7 +13,11 @@
 \usepackage{microtype} % per migliorare il riempimento delle righe
 \usepackage{setspace} % per l'interlinea
 \onehalfspacing
-\usepackage{xcolor}
+\usepackage{xcolor} % per i colori
+\usepackage{booktabs} % per le tabelle
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subfig}
 % per i link
 \usepackage{hyperref}
 \hypersetup{
@@ -57,12 +61,12 @@
 	\production{Proc}         & \term{PROC} \term{ID} \term{LPAR} \nonterm{ParamDeclList} \term{RPAR} \nonterm{ResultTypeList} \term{COLON} %
 						\nonterm{ProcBody}\\
 					  |& \term{PROC} \term{ID} \term{LPAR} \term{RPAR} \nonterm{ResultTypeList} \term{COLON} \nonterm{ProcBody}\\
-	\production{ProcBody} & \nonterm{VarDeclList} \nonterm{StatList} \term{RETURN} \nonterm{ReturnExprs} \term{CORP} \term{SEMI} \\
+	\production{\textcolor{blue}{ProcBody}} & \nonterm{VarDeclList} \nonterm{StatList} \term{RETURN} \nonterm{ReturnExprs} \term{CORP} \term{SEMI} \\
 	 				  |& \nonterm{VarDeclList} \term{RETURN} \nonterm{ReturnExprs} \term{CORP} \term{SEMI} \\
 	\production{ParamDeclList} & \nonterm{ParDecl} \\
 						  |& \nonterm{ParamDeclList} \term{SEMI} \nonterm{ParDecl} \\
 	\production{ParDecl}            & \nonterm{Type} \nonterm{ParIdList} \\
-	\production{ParIdList}           & \term{ID} \\
+	\production{\textcolor{blue}{ParIdList}}           & \term{ID} \\
 						  |& \nonterm{ParIdList} \term{COMMA} \term{ID} \\
 	\production{ResultTypeList} & \nonterm{ResultType} \\
 						  |& \nonterm{ResultType} \term{COMMA} \nonterm{ResultTypeList} \\
@@ -211,6 +215,45 @@
     	\frac{(\$\mi{ret} \colon \tau) \in \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
 	{\Gamma \vdash \resw{-\!\!>} \mi{e}}
     \]
+    \subsection{Tabelle di Compatibilità}
+    \begin{figure}[ht]
+    	\centering
+	\subfloat[][optype1]{%
+    	\begin{tabular}{lll}
+    		\toprule
+		op & operand & result\\
+		\midrule
+		- & integer & integer \\
+		- & float     & float \\
+		! & boolean & boolean \\
+		\bottomrule
+    	\end{tabular}
+    	} \\
+	
+	\subfloat[][optype2]{%
+	\begin{tabular}{llll}
+		\toprule
+		\multicolumn{1}{c}{\multirow{2}*{op}} & \multicolumn{1}{c}{first}  & \multicolumn{1}{c}{second} & \multicolumn{1}{c}{\multirow{2}*{result}} \\
+		                      & \multicolumn{1}{c}{operand} & \multicolumn{1}{c}{operand} \\
+		\midrule
+		+ - * / & integer & integer & integer \\
+		+ - * / & integer & float & float \\
+		+ - * / & float & integer & float \\
+		+ - * / & float & float & float \\
+		\&\& || & boolean & boolean & boolean\\
+		< = > <= >= <> & integer & integer & boolean \\
+		< = > <= >= <> & integer & float & boolean \\
+		< = > <= >= <> & float & integer & boolean \\
+		< = > <= >= <> & float & float & boolean \\
+		< = > <= >= <> & string & string & boolean \\
+		\bottomrule
+	\end{tabular}
+	}
+	\caption{Relazioni di tipo per gli operatori primitivi. Gli operatori aritmetici lavorano sia su numeri interi sia su numeri in virgola mobile.
+	              Gli operatori logiri ! \&\& || (not, and e or) lavorano su boolean. Gli operatori di comparazione lavorano su tipi primitivi diversi da boolean.}
+\end{figure}
+    
+
 
 
 \end{document}
