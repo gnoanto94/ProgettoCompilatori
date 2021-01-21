@@ -7,7 +7,6 @@ public class ProcOpBody extends Node implements Visitable{
     private ArrayList<VarDeclOp> varDeclList;
     private ArrayList<StatOp> statList;
     private ReturnExprs returnExprs;
-    //procbody = VarDeclList StatList RETURN ReturnExprs CORP SEMI
     
     public ProcOpBody(ArrayList<VarDeclOp> varDeclList, ArrayList<StatOp> statList, ReturnExprs returnExprs) {
         super(Components.PROC_BODY_OP);

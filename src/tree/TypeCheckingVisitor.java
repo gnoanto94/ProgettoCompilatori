@@ -1,7 +1,5 @@
 package tree;
 
-import syntaxanalysis.Env;
-import syntaxanalysis.StackEnv;
 import syntaxanalysis.SymbolTable;
 
 import java.lang.reflect.Array;
@@ -9,7 +7,7 @@ import java.util.ArrayList;
 
 public class TypeCheckingVisitor implements Visitor{
 
-    private Env currentTable = StackEnv.top();
+    private boolean singleMainDeclaration = false; //flag per controllare se viene usata più di una procedura main
 
     /* Le visit dei nodi foglia ritornano sempre il loro type*/
     @Override
@@ -23,38 +21,38 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(IdLeaf i) {
+    public Object visit(IdLeaf i) throws Exception{
         SymbolTable.SymbolTableRow row = i.getTableEntry();
 
         if (row instanceof SymbolTable.VarRow){
-            return ((SymbolTable.VarRow) row).getVarType();
+            return ((SymbolTable.VarRow) row).getVarType().getValue();
         }
 
         if (row instanceof SymbolTable.ProcRow){
             return ((SymbolTable.ProcRow) row).getReturnTypes();
         }
 
-        return null;
+        throw new Exception("Errore Semantico: Utilizzo di variabile non dichiarata");
     }
 
     @Override
     public Object visit(StringConstLeaf s) {
-        return new Type(Type.STRING);
+        return ResultTypeOp.STRING;
     }
 
     @Override
     public Object visit(NullLeaf n) {
-        return new Type();
+        return null;
     }
 
     @Override
     public Object visit(TrueLeaf t) {
-        return new Type(Type.BOOL);
+        return ResultTypeOp.BOOL;
     }
 
     @Override
     public Object visit(FalseLeaf f) {
-        return new Type(Type.BOOL);
+        return ResultTypeOp.BOOL;
     }
 
     @Override
@@ -133,7 +131,6 @@ public class TypeCheckingVisitor implements Visitor{
         String type1, type2;
         type1 = (String) s.getId().accept(this);
         type2 = (String) ((Visitable) s.getExpr()).accept(this);
-
         if(!type1.equals(type2)){
             throw new Exception("Errore Semantico: Type Mismatch in Simple Assign");
         }
@@ -142,28 +139,89 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(IfOp i) {
-        return null;
+    public Object visit(IfOp i) throws Exception{
+
+        String type = (String) ((Visitable) i.getExpr()).accept(this);
+        ArrayList<ElifOp> elifList = i.getElifList();
+        ArrayList<StatOp> statList = i.getStatList();
+
+        if(!(type.equals(ResultTypeOp.BOOL))){
+            throw new Exception("Errore Semantico: la condizione dell'if deve essere un'espressione booleana ");
+        }
+
+        //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo dell'if
+        for(StatOp s : statList){
+            s.accept(this);
+        }
+
+        if(elifList != null){
+            //si controlla se esiste una o più elif così da richiamare la accept per ognuna di esse
+            for(ElifOp e : elifList){
+                e.accept(this);
+            }
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement if non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(ElifOp e) {
-        return null;
+    public Object visit(ElifOp e) throws Exception{
+
+        String type = (String) ((Visitable) e.getExpr()).accept(this);
+        ArrayList<StatOp> statList = e.getStatList();
+
+        if(!(type.equals(ResultTypeOp.BOOL))){
+            throw new Exception("Errore Semantico: la condizione dell'elif deve essere un'espressione booleana ");
+        }
+
+        //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo dell'elif
+        for(StatOp s : statList){
+            s.accept(this);
+        }
+
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement elif non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(ElseOp e) {
-        return null;
+    public Object visit(ElseOp e) throws Exception{
+        ArrayList<StatOp> statList = e.getStatList();
+        //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo dell'elif
+        for(StatOp s : statList){
+            s.accept(this);
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement else non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(WhileOp w) {
-        return null;
+    public Object visit(WhileOp w) throws Exception{
+
+        String type = (String) ((Visitable) w.getExpr()).accept(this);
+        ArrayList<StatOp> statList = w.getStatList();
+
+        if(!(type.equals(ResultTypeOp.BOOL))){
+            throw new Exception("Errore Semantico: la condizione dell'if deve essere un'espressione booleana ");
+        }
+
+        //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo del while
+
+        if(statList != null){ //while potrebbe non avere una statlist
+            for(StatOp s : statList){
+                s.accept(this);
+            }
+        }
+        //si effettua il type checking anche per il corpo del do
+        w.getDoOp().accept(this);
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement while non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(DoOp d) {
-        return null;
+    public Object visit(DoOp d) throws Exception{
+
+        ArrayList<StatOp> statList = d.getStatList();
+        //Bisogna effettuare il type checking per tutti gli statement nel corpo del do
+        for(StatOp s : statList){
+            s.accept(this);
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement do non ha un tipo di ritorno
     }
 
     @Override
@@ -214,6 +272,8 @@ public class TypeCheckingVisitor implements Visitor{
     public Object visit(MultipleAssignOp m) throws Exception {
 
         String type1, type2;
+        ArrayList<String> rightSideTypes = new ArrayList<>();
+        ArrayList<Type> procTypes;
         ArrayList<IdLeaf> idList = m.getIdList();
         ArrayList<Expr> exprList = m.getExprList();
         int exprListSize = 0;
@@ -222,21 +282,25 @@ public class TypeCheckingVisitor implements Visitor{
             if(e instanceof CallProcOp){
                 //Nel caso in cui la exprList contiene delle chiamate a procedure bisogna aumentare la size
                 //in base al numero di valori di ritorno ritornati dalle procedure in questione
-                exprListSize += ((ArrayList<Type>) ((CallProcOp) e).accept(this)).size();
+                procTypes = (ArrayList<Type>) ((CallProcOp) e).accept(this);
+                exprListSize += procTypes.size();
+                for(Type t : procTypes){
+                    rightSideTypes.add(t.getValue());
+                }
+            }else{
+                rightSideTypes.add((String) ((Visitable)e).accept(this));
+                exprListSize++;
             }
-            exprListSize++;
         }
 
-        System.out.println("Multiple assign, exprList size: " +exprListSize);
-        System.out.println("Multiple assign, idList size: " +idList.size());
-
-        if(idList.size() != exprList.size()){
+        if(idList.size() != exprListSize){
             throw new Exception("Errore Semantico: il numero di argomenti nell'assegnazione multipla non coincide");
         }
 
         for (int i = 0; i < exprListSize ; i++){
             type1 = (String) idList.get(i).accept(this);
-            type2 = (String) ((Visitable) exprList.get(i)).accept(this);
+            type2 = rightSideTypes.get(i);
+
             if(!(type1.equals(type2))){
                 throw new Exception("Errore Semantico: Type Mismatch in MultipleAssign");
             }
@@ -269,12 +333,17 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(IdListInitOp i) {
-        return null;
+    public Object visit(IdListInitOp i) throws Exception{
+        for(IdListInit id : i.getIdListInit()){
+            ((Visitable) id).accept(this);
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto idListInit non ha un tipo di ritorno
     }
 
     @Override
     public Object visit(ParamDeclOp p) {
+        //non viene effettuato alcun controllo perchè si ha a che fare con dichiarazioni di parametri
+        //e conseguentemente il metodo visit in questione non viene mai chiamato
         return null;
     }
 
@@ -286,30 +355,82 @@ public class TypeCheckingVisitor implements Visitor{
     @Override
     public Object visit(ProcOp p) throws Exception{
 
-        ArrayList<String> returnTypes = (ArrayList<String>) p.getProcBody().getReturnExprs().accept(this);
-        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
-
-        if(returnTypes.size() != resultTypeList.size()){
-            throw new Exception("Errore Semantico: I valori restituiti dalla procedura non sono in numero eguale " +
-                    "a quelli definiti nella firma della procedura");
-        }
-        for(int i = 0; i < returnTypes.size(); i++){
-            if(!(returnTypes.get(i).equals(resultTypeList.get(i).accept(this)))){
-                throw new Exception("Errore Semantico: Type Mismatch in procedure - " +
-                        "i tipi di ritorno non coincidono con quelli della firma");
+        //Controllo dell'unicità della procedura main
+        if(!(singleMainDeclaration)){
+            if(p.getId().getIdEntry().equals("main")){
+                singleMainDeclaration = true;
+            }
+        }else{
+            if(p.getId().getIdEntry().equals("main")){
+                throw new Exception("Errore Semantico: la procedura main deve essere unica");
             }
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto la visit la procedure non ha un tipo di ritorno
+
+        //resultTypeList fa riferimento ai tipi di ritorno nella firma della procedura
+        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
+
+        if(p.getProcBody().getReturnExprs() != null){
+
+            //returnTypes fa riferimento ai tipi di ritorno delle espressioni alla fine della procedura
+            ArrayList<String> returnTypes = (ArrayList<String>) p.getProcBody().getReturnExprs().accept(this);
+
+            if(returnTypes.size() != resultTypeList.size()){
+                throw new Exception("Errore Semantico: I valori restituiti dalla procedura non sono in numero eguale " +
+                        "a quelli definiti nella firma della procedura");
+            }
+
+            for(int i = 0; i < returnTypes.size(); i++){
+                if(!(returnTypes.get(i).equals(resultTypeList.get(i).accept(this)))){
+                    throw new Exception("Errore Semantico: Type Mismatch in procedure - " +
+                            "i tipi di ritorno non coincidono con quelli della firma");
+                }
+            }
+        }else{
+            if(!(resultTypeList.size() == 1 && resultTypeList.get(0).getValue().equals(ResultTypeOp.VOID))){
+                throw new Exception("Errore Semantico: valore di ritorno mancante per la procedura");
+            }
+        }
+
+        p.getProcBody().accept(this);
+        return ResultTypeOp.VOID; //si restituisce void in quanto una procedura non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(ProcOpBody p) {
-        return null;
+    public Object visit(ProcOpBody p) throws Exception{
+        //i controlli dei tipi di ritorno della procedura vengono già fatti all'interno della visit di procop
+        ArrayList<StatOp> statList = p.getStatList();
+        ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
+
+        if(varDeclList != null){
+            for(VarDeclOp v : varDeclList){
+                v.accept(this);
+            }
+        }
+        if(statList != null){
+            for(StatOp s : statList){
+                s.accept(this);
+            }
+        }
+
+        return ResultTypeOp.VOID; //si restituisce void in quanto ProcOpBody non ha un tipo di ritorno
     }
 
     @Override
-    public Object visit(ProgramOp p) {
-        return null;
+    public Object visit(ProgramOp p) throws Exception {
+        ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
+        ArrayList<ProcOp> procList = p.getProcOpList();
+
+        //Se dichiarate, bisogna effettuare il type checking per tutte le variabili
+        if(varDeclList != null){
+            for(VarDeclOp v : varDeclList){
+                v.accept(this);
+            }
+        }
+        //Per ogni procedura all'interno del programma bisogna effettuare il type checking
+        for(ProcOp proc : procList){
+            proc.accept(this);
+        }
+        return ResultTypeOp.VOID; //si restituisce void in quanto program non ha un tipo di ritorno
     }
 
     @Override
@@ -328,19 +449,10 @@ public class TypeCheckingVisitor implements Visitor{
     }
 
     @Override
-    public Object visit(VarDeclOp v) {
-        Type type = v.getType();
-        IdListInitOp idListOp = v.getIdListInit();
-        ArrayList<IdListInit> idList = idListOp.getIdListInit();
-        for(IdListInit i : idList){
-            if(i instanceof IdLeaf){
-                ((SymbolTable.VarRow)((IdLeaf) i).getTableEntry()).setVarType(type);
-            }
-            if(i instanceof SimpleAssignOp){
-                ((SymbolTable.VarRow)((SimpleAssignOp) i).getId().getTableEntry()).setVarType(type);
-            }
-        }
-        return null;
+    public Object visit(VarDeclOp v) throws Exception{
+
+        v.getIdListInit().accept(this);
+        return ResultTypeOp.VOID; //si restituisce void in quanto varDeclOp non ha un tipo di ritorno
     }
 
     private Object optype1(Operator op, Expr first) throws Exception{

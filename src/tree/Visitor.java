@@ -3,7 +3,7 @@ package tree;
 public interface Visitor {
     Object visit(FloatConstLeaf f);
     Object visit(IntConstLeaf i);
-    Object visit(IdLeaf i);
+    Object visit(IdLeaf i) throws Exception;
     Object visit(StringConstLeaf s);
     Object visit(NullLeaf n);
     Object visit(TrueLeaf t);

@@ -8,6 +8,7 @@ import tree.TableAmplifierVisitor;
 import tree.TreeVisitor;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import tree.TypeCheckingVisitor;
 
 import java.io.*;
 
@@ -53,5 +54,9 @@ public class Tester {
             System.out.println(e.getName());
             System.out.println(e.getTable());
         }
+
+        //Chiamata al visitor per il Type Checking
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor();
+        p.root.accept(typeVisitor);
     }
 }

@@ -97,16 +97,7 @@
         <ResultTypeOp>void</ResultTypeOp>
       </ResultTypeList>
       <ProcBodyOp>
-        <VarDeclList>
-          <VarDeclOp>
-            <TypeOp>int</TypeOp>
-            <IdListInitOp>
-              <IdList>
-                <id>e</id>
-              </IdList>
-            </IdListInitOp>
-          </VarDeclOp>
-        </VarDeclList>
+        <VarDeclList>null</VarDeclList>
         <StatList>
           <WhileOp>
             <StatList>
@@ -120,6 +111,10 @@
                   <id>n</id>
                 </IdList>
               </ReadOp>
+              <CallProcOp>
+                <id>prova</id>
+                <ExprList>null</ExprList>
+              </CallProcOp>
             </StatList>
             <LtOp>
               <id>n</id>

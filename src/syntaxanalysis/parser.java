@@ -1633,7 +1633,7 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 SymbolTable.SymbolTableRow row = currentTable.lookup(i);
                                                 if(row == null){
-                                                    RESULT = new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE));
+                                                    throw new Exception("Errore - Utilizzo di variabile non dichiarata");
                                                 }
                                                 else{
                                                     RESULT = new IdLeaf(i,row);

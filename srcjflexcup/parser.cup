@@ -400,7 +400,7 @@ expr      ::=  expr:e1 PLUS  expr:e2         {: RESULT = new PlusOp(e1, e2); :}
 
              |         ID:i                  {: SymbolTable.SymbolTableRow row = currentTable.lookup(i);
                                                 if(row == null){
-                                                    RESULT = new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE));
+                                                    throw new Exception("Errore - Utilizzo di variabile non dichiarata");
                                                 }
                                                 else{
                                                     RESULT = new IdLeaf(i,row);

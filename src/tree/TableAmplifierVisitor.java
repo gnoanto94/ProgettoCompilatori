@@ -23,7 +23,7 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(VarDeclOp v) {
+    public Object visit(VarDeclOp v) throws Exception{
         Type type = v.getType();
         IdListInitOp idListOp = v.getIdListInit();
         ArrayList<IdListInit> idList = idListOp.getIdListInit();
@@ -87,7 +87,7 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     @Override
-    public Object visit(ParamDeclOp p) {
+    public Object visit(ParamDeclOp p) throws Exception{
         ArrayList<IdLeaf> idList = p.getIdList();
         Type type = p.getType();
         SymbolTable.SymbolTableRow check;
