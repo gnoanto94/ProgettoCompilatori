@@ -111,10 +111,6 @@
                   <id>n</id>
                 </IdList>
               </ReadOp>
-              <CallProcOp>
-                <id>prova</id>
-                <ExprList>null</ExprList>
-              </CallProcOp>
             </StatList>
             <LtOp>
               <id>n</id>

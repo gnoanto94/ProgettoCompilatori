@@ -6,9 +6,8 @@
 package syntaxanalysis;
 
 import java.util.ArrayList;
-import tree.*;
+import tree_nodes.*;
 import java.lang.Exception;
-import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */

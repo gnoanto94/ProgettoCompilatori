@@ -1,6 +1,6 @@
 package syntaxanalysis;
 
-import tree.*;
+import tree_nodes.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,6 +94,10 @@ public class SymbolTable {
         } else {
             return -1;
         }
+    }
+
+    public ArrayList<SymbolTableRow> getSymTab() {
+        return symTab;
     }
 
     @Override

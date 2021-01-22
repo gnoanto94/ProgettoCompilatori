@@ -34,7 +34,8 @@ Letter = [A-Za-z]
 Digit = [0-9]
 Identifier = ({Letter}|_)({Letter}|{Digit}|_)*
 Integer = [1-9][0-9]*|[0]
-Float = (0|[1-9][0-9]*) (\.([0]*[1-9]+([0-9]*[1-9])?) ((e|E)(\+|-)?[0-9]+)?)
+//Float = (0|[1-9][0-9]*) (\.([0]*[1-9]+([0-9]*[1-9])?) ((e|E)(\+|-)?[0-9]+)?)
+Float = (0|[1-9][0-9]*)(\.([0-9]*)((e|E)(\+|-)?[0-9]+)?)
 CommentString = [^\*\/]*
 
 //dichiarazione degli state per la gestione degli errori per stringhe e commenti
@@ -112,6 +113,7 @@ CommentString = [^\*\/]*
 <COMMENT> {
     \*                  {yybegin(COMMENT2);}
     {CommentString}     {/* ignore */}
+    \/                  {/* ignore */}
 }
 <COMMENT2>{
     \/                  {yybegin(YYINITIAL);}

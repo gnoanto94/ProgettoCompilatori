@@ -2,7 +2,7 @@ package syntaxanalysis;
 
 
 import java.util.ArrayList;
-import tree.*;
+import tree_nodes.*;
 import java.lang.Exception;
 
 parser code{:public ProgramOp root;

@@ -104,12 +104,12 @@ class Lexer implements java_cup.runtime.Scanner {
     "\1\3\1\6\1\7\1\10\1\11\1\12\1\13\1\14"+
     "\2\15\1\16\1\17\1\20\1\21\1\22\4\23\1\3"+
     "\1\1\1\24\1\25\1\2\1\26\1\27\1\30\1\31"+
-    "\1\32\1\33\1\0\1\34\1\35\1\36\1\37\3\23"+
-    "\1\40\1\41\1\42\1\43\1\44\1\45\3\23\1\0"+
-    "\1\23\1\46\1\47\1\0\1\45\1\50";
+    "\1\32\1\33\1\34\1\35\1\36\1\37\1\40\3\23"+
+    "\1\41\1\42\1\43\1\44\1\45\1\0\3\23\1\0"+
+    "\1\34\1\23\1\46\1\47\1\50";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[63];
+    int [] result = new int[62];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -141,10 +141,10 @@ class Lexer implements java_cup.runtime.Scanner {
     "\0\u02df\0\214\0\214\0\214\0\214\0\214\0\214\0\u0302"+
     "\0\214\0\214\0\214\0\214\0\u0325\0\u0348\0\u036b\0\214"+
     "\0\214\0\214\0\214\0\214\0\u038e\0\u03b1\0\u03d4\0\u03f7"+
-    "\0\u041a\0\u043d\0\u01ea\0\u01ea\0\u0460\0\u0460\0\u01ea";
+    "\0\u041a\0\u041a\0\u043d\0\u01ea\0\u01ea\0\u01ea";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[63];
+    int [] result = new int[62];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -172,7 +172,7 @@ class Lexer implements java_cup.runtime.Scanner {
     "\1\24\1\25\1\26\1\27\1\30\2\31\1\5\2\31"+
     "\1\32\1\31\1\33\2\31\1\34\1\31\1\35\2\36"+
     "\2\5\1\36\1\37\22\36\1\40\12\36\11\41\1\42"+
-    "\4\41\1\5\24\41\16\43\1\44\24\43\45\0\1\6"+
+    "\4\41\1\6\24\41\16\43\1\44\24\43\45\0\1\6"+
     "\46\0\1\45\61\0\1\46\26\0\1\47\46\0\1\50"+
     "\42\0\1\50\1\0\2\23\46\0\1\51\42\0\1\52"+
     "\1\53\41\0\1\54\35\0\2\31\5\0\2\31\1\0"+
@@ -181,19 +181,19 @@ class Lexer implements java_cup.runtime.Scanner {
     "\2\31\5\0\2\31\1\0\5\31\1\57\3\31\43\0"+
     "\1\60\2\36\2\0\1\36\1\0\22\36\1\0\12\36"+
     "\5\0\1\61\27\0\1\62\1\63\1\0\1\64\2\0"+
-    "\11\41\1\0\4\41\1\0\24\41\17\0\1\50\1\65"+
-    "\41\0\2\31\5\0\2\31\1\0\3\31\1\66\5\31"+
-    "\20\0\2\31\5\0\2\31\1\0\3\31\1\67\5\31"+
-    "\20\0\2\31\5\0\2\31\1\0\10\31\1\70\20\0"+
-    "\1\50\1\65\6\0\1\71\2\0\1\71\27\0\2\31"+
-    "\5\0\2\31\1\0\6\31\1\72\2\31\20\0\2\31"+
-    "\5\0\2\31\1\0\3\31\1\73\5\31\20\0\2\31"+
-    "\5\0\2\31\1\0\1\31\1\74\7\31\13\0\1\75"+
-    "\1\0\1\75\2\0\2\76\41\0\2\31\5\0\2\31"+
-    "\1\0\1\31\1\77\7\31\20\0\2\76\22\0";
+    "\11\41\1\0\4\41\1\0\24\41\17\0\2\50\6\0"+
+    "\1\65\2\0\1\65\27\0\2\31\5\0\2\31\1\0"+
+    "\3\31\1\66\5\31\20\0\2\31\5\0\2\31\1\0"+
+    "\3\31\1\67\5\31\20\0\2\31\5\0\2\31\1\0"+
+    "\10\31\1\70\13\0\1\71\1\0\1\71\2\0\2\72"+
+    "\41\0\2\31\5\0\2\31\1\0\6\31\1\73\2\31"+
+    "\20\0\2\31\5\0\2\31\1\0\3\31\1\74\5\31"+
+    "\20\0\2\31\5\0\2\31\1\0\1\31\1\75\7\31"+
+    "\20\0\2\72\41\0\2\31\5\0\2\31\1\0\1\31"+
+    "\1\76\7\31\1\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[1155];
+    int [] result = new int[1120];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -238,11 +238,10 @@ class Lexer implements java_cup.runtime.Scanner {
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\1\0\2\1\1\0\2\11\1\1\2\11\1\1\5\11"+
     "\5\1\1\11\1\1\1\11\7\1\1\11\2\1\6\11"+
-    "\1\0\4\11\3\1\5\11\4\1\1\0\3\1\1\0"+
-    "\2\1";
+    "\1\1\4\11\3\1\5\11\1\0\3\1\1\0\5\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[63];
+    int [] result = new int[62];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -735,15 +734,15 @@ class Lexer implements java_cup.runtime.Scanner {
             case STRING: {
               throw new IOException("Stringa costante non completata");
             }  // fall though
-            case 64: break;
+            case 63: break;
             case COMMENT: {
               throw new IOException("Commento non chiuso");
             }  // fall though
-            case 65: break;
+            case 64: break;
             case COMMENT2: {
               throw new IOException("Commento non chiuso");
             }  // fall though
-            case 66: break;
+            case 65: break;
             default:
           {     return new Symbol(sym.EOF);
  }
@@ -898,52 +897,52 @@ class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 67: break;
           case 28:
-            { return generateToken(sym.ASSIGN);
+            { return generateToken(sym.FLOAT_CONST, yytext());
             }
             // fall through
           case 68: break;
           case 29:
-            { return generateToken(sym.LE);
+            { return generateToken(sym.ASSIGN);
             }
             // fall through
           case 69: break;
           case 30:
-            { return generateToken(sym.NE);
+            { return generateToken(sym.LE);
             }
             // fall through
           case 70: break;
           case 31:
-            { return generateToken(sym.GE);
+            { return generateToken(sym.NE);
             }
             // fall through
           case 71: break;
           case 32:
-            { return generateToken(sym.OR);
+            { return generateToken(sym.GE);
             }
             // fall through
           case 72: break;
           case 33:
-            { string.append('\"');
+            { return generateToken(sym.OR);
             }
             // fall through
           case 73: break;
           case 34:
-            { string.append('\n');
+            { string.append('\"');
             }
             // fall through
           case 74: break;
           case 35:
-            { string.append('\r');
+            { string.append('\n');
             }
             // fall through
           case 75: break;
           case 36:
-            { string.append('\t');
+            { string.append('\r');
             }
             // fall through
           case 76: break;
           case 37:
-            { return generateToken(sym.FLOAT_CONST, yytext());
+            { string.append('\t');
             }
             // fall through
           case 77: break;
