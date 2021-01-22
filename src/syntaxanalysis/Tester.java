@@ -1,5 +1,6 @@
 package syntaxanalysis;
 
+import code_generation.CodeGeneratorVisitor;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
@@ -57,5 +58,9 @@ public class Tester {
         //Chiamata al visitor per il Type Checking
         TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor();
         p.root.accept(typeVisitor);
+
+        CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor(args[0]);
+        p.root.accept(codeVisitor);
+
     }
 }

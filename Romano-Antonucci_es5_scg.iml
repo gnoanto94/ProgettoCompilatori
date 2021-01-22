@@ -7,19 +7,19 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../CUP/java-cup-11b-runtime.jar!/" />
+          <root url="jar://C:/CUP/java-cup-11b-runtime.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Utility/jdom-2.0.6/jdom-2.0.6.jar!/" />
+          <root url="jar://C:/JDOM/jdom-2.0.6/jdom-2.0.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
