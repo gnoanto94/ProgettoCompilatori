@@ -10,5 +10,7 @@ bool nonloso2 := nonloso && nonloso1;
 bool nonloso3 := nonloso || nonloso1;
 
 proc main()void:
+int qualcosa;
+qualcosa := 100/29 * 30 - 12;
 ->
 corp;

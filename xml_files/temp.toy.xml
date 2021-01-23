@@ -139,8 +139,35 @@
         <ResultTypeOp>void</ResultTypeOp>
       </ResultTypeList>
       <ProcBodyOp>
-        <VarDeclList>null</VarDeclList>
-        <StatList>null</StatList>
+        <VarDeclList>
+          <VarDeclOp>
+            <TypeOp>int</TypeOp>
+            <IdListInitOp>
+              <IdList>
+                <id>qualcosa</id>
+              </IdList>
+            </IdListInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <MultipleAssignOp>
+            <IdList>
+              <id>qualcosa</id>
+            </IdList>
+            <ExprList>
+              <MinusOp>
+                <MultOp>
+                  <DivOp>
+                    <IntConst>100</IntConst>
+                    <IntConst>29</IntConst>
+                  </DivOp>
+                  <IntConst>30</IntConst>
+                </MultOp>
+                <IntConst>12</IntConst>
+              </MinusOp>
+            </ExprList>
+          </MultipleAssignOp>
+        </StatList>
         <ReturnExprs>null</ReturnExprs>
       </ProcBodyOp>
     </ProcOp>

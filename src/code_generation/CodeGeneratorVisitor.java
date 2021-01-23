@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class CodeGeneratorVisitor implements Visitor {
 
     private String programName;
+    private String currentProcName;
+    private String multipleReturnVars = "";
     private PrintStream ps;
 
     private static final String TRUE = "1";
@@ -169,27 +171,97 @@ public class CodeGeneratorVisitor implements Visitor {
     /* STATEMENT */
     @Override
     public Object visit(IfOp i) throws Exception {
-        return null;
+
+        String str = "if("+((Visitable) i.getExpr()).accept(this)+"){\n";
+        for(StatOp s : i.getStatList()){
+            str += s.accept(this);
+        }
+        str += "\n}";
+        //si verifica se vengono usati else if(elif)
+        if(i.getElifList() != null){
+            for(StatOp s: i.getElifList()){
+                str += s.accept(this);
+            }
+        }
+        //si verifica se viene utilizzato else
+        if(i.getElseOp() != null){
+            str += i.getElseOp().accept(this);
+        }
+
+        return str;
     }
 
     @Override
     public Object visit(ElifOp e) throws Exception {
-        return null;
+
+        String str = "else if("+((Visitable) e.getExpr()).accept(this)+"){\n";
+        for(StatOp s : e.getStatList()){
+            str += s.accept(this);
+        }
+        str += "\n}";
+
+        return str;
     }
 
     @Override
     public Object visit(ElseOp e) throws Exception {
-        return null;
+        String str = "else{\n";
+
+        for(StatOp s : e.getStatList()){
+            str += s.accept(this);
+        }
+        str += "\n}";
+
+        return str;
     }
 
     @Override
     public Object visit(WhileOp w) throws Exception {
-        return null;
+
+        /* Ci sono due possibili produzioni per while:
+         * 1) while statements1 return expr do statements2 od
+         * 2) while expr do statements od
+         *
+         * Nel caso 1, il codice C risultante è il seguente:
+         *
+         * statements1
+         * while(expr){
+         *    statements2
+         *    statements1
+         * }
+         * Nel caso 2, il codice C risultante è il seguente:
+         *
+         * while(condizione){
+         *  statements
+         * }
+         *
+         */
+
+        String str = "", stat1 = "";
+
+        if(w.getStatList()!=null){
+            for(StatOp s : w.getStatList()){
+                stat1 += s.accept(this);
+            }
+            stat1 += "\n";
+        }
+        str += stat1 + "while(" + ((Visitable) w.getExpr()).accept(this) + "){";
+        str += w.getDoOp().accept(this);
+        str += stat1 + "\n";
+
+        return str + "}\n";
     }
 
     @Override
     public Object visit(DoOp d) throws Exception {
-        return null;
+
+        //Nel linguaggio C non esiste while do, quindi semplicemente si prendono gli statement che andranno nel while
+        String str = "";
+        for(StatOp s : d.getStatList()){
+            str += s.accept(this);
+        }
+
+        return str;
     }
 
     @Override
@@ -374,19 +446,73 @@ public class CodeGeneratorVisitor implements Visitor {
         /* Creazione delle variabili globali per i valori di ritorno successivi al primo
          * Nella firma della funzione C come tipo di ritorno ci sarà solo il primo
          */
-        return null;
+        currentProcName = p.getId().getIdEntry();
+        String str = "";
+
+        ArrayList<String> results = new ArrayList<>();
+        for(ResultTypeOp r : p.getResultTypeList()){
+            results.add(r.getValue());
+        }
+
+        str += results.get(0) + " " + currentProcName+"(";
+
+        for(int i = 1; i < results.size(); i++){
+            multipleReturnVars += results.get(i)+currentProcName+"_"+i+"\n";
+        }
+
+        if(p.getParamDeclList() != null) {
+            for (ParamDeclOp param : p.getParamDeclList()) {
+                str += param.accept(this);
+            }
+        }
+        str += "){" + p.getProcBody().accept(this)+"}";
+
+        return str;
     }
 
     @Override
     public Object visit(ProcOpBody p) throws Exception {
         /*Return solo del primo valore di ritorno (o dell'unico valore)
          * e assegnazione dei valori di ritorno successivo al primo alle variabili globali create precedentemente */
-        return null;
+
+        String str = "", ret = "";
+
+        if(p.getVarDeclList() != null) {
+            for (VarDeclOp v : p.getVarDeclList()) {
+                v.accept(this);
+            }
+        }
+
+        if(p.getStatList() != null) {
+            for (StatOp s : p.getStatList()) {
+                str += s.accept(this);
+            }
+        }
+
+        if(p.getReturnExprs() != null){
+            ArrayList<String> exprs = (ArrayList<String>) p.getReturnExprs().accept(this);
+            int counter = 1;
+            for(int i = 0; i < exprs.size(); i++){
+                if(i == 0){
+                    ret = "return " + exprs.get(i);
+                }else{
+                    str += currentProcName + counter + " = " + exprs.get(i)+";\n";//assegnazione variabili
+                    counter++;
+                }
+            }
+        }
+
+        return str+ret;
     }
 
     @Override
     public Object visit(ReturnExprs r) throws Exception {
-        return null;
+        ArrayList<String> returnExprs = new ArrayList<>();
+
+        for(Expr e : r.getExprList()){
+            returnExprs.add((String)((Visitable)e).accept(this));
+        }
+        return returnExprs;
     }
 
     @Override
@@ -406,8 +532,11 @@ public class CodeGeneratorVisitor implements Visitor {
             }
         }
 
+        //si aggiungono le variabili globali corrispondenti ai ritorni multipli delle procedure
+        ps.println(multipleReturnVars);
+
         for(ProcOp pr: procList){
-            pr.accept(this);
+            ps.println(pr.accept(this));
         }
 
         return null;

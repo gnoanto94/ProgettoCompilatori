@@ -13,3 +13,7 @@ int nonloso = 1;
 int nonloso1 = 0;
 int nonloso2 = nonloso && nonloso1;
 int nonloso3 = nonloso || nonloso1;
+
+int qualcosa;
+void main(){IdLeaf{idEntry='qualcosa'} = 100 / 29 * 30 - 12;
+}
