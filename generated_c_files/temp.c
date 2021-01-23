@@ -1,3 +1,4 @@
+/* Auto-generated code from Toy Compiler */
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -8,7 +9,7 @@ int n = 100 / 29 * 30 - 12;
 char* c = "ciao";
 char* c1 = "aihgs";
 int prova = c < c1;
-int banana = 1;
-int banana1 = 0;
-int banana2 = banana && banana1;
-int banana3 = banana || banana1;
+int nonloso = 1;
+int nonloso1 = 0;
+int nonloso2 = nonloso && nonloso1;
+int nonloso3 = nonloso || nonloso1;

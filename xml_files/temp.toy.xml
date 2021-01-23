@@ -85,7 +85,7 @@
       <IdListInitOp>
         <IdList>
           <SimpleAssignOp>
-            <id>banana</id>
+            <id>nonloso</id>
             <true />
           </SimpleAssignOp>
         </IdList>
@@ -96,7 +96,7 @@
       <IdListInitOp>
         <IdList>
           <SimpleAssignOp>
-            <id>banana1</id>
+            <id>nonloso1</id>
             <false />
           </SimpleAssignOp>
         </IdList>
@@ -107,10 +107,10 @@
       <IdListInitOp>
         <IdList>
           <SimpleAssignOp>
-            <id>banana2</id>
+            <id>nonloso2</id>
             <AndOp>
-              <id>banana</id>
-              <id>banana1</id>
+              <id>nonloso</id>
+              <id>nonloso1</id>
             </AndOp>
           </SimpleAssignOp>
         </IdList>
@@ -121,10 +121,10 @@
       <IdListInitOp>
         <IdList>
           <SimpleAssignOp>
-            <id>banana3</id>
+            <id>nonloso3</id>
             <OrOp>
-              <id>banana</id>
-              <id>banana1</id>
+              <id>nonloso</id>
+              <id>nonloso1</id>
             </OrOp>
           </SimpleAssignOp>
         </IdList>

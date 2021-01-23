@@ -1,6 +1,5 @@
 package code_generation;
 
-
 import syntaxanalysis.SymbolTable;
 import tree_nodes.*;
 import java.io.FileNotFoundException;
@@ -18,8 +17,11 @@ public class CodeGeneratorVisitor implements Visitor {
     public CodeGeneratorVisitor(String programName) throws FileNotFoundException {
         //si elimina il .toy dal nome del file e lo si trasforma in .c
         this.programName = (programName.substring(0, programName.indexOf('.'))) + ".c";
+        String temp[] = this.programName.split("/");
+        this.programName = "generated_c_files/" + temp[1];
         this.ps = new PrintStream(this.programName);
         //verrà sempre inclusa
+        ps.println("/* Auto-generated code from Toy Compiler */");
         ps.println("#include<stdio.h>"); //I/O
         ps.println("#include<stdlib.h>");
         ps.println("#include<string.h>"); //per lavorare con le stringhe
@@ -164,6 +166,7 @@ public class CodeGeneratorVisitor implements Visitor {
         return name+" = "+expr;
     }
 
+    /* STATEMENT */
     @Override
     public Object visit(IfOp i) throws Exception {
         return null;
@@ -220,17 +223,116 @@ public class CodeGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(WriteOp w) throws Exception {
-        return null;
+
+        ArrayList<Expr> exprs = w.getExprList();
+        String text = "", vars = "";
+
+        for(Expr e : exprs){
+
+            if(e instanceof IdLeaf){
+                vars += ((IdLeaf) e).accept(this) + ", ";
+
+                SymbolTable.VarRow row = (SymbolTable.VarRow) ((IdLeaf) e).getTableEntry();
+                String type = row.getVarType().getValue();
+
+                text += getPlaceHolders(type);
+            } else if(e instanceof CallProcOp){
+                    String[] info = (String[])((CallProcOp) e).accept(this);
+                    text += info[0];
+                    vars += info[1];
+            } else {
+                //Nel caso in cui siano costanti
+                text += ((Visitable) e).accept(this);
+            }
+        }
+        vars = vars.substring(0, vars.lastIndexOf(','));
+        return "printf(\"" + text + "\", " + vars + ");";
+    }
+
+    public String getPlaceHolders(String type){
+        if(type.equals(Type.INT)){
+            return "%d ";
+        }
+
+        if(type.equals(Type.FLOAT)){
+            return "%f ";
+        }
+
+        if(type.equals(Type.BOOL)){
+            return "%d ";
+        }
+
+        if(type.equals(Type.STRING)){
+            return "%s ";
+        }
+
+        return "";
     }
 
     @Override
     public Object visit(MultipleAssignOp m) throws Exception {
-        return null;
+        String str = "";
+        ArrayList<IdLeaf> idList = m.getIdList();
+        ArrayList<Expr> exprList = m.getExprList();
+
+        ArrayList<String> values = new ArrayList<>();
+
+        for(Expr e: exprList){
+            if(e instanceof CallProcOp){
+                String[] info = (String[]) ((CallProcOp) e).accept(this);
+                String[] info2 = info[1].split(",");
+
+               for(int i = 0; i < info2.length; i++){
+                   values.add(info2[i]);
+               }
+            }
+            values.add((String) ((Visitable) e).accept(this));
+        }
+
+        for(int i = 0; i < idList.size(); i++){
+            str += idList.get(i) + " = " + values.get(i)+";\n";
+        }
+        return str;
     }
 
     @Override
     public Object visit(CallProcOp c) throws Exception {
-        return null;
+        String text="", vars="";
+        SymbolTable.ProcRow p_row = (SymbolTable.ProcRow) c.getId().getTableEntry();
+        ArrayList<String> types = new ArrayList<>();
+
+        for(ResultTypeOp t: p_row.getReturnTypes()){
+            types.add(t.getValue());
+        }
+
+        for(String s: types){
+            text += getPlaceHolders(s);
+        }
+
+
+        String proc_name = c.getId().getIdEntry();
+        ArrayList<Expr> actualParam = c.getExprList();
+
+        vars += proc_name + "(";
+        if(actualParam != null) {
+            for (Expr e2 : actualParam) {
+                vars += ((Visitable) e2).accept(this) + ", ";
+            }
+        }
+        vars += ")";
+
+        if(types.size() == 1){ //se la procedura ha un unico tipo di ritorno
+            text += getPlaceHolders(types.get(0));
+        } else { //la procedura ha più tipi di ritorno
+            int counter = 1;
+            for(String s2: types){
+                text += getPlaceHolders(s2);
+                vars += proc_name + "_" + counter + ", ";
+                counter++;
+            }
+        }
+        String[] result = {text, vars};
+        return result;
     }
 
     @Override
@@ -244,21 +346,55 @@ public class CodeGeneratorVisitor implements Visitor {
         return idList;
     }
 
+    /* PROCEDURE */
     @Override
     public Object visit(ParamDeclOp p) throws Exception {
-        return null;
+        String var = "";
+        ArrayList<IdLeaf> idList = p.getIdList();
+        String type = (String) p.getType().accept(this);
+        //in C una stringa corrisponde ad un array di caratteri
+        if(type.equals(Type.STRING)){
+            type = "char*";
+            //in C non esistono booleane, per cui usiamo i valori interi 0 e 1
+        } else if(type.equals(Type.BOOL)){
+            type = "int";
+        }
+
+        for(IdLeaf id: idList){
+            var += type + " " + id.accept(this) + ", ";
+        }
+
+        var = var.substring(0, var.lastIndexOf(','));
+
+        return var;
     }
 
     @Override
     public Object visit(ProcOp p) throws Exception {
+        /* Creazione delle variabili globali per i valori di ritorno successivi al primo
+         * Nella firma della funzione C come tipo di ritorno ci sarà solo il primo
+         */
         return null;
     }
 
     @Override
     public Object visit(ProcOpBody p) throws Exception {
+        /*Return solo del primo valore di ritorno (o dell'unico valore)
+         * e assegnazione dei valori di ritorno successivo al primo alle variabili globali create precedentemente */
         return null;
     }
 
+    @Override
+    public Object visit(ReturnExprs r) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Object visit(ResultTypeOp r) {
+        return r.getValue();
+    }
+
+    /* PROGRAM */
     @Override
     public Object visit(ProgramOp p) throws Exception {
         ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
@@ -275,16 +411,6 @@ public class CodeGeneratorVisitor implements Visitor {
         }
 
         return null;
-    }
-
-    @Override
-    public Object visit(ReturnExprs r) throws Exception {
-        return null;
-    }
-
-    @Override
-    public Object visit(ResultTypeOp r) {
-        return r.getValue();
     }
 
     @Override
