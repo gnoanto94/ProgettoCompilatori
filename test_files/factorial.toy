@@ -21,7 +21,7 @@ proc main()void:
 	readln(n);
 	->n < 10
     do
-	write("Factorial of ", n, " is " , factorial(n), "\n");
+	write("\tFactorial of ", n, " is " , factorial(n), "\n");
     od;
     ->
 corp;

@@ -26,7 +26,7 @@ public class CodeGeneratorVisitor implements Visitor {
         ps.println("/* Auto-generated code from Toy Compiler */");
         ps.println("#include<stdio.h>"); //I/O
         ps.println("#include<stdlib.h>");
-        ps.println("#include<string.h>"); //per lavorare con le stringhe
+//        ps.println("#include<string.h>"); //per lavorare con le stringhe
         ps.println();
     }
 
@@ -47,7 +47,12 @@ public class CodeGeneratorVisitor implements Visitor {
 
     @Override
     public Object visit(StringConstLeaf s) {
-        return ("\"" + s.getValue() + "\"");
+        String res = "";
+
+        res = s.getValue().replace("\n", "\\" + "n");
+        res = res.replace("\t", "\\" + "t");
+
+        return ("\"" + res + "\"");
     }
 
     @Override
@@ -65,107 +70,118 @@ public class CodeGeneratorVisitor implements Visitor {
         return FALSE;
     }
 
+    private String[] getExprCode(Expr e1, Expr e2) throws Exception {
+        //result[0] = e1, result[1] = e2
+        String[] result = new String[2];
+
+        if(e1 instanceof CallProcOp){
+            result[0] = ((String[]) ((Visitable) e1).accept(this))[1]; //in 1 c'è il contenuto di nostro interesse
+        } else {
+            result[0] = (String) ((Visitable) e1).accept(this);
+        }
+
+        if(e2 != null) {
+            if (e2 instanceof CallProcOp) {
+                result[1] = ((String[]) ((Visitable) e2).accept(this))[1]; //in 1 c'è il contenuto di nostro interesse
+            } else {
+                result[1] = (String) ((Visitable) e2).accept(this);
+            }
+        } else {
+            result[1] = null;
+        }
+
+        return result;
+    }
+
     @Override
     public Object visit(PlusOp p) throws Exception {
-        String e1 = (String) ((Visitable)p.getE1()).accept(this);
-        String e2 = (String) ((Visitable)p.getE2()).accept(this);
-        return e1+" + "+e2;
+        String[] expr = getExprCode(p.getE1(), p.getE2());
+        return expr[0] + " + " + expr[1];
     }
 
     @Override
     public Object visit(MinusOp m) throws Exception {
-        String e1 = (String) ((Visitable)m.getE1()).accept(this);
-        String e2 = (String) ((Visitable)m.getE2()).accept(this);
-        return e1+" - "+e2;
+        String[] expr = getExprCode(m.getE1(), m.getE2());
+        return expr[0] + " - " + expr[1];
     }
 
     @Override
     public Object visit(UMinusOp u) throws Exception {
-        String e1 = (String) ((Visitable)u.getE1()).accept(this);
-        return "-"+e1;
+        String[] expr = getExprCode(u.getE1(), null);
+        return "-" + expr[0];
     }
 
     @Override
     public Object visit(MultOp m) throws Exception {
-        String e1 = (String) ((Visitable)m.getE1()).accept(this);
-        String e2 = (String) ((Visitable)m.getE2()).accept(this);
-        return e1+" * "+e2;
+        String[] expr = getExprCode(m.getE1(), m.getE2());
+        return expr[0] + " * " + expr[1];
     }
 
     @Override
     public Object visit(DivOp d) throws Exception {
-        String e1 = (String) ((Visitable)d.getE1()).accept(this);
-        String e2 = (String) ((Visitable)d.getE2()).accept(this);
-        return e1+" / "+e2;
+        String[] expr = getExprCode(d.getE1(), d.getE2());
+        return expr[0] + " / " + expr[1];
     }
 
     @Override
     public Object visit(AndOp a) throws Exception {
-        String e1 = (String) ((Visitable)a.getE1()).accept(this);
-        String e2 = (String) ((Visitable)a.getE2()).accept(this);
-        return e1+" && "+e2;
+        String[] expr = getExprCode(a.getE1(), a.getE2());
+        return expr[0] + " && " + expr[1];
     }
 
     @Override
     public Object visit(OrOp o) throws Exception {
-        String e1 = (String) ((Visitable)o.getE1()).accept(this);
-        String e2 = (String) ((Visitable)o.getE2()).accept(this);
-        return e1+" || "+e2;
+        String[] expr = getExprCode(o.getE1(), o.getE2());
+        return expr[0] + " || " + expr[1];
     }
 
     @Override
     public Object visit(NotOp n) throws Exception {
-        String e1 = (String) ((Visitable)n.getE1()).accept(this);
-        return "!"+e1;
+        String[] expr = getExprCode(n.getE1(), null);
+        return "!" + expr[0];
     }
 
     @Override
     public Object visit(LtOp l) throws Exception {
-        String e1 = (String) ((Visitable)l.getE1()).accept(this);
-        String e2 = (String) ((Visitable)l.getE2()).accept(this);
-        return e1+" < "+e2;
+        String[] expr = getExprCode(l.getE1(), l.getE2());
+        return expr[0] + " < " + expr[1];
     }
 
     @Override
     public Object visit(LeOp l) throws Exception {
-        String e1 = (String) ((Visitable)l.getE1()).accept(this);
-        String e2 = (String) ((Visitable)l.getE2()).accept(this);
-        return e1+" <= "+e2;
+        String[] expr = getExprCode(l.getE1(), l.getE2());
+        return expr[0] + " <= " + expr[1];
     }
 
     @Override
     public Object visit(GtOp g) throws Exception {
-        String e1 = (String) ((Visitable)g.getE1()).accept(this);
-        String e2 = (String) ((Visitable)g.getE2()).accept(this);
-        return e1+" > "+e2;
+        String[] expr = getExprCode(g.getE1(), g.getE2());
+        return expr[0] + " > " + expr[1];
     }
 
     @Override
     public Object visit(GeOp g) throws Exception {
-        String e1 = (String) ((Visitable)g.getE1()).accept(this);
-        String e2 = (String) ((Visitable)g.getE2()).accept(this);
-        return e1+" >= "+e2;
+        String[] expr = getExprCode(g.getE1(), g.getE2());
+        return expr[0] + " >= " + expr[1];
     }
 
     @Override
     public Object visit(NeOp n) throws Exception {
-        String e1 = (String) ((Visitable)n.getE1()).accept(this);
-        String e2 = (String) ((Visitable)n.getE2()).accept(this);
-        return e1+" != "+e2;
+        String[] expr = getExprCode(n.getE1(), n.getE2());
+        return expr[0] + " != " + expr[1];
     }
 
     @Override
     public Object visit(EqOp e) throws Exception {
-        String e1 = (String) ((Visitable)e.getE1()).accept(this);
-        String e2 = (String) ((Visitable)e.getE2()).accept(this);
-        return e1+" == "+e2;
+        String[] expr = getExprCode(e.getE1(), e.getE2());
+        return expr[0] + " == " + expr[1];
     }
 
     @Override
     public Object visit(SimpleAssignOp s) throws Exception {
         String name = (String) s.getId().accept(this);
-        String expr = (String) ((Visitable) s.getExpr()).accept(this);
-        return name+" = "+expr;
+        String[] expr = getExprCode(s.getExpr(), null);
+        return name+" = "+expr[0];
     }
 
     /* STATEMENT */
@@ -174,13 +190,13 @@ public class CodeGeneratorVisitor implements Visitor {
 
         String str = "if("+((Visitable) i.getExpr()).accept(this)+"){\n";
         for(StatOp s : i.getStatList()){
-            str += s.accept(this);
+            str += "\t"+s.accept(this);
         }
-        str += "\n}";
+        str += "}\n";
         //si verifica se vengono usati else if(elif)
         if(i.getElifList() != null){
             for(StatOp s: i.getElifList()){
-                str += s.accept(this);
+                str += "\t"+s.accept(this);
             }
         }
         //si verifica se viene utilizzato else
@@ -196,9 +212,9 @@ public class CodeGeneratorVisitor implements Visitor {
 
         String str = "else if("+((Visitable) e.getExpr()).accept(this)+"){\n";
         for(StatOp s : e.getStatList()){
-            str += s.accept(this);
+            str += "\t"+s.accept(this);
         }
-        str += "\n}";
+        str += "}\n";
 
         return str;
     }
@@ -208,9 +224,9 @@ public class CodeGeneratorVisitor implements Visitor {
         String str = "else{\n";
 
         for(StatOp s : e.getStatList()){
-            str += s.accept(this);
+            str += "\t"+ s.accept(this);
         }
-        str += "\n}";
+        str += "}\n";
 
         return str;
     }
@@ -241,13 +257,13 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(w.getStatList()!=null){
             for(StatOp s : w.getStatList()){
-                stat1 += s.accept(this);
+                stat1 += "\t" + s.accept(this);
             }
             stat1 += "\n";
         }
-        str += stat1 + "while(" + ((Visitable) w.getExpr()).accept(this) + "){";
+        str += stat1 + "while(" + ((Visitable) w.getExpr()).accept(this) + "){\n";
         str += w.getDoOp().accept(this);
-        str += stat1 + "\n";
+        str += stat1;
 
         return str + "}\n";
     }
@@ -258,7 +274,7 @@ public class CodeGeneratorVisitor implements Visitor {
         //Nel linguaggio C non esiste while do, quindi semplicemente si prendono gli statement che andranno nel while
         String str = "";
         for(StatOp s : d.getStatList()){
-            str += s.accept(this);
+            str += "\t" + s.accept(this);
         }
 
         return str;
@@ -272,25 +288,11 @@ public class CodeGeneratorVisitor implements Visitor {
 
         for(IdLeaf id : r.getIdList()){
             type = ((SymbolTable.VarRow) id.getTableEntry()).getVarType().getValue();
-            if(type.equals(ResultTypeOp.INT)){
-                str += "%d ";
-                vars += id.getIdEntry()+",";
-            }
-            if(type.equals(ResultTypeOp.FLOAT)){
-                str += "%f ";
-                vars += id.getIdEntry()+",";
-            }
-            if(type.equals(ResultTypeOp.BOOL)){
-                str += "%d ";
-                vars += id.getIdEntry()+",";
-            }
-            if(type.equals(ResultTypeOp.STRING)){
-                str += "%s ";
-                vars += id.getIdEntry()+",";
-            }
+            str += getPlaceHolders(type);
+            vars += "&" + id.getIdEntry()+",";
         }
         vars = vars.substring(0,vars.lastIndexOf(","));
-        return "scanf(\""+str+"\","+vars+")";
+        return "scanf(\""+str+"\","+vars+");\n";
     }
 
     @Override
@@ -300,7 +302,6 @@ public class CodeGeneratorVisitor implements Visitor {
         String text = "", vars = "";
 
         for(Expr e : exprs){
-
             if(e instanceof IdLeaf){
                 vars += ((IdLeaf) e).accept(this) + ", ";
 
@@ -311,14 +312,23 @@ public class CodeGeneratorVisitor implements Visitor {
             } else if(e instanceof CallProcOp){
                     String[] info = (String[])((CallProcOp) e).accept(this);
                     text += info[0];
-                    vars += info[1];
+                    vars += info[1] + ",";
             } else {
                 //Nel caso in cui siano costanti
-                text += ((Visitable) e).accept(this);
+                if(e instanceof StringConstLeaf){
+                    String str = (String) ((Visitable) e).accept(this);
+                    text += str.replace("\"", "");
+                } else {
+                    text += ((Visitable) e).accept(this);
+                }
             }
         }
-        vars = vars.substring(0, vars.lastIndexOf(','));
-        return "printf(\"" + text + "\", " + vars + ");";
+        System.out.println("Vars: " + vars);
+        if(!vars.equals("")) {
+            vars = vars.substring(0, vars.lastIndexOf(","));
+            vars = ", " + vars;
+        }
+        return "printf(\"" + text + "\"" + vars + ");\n";
     }
 
     public String getPlaceHolders(String type){
@@ -352,17 +362,29 @@ public class CodeGeneratorVisitor implements Visitor {
         for(Expr e: exprList){
             if(e instanceof CallProcOp){
                 String[] info = (String[]) ((CallProcOp) e).accept(this);
-                String[] info2 = info[1].split(",");
+                int parIndex = info[1].indexOf(")");
+                String[] proc = new String[2];
+                proc[0] = info[1].substring(0, parIndex);
+                proc[1] = info[1].substring(parIndex+1);
+                //proc[0] = prova(parametro1, parametro2
+                if(!proc[1].equals("")) {
+                    proc[0] += "),";
+                } else {
+                    proc[0] += ")";
+                }
+                String[] info2 = proc[1].split(",");
 
+                values.add(proc[0]);
                for(int i = 0; i < info2.length; i++){
                    values.add(info2[i]);
                }
+            } else {
+                values.add((String) ((Visitable) e).accept(this));
             }
-            values.add((String) ((Visitable) e).accept(this));
         }
 
         for(int i = 0; i < idList.size(); i++){
-            str += idList.get(i) + " = " + values.get(i)+";\n";
+            str += idList.get(i).getIdEntry() + " = " + values.get(i)+";\n";
         }
         return str;
     }
@@ -377,10 +399,9 @@ public class CodeGeneratorVisitor implements Visitor {
             types.add(t.getValue());
         }
 
-        for(String s: types){
-            text += getPlaceHolders(s);
-        }
-
+//        for(String s: types){
+//            text += getPlaceHolders(s);
+//        }
 
         String proc_name = c.getId().getIdEntry();
         ArrayList<Expr> actualParam = c.getExprList();
@@ -391,7 +412,12 @@ public class CodeGeneratorVisitor implements Visitor {
                 vars += ((Visitable) e2).accept(this) + ", ";
             }
         }
-        vars += ")";
+        int lastCommaIndex = vars.lastIndexOf(",");
+        if(lastCommaIndex != -1) {
+            vars = vars.substring(0, vars.lastIndexOf(",")) + ")";
+        } else {
+            vars += ")";
+        }
 
         if(types.size() == 1){ //se la procedura ha un unico tipo di ritorno
             text += getPlaceHolders(types.get(0));
@@ -465,7 +491,7 @@ public class CodeGeneratorVisitor implements Visitor {
                 str += param.accept(this);
             }
         }
-        str += "){" + p.getProcBody().accept(this)+"}";
+        str += "){ \n" + p.getProcBody().accept(this)+"\n}\n";
 
         return str;
     }
@@ -479,13 +505,17 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(p.getVarDeclList() != null) {
             for (VarDeclOp v : p.getVarDeclList()) {
-                v.accept(this);
+                str += (v.accept(this)) + "\n";
             }
         }
 
         if(p.getStatList() != null) {
             for (StatOp s : p.getStatList()) {
-                str += s.accept(this);
+                if(s instanceof CallProcOp){
+                    str += ((String[]) s.accept(this))[1] + "; \n";
+                } else {
+                    str += s.accept(this);
+                }
             }
         }
 
@@ -494,7 +524,7 @@ public class CodeGeneratorVisitor implements Visitor {
             int counter = 1;
             for(int i = 0; i < exprs.size(); i++){
                 if(i == 0){
-                    ret = "return " + exprs.get(i);
+                    ret = "\treturn " + exprs.get(i);
                 }else{
                     str += currentProcName + counter + " = " + exprs.get(i)+";\n";//assegnazione variabili
                     counter++;
@@ -528,11 +558,13 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(varDeclList != null) { //potrebbero non esserci variabili globali
             for (VarDeclOp v : varDeclList) {
-                v.accept(this);
+                ps.println(v.accept(this));
             }
         }
 
         //si aggiungono le variabili globali corrispondenti ai ritorni multipli delle procedure
+        //DA CORREGERE perché in questo punto ancora non sono note, lo saranno dopo aver chiamato
+        //i metodi visit delle procedure
         ps.println(multipleReturnVars);
 
         for(ProcOp pr: procList){
@@ -562,8 +594,6 @@ public class CodeGeneratorVisitor implements Visitor {
             type = "int";
         }
 
-        ps.println(type + " " + var);
-
-        return null;
+        return type + " " + var;
     }
 }

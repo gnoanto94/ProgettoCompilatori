@@ -103,8 +103,18 @@
                     <MultipleAssignOp>
                       <IdList>
                         <id>i_result</id>
+                        <id>i_left</id>
+                        <id>i_right</id>
                       </IdList>
                       <ExprList>
+                        <CallProcOp>
+                          <id>i_expr</id>
+                          <ExprList>
+                            <id>i_left</id>
+                            <id>i_right</id>
+                          </ExprList>
+                        </CallProcOp>
+                        <IntConst>10</IntConst>
                         <CallProcOp>
                           <id>i_expr</id>
                           <ExprList>
