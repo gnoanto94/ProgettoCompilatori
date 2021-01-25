@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MultAddDiff" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="syntaxanalysis.Tester" />
+    <option name="MAIN_CLASS_NAME" value="compiler.Compiler" />
     <module name="Romano-Antonucci_es5_scg" />
     <option name="PROGRAM_PARAMETERS" value="test_files/multAddDiff.toy" />
     <method v="2">

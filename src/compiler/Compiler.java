@@ -1,4 +1,4 @@
-package syntaxanalysis;
+package compiler;
 
 import code_generation.CodeGeneratorVisitor;
 import org.jdom2.input.SAXBuilder;
@@ -9,10 +9,11 @@ import semanticanalysis.TableAmplifierVisitor;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import semanticanalysis.TypeCheckingVisitor;
+import syntaxanalysis.*;
 
 import java.io.*;
 
-public class Tester {
+public class Compiler {
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0){
@@ -33,10 +34,9 @@ public class Tester {
         xmlOut.setFormat(Format.getPrettyFormat());
         String xml = xmlOut.outputString(doc);
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
-
+        String fileName = args[0].substring(args[0].indexOf("/")+1);
         try{
             Document doc2 = builder.build(new StringReader(xml));
-            String fileName = args[0].substring(args[0].indexOf("/")+1);
             FileOutputStream out = new FileOutputStream(new File("xml_files/" + fileName +".xml"));
             xmlOut.output(doc2, out);
         }
@@ -48,11 +48,12 @@ public class Tester {
         TableAmplifierVisitor tableVisitor = new TableAmplifierVisitor();
         p.root.accept(tableVisitor);
 
-        System.out.println("SYMBOL TABLE \n =====================");
-        System.out.println("Taglia dello stack: " + StackEnv.stack.size());
+        PrintStream ps = new PrintStream(new File("generated_c_files/" + fileName.replace(".toy", "") + "_SymbolTable.txt"));
+        ps.println("SYMBOL TABLE \n =====================");
+        ps.println("Taglia dello stack: " + StackEnv.stack.size());
         for(Env e: StackEnv.stack){
-            System.out.println(e.getName());
-            System.out.println(e.getTable());
+            ps.println(e.getName());
+            ps.println(e.getTable());
         }
 
         //Chiamata al visitor per il Type Checking

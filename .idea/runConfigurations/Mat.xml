@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Temperatures" type="Application" factoryName="Application">
+  <configuration default="false" name="Mat" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="compiler.Compiler" />
     <module name="Romano-Antonucci_es5_scg" />
-    <option name="PROGRAM_PARAMETERS" value="test_files/temperatures.toy" />
+    <option name="PROGRAM_PARAMETERS" value="test_files/mat.toy" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

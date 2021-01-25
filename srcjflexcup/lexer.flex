@@ -5,6 +5,7 @@ import java.io.IOException;
 %%
 
 //OPTION & DECLARATIONS
+%public
 %class Lexer
 %unicode
 %cup

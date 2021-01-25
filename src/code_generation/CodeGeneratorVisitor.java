@@ -640,7 +640,6 @@ public class CodeGeneratorVisitor implements Visitor {
         String str = "";
         if(s instanceof CallProcOp){
             str += ((String[]) s.accept(this))[1] + "; \n";
-            System.out.println(str);
         } else {
             str += s.accept(this);
         }

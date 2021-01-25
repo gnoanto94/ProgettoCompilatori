@@ -1,0 +1,133 @@
+
+proc main() void:
+    int scelta := 1, n;
+    float flt_result;
+    int int_result;
+
+    while
+    write("1 - Somma di due numeri \n");
+    write("2 - Moltiplicazione di due numeri utilizzando la somma\n");
+    write("3 - Divisione intera fra due numeri positivi\n");
+    write("4 - Elevamento a potenza\n");
+    write("5 - Successione di Fibonacci\n");
+    write("0 - Uscita");
+    write("\n");
+    write("Scelta: ");
+    readln(scelta);
+         ->scelta <> 0
+    do
+
+    if scelta = 1 then
+        flt_result := sum();
+        write("La somma dei due numeri è: ", flt_result, "\n");
+    elif scelta = 2 then
+        int_result := multiply();
+        write("La moltiplicazione di due numeri usando la somma è: ", int_result, "\n");
+    elif scelta = 3 then
+        int_result := divide();
+        write("La divisione intera fra i due numeri è: ", int_result, "\n");
+    elif scelta = 4 then
+        int_result := my_pow();
+        write("L'elevamento a potenza è: ",  int_result, "\n");
+    else
+        write("SUCCESSIONE di FIBONACCI\n");
+        write("Fino a che punto della successione? ");
+        readln(n);
+        fib(n);
+        write("\n");
+    fi;
+    od;
+    ->
+corp;
+
+proc sum() float:
+    float a, b, result;
+
+    write("SOMMA\n");
+    write("Inserire il primo operando: ");
+    readln(a);
+    write("Inserire il secondo operando: ");
+    readln(b);
+
+    result := a + b;
+    ->result
+corp;
+
+proc multiply() int:
+    int a, b, result := 0, i := 0;
+    write("MOLTIPLICAZIONE tramite SOMMA\n");
+    write("Inserire il primo operando: ");
+    readln(a);
+    write("Inserire il secondo operando: ");
+    readln(b);
+
+    while
+        i < b
+    do
+        result := result + a;
+        i := i + 1;
+    od;
+    ->result
+corp;
+
+proc divide() int:
+    int a, b, result := 0, i := 0;
+    write("DIVISIONE tra INTERI POSITIVI\n");
+    while
+        write("Inserire il primo operando: ");
+        readln(a);
+        ->a < 0
+    do
+        write("Il valore inserito è negativo. Riprovare\n");
+    od;
+
+    /* a questo punto il primo operando è corretto */
+    while
+            write("Inserire il secondo operando: ");
+            readln(b);
+            ->b < 0
+        do
+            write("Il valore inserito è negativo. Riprovare\n");
+        od;
+
+    result := a / b;
+    ->result
+corp;
+
+proc my_pow() int:
+    int a, b, result := 1, i := 0;
+
+    write("ELEVAMENTO a POTENZA\n");
+    write("Inserire la base: ");
+    readln(a);
+    write("Inserire l'esponente: ");
+    readln(b);
+
+    while
+        i < b
+    do
+        result := result * a;
+        i := i + 1;
+    od;
+    ->result
+corp;
+
+proc fib(int n) void:
+    int first := 0, second := 1, next, c := 0;
+
+    while
+        c < n
+    do
+        if c <= 1 then
+            next := c;
+        else
+            next := first + second;
+            first := second;
+            second := next;
+        fi;
+
+        write(next, " ");
+        c := c + 1;
+    od;
+    ->
+corp;
