@@ -3,32 +3,36 @@
 #include<stdlib.h>
 
 char* nome = "Michele";
+int multAddDiff_1;
+int multAddDiff_2;
 
-void main(){ 
-int a, b, c = 0;
-a = multAddDiff(),;
+
+int multAddDiff();
+void writeNewLines(int n);
+
+int main(){ 
+int a, b, c, d = 0;
+a = multAddDiff();
 b = multAddDiff_1;
 c =  multAddDiff_2;
-printf("Ciao %s ", nome);
+printf("Ciao %s", nome);
 writeNewLines(2); 
-printf("I tuoi valori sono:\n%d  per la moltiplicazione\n%d  per la somma, e \n%d  per la differenza", a, b, c);
-
+printf("I tuoi valori sono:\n%d per la moltiplicazione\n%d per la somma, e \n%d per la differenza", a, b, c);
+return 0;
 }
-
 int multAddDiff(){ 
 int primo, secondo, mul, add, diff;
 printf("Inserire il primo argomento:\n");
-scanf("%d ",&primo);
+scanf("%d",&primo);
 printf("Inserire il secondo argomento:\n");
-scanf("%d ",&secondo);
+scanf("%d",&secondo);
 mul = primo * secondo;
 add = primo + secondo;
 diff = primo - secondo;
-multAddDiff1 = add;
-multAddDiff2 = diff;
-	return mul
+multAddDiff_1 = add;
+multAddDiff_2 = diff;
+return mul;
 }
-
 void writeNewLines(int n){ 
 while(n > 0){
 	printf("\n");

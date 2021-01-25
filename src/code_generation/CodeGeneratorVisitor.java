@@ -11,6 +11,7 @@ public class CodeGeneratorVisitor implements Visitor {
     private String programName;
     private String currentProcName;
     private String multipleReturnVars = "";
+    private String procedurePrototypes = "";
     private PrintStream ps;
 
     private static final String TRUE = "1";
@@ -188,9 +189,22 @@ public class CodeGeneratorVisitor implements Visitor {
     @Override
     public Object visit(IfOp i) throws Exception {
 
-        String str = "if("+((Visitable) i.getExpr()).accept(this)+"){\n";
+        String str = "if(";
+
+
+        if(i.getExpr() instanceof CallProcOp){
+            //Questo cast è possibile poichè callproc è sia statement che expr
+            str += getCodeForStmt((StatOp) i.getExpr());
+            str = str.replace(";", "");
+            str = str.replace("\n", "");
+        }else{
+            str += ((Visitable) i.getExpr()).accept(this);
+        }
+
+        str += "){\n";
+
         for(StatOp s : i.getStatList()){
-            str += "\t"+s.accept(this);
+            str += "\t"+getCodeForStmt(s);
         }
         str += "}\n";
         //si verifica se vengono usati else if(elif)
@@ -210,9 +224,18 @@ public class CodeGeneratorVisitor implements Visitor {
     @Override
     public Object visit(ElifOp e) throws Exception {
 
-        String str = "else if("+((Visitable) e.getExpr()).accept(this)+"){\n";
+        String str = "else if(";
+        if(e.getExpr() instanceof CallProcOp){
+            //Questo cast è possibile poichè callproc è sia statement che expr
+            str += getCodeForStmt((StatOp) e.getExpr());
+            str = str.replace(";", "");
+            str = str.replace("\n", "");
+        }else{
+            str += ((Visitable) e.getExpr()).accept(this);
+        }
+        str += "){\n";
         for(StatOp s : e.getStatList()){
-            str += "\t"+s.accept(this);
+            str += "\t"+getCodeForStmt(s);
         }
         str += "}\n";
 
@@ -224,7 +247,7 @@ public class CodeGeneratorVisitor implements Visitor {
         String str = "else{\n";
 
         for(StatOp s : e.getStatList()){
-            str += "\t"+ s.accept(this);
+            str += "\t"+getCodeForStmt(s);
         }
         str += "}\n";
 
@@ -257,11 +280,22 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(w.getStatList()!=null){
             for(StatOp s : w.getStatList()){
-                stat1 += "\t" + s.accept(this);
+                stat1 += "\t"+getCodeForStmt(s);
             }
             stat1 += "\n";
         }
-        str += stat1 + "while(" + ((Visitable) w.getExpr()).accept(this) + "){\n";
+        str += stat1 + "while(";
+
+        if(w.getExpr() instanceof CallProcOp){
+            //Questo cast è possibile poichè callproc è sia statement che expr
+            str += getCodeForStmt((StatOp) w.getExpr());
+            str = str.replace(";", "");
+            str = str.replace("\n", "");
+        }else{
+            str += ((Visitable) w.getExpr()).accept(this);
+        }
+
+        str += "){\n";
         str += w.getDoOp().accept(this);
         str += stat1;
 
@@ -274,7 +308,7 @@ public class CodeGeneratorVisitor implements Visitor {
         //Nel linguaggio C non esiste while do, quindi semplicemente si prendono gli statement che andranno nel while
         String str = "";
         for(StatOp s : d.getStatList()){
-            str += "\t" + s.accept(this);
+            str += "\t"+getCodeForStmt(s);
         }
 
         return str;
@@ -323,7 +357,6 @@ public class CodeGeneratorVisitor implements Visitor {
                 }
             }
         }
-        System.out.println("Vars: " + vars);
         if(!vars.equals("")) {
             vars = vars.substring(0, vars.lastIndexOf(","));
             vars = ", " + vars;
@@ -333,19 +366,19 @@ public class CodeGeneratorVisitor implements Visitor {
 
     public String getPlaceHolders(String type){
         if(type.equals(Type.INT)){
-            return "%d ";
+            return "%d";
         }
 
         if(type.equals(Type.FLOAT)){
-            return "%f ";
+            return "%f";
         }
 
         if(type.equals(Type.BOOL)){
-            return "%d ";
+            return "%d";
         }
 
         if(type.equals(Type.STRING)){
-            return "%s ";
+            return "%s";
         }
 
         return "";
@@ -367,14 +400,10 @@ public class CodeGeneratorVisitor implements Visitor {
                 proc[0] = info[1].substring(0, parIndex);
                 proc[1] = info[1].substring(parIndex+1);
                 //proc[0] = prova(parametro1, parametro2
-                if(!proc[1].equals("")) {
-                    proc[0] += "),";
-                } else {
-                    proc[0] += ")";
-                }
+                proc[0] += ")";
                 String[] info2 = proc[1].split(",");
-
                 values.add(proc[0]);
+
                for(int i = 0; i < info2.length; i++){
                    values.add(info2[i]);
                }
@@ -422,12 +451,12 @@ public class CodeGeneratorVisitor implements Visitor {
         if(types.size() == 1){ //se la procedura ha un unico tipo di ritorno
             text += getPlaceHolders(types.get(0));
         } else { //la procedura ha più tipi di ritorno
-            int counter = 1;
-            for(String s2: types){
-                text += getPlaceHolders(s2);
-                vars += proc_name + "_" + counter + ", ";
-                counter++;
+            text += getPlaceHolders(types.get(0));
+            for(int i = 1; i<types.size(); i++){
+                text += getPlaceHolders(types.get(i));
+                vars += proc_name + "_" + i + ", ";
             }
+            vars = vars.substring(0,vars.lastIndexOf(","));
         }
         String[] result = {text, vars};
         return result;
@@ -473,17 +502,26 @@ public class CodeGeneratorVisitor implements Visitor {
          * Nella firma della funzione C come tipo di ritorno ci sarà solo il primo
          */
         currentProcName = p.getId().getIdEntry();
+
         String str = "";
-
         ArrayList<String> results = new ArrayList<>();
-        for(ResultTypeOp r : p.getResultTypeList()){
-            results.add(r.getValue());
-        }
 
+        //Poichè in C non si può usare un main con ritorno void, si imposta ad int e si utilizza return 0 alla fine
+        if(currentProcName.equals("main")) {
+            results.add("int");
+        } else{
+            for (ResultTypeOp r : p.getResultTypeList()) {
+                if(r.getValue().equals(ResultTypeOp.BOOL)){
+                    results.add("int");
+                }else{
+                results.add(r.getValue());
+                }
+            }
+        }
         str += results.get(0) + " " + currentProcName+"(";
 
         for(int i = 1; i < results.size(); i++){
-            multipleReturnVars += results.get(i)+currentProcName+"_"+i+"\n";
+            multipleReturnVars += results.get(i)+" "+currentProcName+"_"+i+";\n";
         }
 
         if(p.getParamDeclList() != null) {
@@ -491,6 +529,7 @@ public class CodeGeneratorVisitor implements Visitor {
                 str += param.accept(this);
             }
         }
+        procedurePrototypes += str+");\n";
         str += "){ \n" + p.getProcBody().accept(this)+"\n}\n";
 
         return str;
@@ -511,27 +550,26 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(p.getStatList() != null) {
             for (StatOp s : p.getStatList()) {
-                if(s instanceof CallProcOp){
-                    str += ((String[]) s.accept(this))[1] + "; \n";
-                } else {
-                    str += s.accept(this);
-                }
+                str += getCodeForStmt(s);
             }
         }
 
-        if(p.getReturnExprs() != null){
-            ArrayList<String> exprs = (ArrayList<String>) p.getReturnExprs().accept(this);
-            int counter = 1;
-            for(int i = 0; i < exprs.size(); i++){
-                if(i == 0){
-                    ret = "\treturn " + exprs.get(i);
-                }else{
-                    str += currentProcName + counter + " = " + exprs.get(i)+";\n";//assegnazione variabili
-                    counter++;
+        if(currentProcName.equals("main")) {
+            ret = "return 0;";
+        }else{
+            if (p.getReturnExprs() != null) {
+                ArrayList<String> exprs = (ArrayList<String>) p.getReturnExprs().accept(this);
+                int counter = 1;
+                for (int i = 0; i < exprs.size(); i++) {
+                    if (i == 0) {
+                        ret = "return " + exprs.get(i)+";";
+                    } else {
+                        str += currentProcName +"_"+ counter + " = " + exprs.get(i) + ";\n";//assegnazione variabili
+                        counter++;
+                    }
                 }
             }
         }
-
         return str+ret;
     }
 
@@ -555,6 +593,7 @@ public class CodeGeneratorVisitor implements Visitor {
     public Object visit(ProgramOp p) throws Exception {
         ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
         ArrayList<ProcOp> procList = p.getProcOpList();
+        String str = "";
 
         if(varDeclList != null) { //potrebbero non esserci variabili globali
             for (VarDeclOp v : varDeclList) {
@@ -562,15 +601,14 @@ public class CodeGeneratorVisitor implements Visitor {
             }
         }
 
-        //si aggiungono le variabili globali corrispondenti ai ritorni multipli delle procedure
-        //DA CORREGERE perché in questo punto ancora non sono note, lo saranno dopo aver chiamato
-        //i metodi visit delle procedure
-        ps.println(multipleReturnVars);
-
         for(ProcOp pr: procList){
-            ps.println(pr.accept(this));
+           str += pr.accept(this);
         }
 
+        ps.println(multipleReturnVars);
+        procedurePrototypes = procedurePrototypes.replace("int main();","");
+        ps.println(procedurePrototypes);
+        ps.println(str);
         return null;
     }
 
@@ -595,5 +633,17 @@ public class CodeGeneratorVisitor implements Visitor {
         }
 
         return type + " " + var;
+    }
+
+    private String getCodeForStmt(StatOp s) throws Exception{
+
+        String str = "";
+        if(s instanceof CallProcOp){
+            str += ((String[]) s.accept(this))[1] + "; \n";
+            System.out.println(str);
+        } else {
+            str += s.accept(this);
+        }
+        return str;
     }
 }

@@ -28,8 +28,9 @@
               <IdList>
                 <id>a</id>
                 <id>b</id>
+                <id>c</id>
                 <SimpleAssignOp>
-                  <id>c</id>
+                  <id>d</id>
                   <IntConst>0</IntConst>
                 </SimpleAssignOp>
               </IdList>

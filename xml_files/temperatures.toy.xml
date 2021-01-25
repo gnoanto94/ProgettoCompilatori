@@ -85,6 +85,7 @@
                   <id>fahrenheit</id>
                   <StringConst>Kelvin:</StringConst>
                   <id>kelvin</id>
+                  <StringConst />
                 </ExprList>
               </WriteOp>
             </StatList>

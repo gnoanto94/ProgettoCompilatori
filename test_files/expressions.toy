@@ -30,14 +30,14 @@ while
             write("Scegli il secondo valore\n");
             readln(i_right);
             i_result := i_expr(i_left, i_right);
-            write("Il risultato è", i_result);
+            write("Il risultato è ", i_result, "\n");
 
         else
             readln(f_left);
             write("Scegli il secondo valore\n");
             readln(f_right);
             f_result := f_expr(f_left, f_right);
-            write("Il risultato è", f_result);
+            write("Il risultato è ", f_result, "\n");
 
         fi;
         write("Premere 0 per chiudere il programma oppure 1 per continuare\n");

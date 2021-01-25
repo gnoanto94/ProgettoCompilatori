@@ -24,7 +24,7 @@ bool
  * random - return a pseudo-random number in the given range.
  */
 
-proc random(int rang)int:
+proc randomShoot(int rang)int:
 
     Seed := Seed * 2137 + 173;
     if Seed < 0 then
@@ -309,8 +309,8 @@ proc main()void:
     readln(Seed);
     disableCursor();
     clearScreen();
-    GunColumn := 4 + random(10);
-    TargetColumn := 30 + random(40);
+    GunColumn := 4 + randomShoot(10);
+    TargetColumn := 30 + randomShoot(40);
     setSpecial3();
     drawGround();
     drawGun();

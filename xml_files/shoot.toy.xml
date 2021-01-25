@@ -37,7 +37,7 @@
   </VarDeclList>
   <ProcOpList>
     <ProcOp>
-      <id>random</id>
+      <id>randomShoot</id>
       <ParamDeclList>
         <ParamDeclOp>
           <TypeOp>int</TypeOp>
@@ -1241,7 +1241,7 @@
               <PlusOp>
                 <IntConst>4</IntConst>
                 <CallProcOp>
-                  <id>random</id>
+                  <id>randomShoot</id>
                   <ExprList>
                     <IntConst>10</IntConst>
                   </ExprList>
@@ -1257,7 +1257,7 @@
               <PlusOp>
                 <IntConst>30</IntConst>
                 <CallProcOp>
-                  <id>random</id>
+                  <id>randomShoot</id>
                   <ExprList>
                     <IntConst>40</IntConst>
                   </ExprList>

@@ -4,6 +4,9 @@
 
 int n = 0;
 
+int factorial(int n);
+
+
 int factorial(int n){ 
 int result = 0;
 if(n == 0){
@@ -12,19 +15,18 @@ if(n == 0){
 else{
 	result = n * factorial(n - 1);
 }
-	return result
+return result;
 }
-
-void main(){ 
+int main(){ 
 	printf("Enter n, or >= 10 to exit:");
-	scanf("%d ",&n);
+	scanf("%d",&n);
 
 while(n < 10){
-	printf("\tFactorial of %d  is %d \n", n, factorial(n));
+	printf("\tFactorial of %d is %d\n", n, factorial(n));
 	printf("Enter n, or >= 10 to exit:");
-	scanf("%d ",&n);
+	scanf("%d",&n);
 
 }
-
+return 0;
 }
 

@@ -13,7 +13,11 @@ int nonloso1 = 0;
 int nonloso2 = nonloso && nonloso1;
 int nonloso3 = nonloso || nonloso1;
 
-void main(){ 
+
+
+int main(){ 
 int qualcosa;
 qualcosa = 100 / 29 * 30 - 12;
+return 0;
 }
+
