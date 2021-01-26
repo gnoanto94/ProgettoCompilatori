@@ -48,7 +48,7 @@ public class Compiler {
         TableAmplifierVisitor tableVisitor = new TableAmplifierVisitor();
         p.root.accept(tableVisitor);
 
-        PrintStream ps = new PrintStream(new File("generated_c_files/" + fileName.replace(".toy", "") + "_SymbolTable.txt"));
+        PrintStream ps = new PrintStream(new File("compiler_output/" + fileName.replace(".toy", "") + "_SymbolTable.txt"));
         ps.println("SYMBOL TABLE \n =====================");
         ps.println("Taglia dello stack: " + StackEnv.stack.size());
         for(Env e: StackEnv.stack){

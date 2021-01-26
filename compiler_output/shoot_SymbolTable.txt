@@ -1,0 +1,99 @@
+SYMBOL TABLE 
+ =====================
+Taglia dello stack: 18
+global
+ID: 0	 | Lessema: int
+ID: 1	 | Lessema: string
+ID: 2	 | Lessema: float
+ID: 3	 | Lessema: bool
+ID: 4	 | Lessema: proc
+ID: 5	 | Lessema: corp
+ID: 6	 | Lessema: void
+ID: 7	 | Lessema: if
+ID: 8	 | Lessema: then
+ID: 9	 | Lessema: elif
+ID: 10	 | Lessema: fi
+ID: 11	 | Lessema: else
+ID: 12	 | Lessema: while
+ID: 13	 | Lessema: do
+ID: 14	 | Lessema: od
+ID: 15	 | Lessema: readln
+ID: 16	 | Lessema: write
+VarRow{id=17, lessema='LINE_COUNT', token=43, varType=Type{value='int'}}
+VarRow{id=18, lessema='STATUS_LINE', token=43, varType=Type{value='int'}}
+VarRow{id=19, lessema='MESSAGE_COLUMN', token=43, varType=Type{value='int'}}
+VarRow{id=20, lessema='PROMPT_COLUMN', token=43, varType=Type{value='int'}}
+VarRow{id=21, lessema='MAXIMUM_COLUMN', token=43, varType=Type{value='int'}}
+VarRow{id=22, lessema='SCALE', token=43, varType=Type{value='int'}}
+VarRow{id=23, lessema='HORIZONTAL_SPEED', token=43, varType=Type{value='int'}}
+VarRow{id=24, lessema='Seed', token=43, varType=Type{value='int'}}
+VarRow{id=25, lessema='Score', token=43, varType=Type{value='int'}}
+VarRow{id=26, lessema='GunColumn', token=43, varType=Type{value='int'}}
+VarRow{id=27, lessema='TargetColumn', token=43, varType=Type{value='int'}}
+VarRow{id=28, lessema='MessageShown', token=43, varType=Type{value='bool'}}
+ProcRow{id=29, lessema='randomShoot', token=43, fref=false, paramTypes=[Type{value='int'}], returnTypes=[Type{value='int'}]}
+ProcRow{id=30, lessema='clearScreen', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=31, lessema='disableCursor', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=32, lessema='enableCursor', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=33, lessema='moveTo', token=43, fref=false, paramTypes=[Type{value='int'}, Type{value='int'}], returnTypes=[Type{value='void'}]}
+ProcRow{id=34, lessema='setSpecial2', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=35, lessema='setSpecial3', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=36, lessema='setNormal', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=37, lessema='writeScore', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=38, lessema='drawGround', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=39, lessema='drawGun', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=40, lessema='clearMessage', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=41, lessema='drawTarget', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=42, lessema='missed', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+ProcRow{id=43, lessema='hitTarget', token=43, fref=false, paramTypes=[Type{value='int'}], returnTypes=[Type{value='bool'}]}
+ProcRow{id=44, lessema='getSpeed', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='int'}]}
+ProcRow{id=45, lessema='main', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+
+randomShoot
+VarRow{id=0, lessema='rang', token=43, varType=Type{value='int'}}
+
+clearScreen
+
+disableCursor
+
+enableCursor
+
+moveTo
+VarRow{id=0, lessema='row', token=43, varType=Type{value='int'}}
+VarRow{id=1, lessema='col', token=43, varType=Type{value='int'}}
+
+setSpecial2
+
+setSpecial3
+
+setNormal
+
+writeScore
+
+drawGround
+VarRow{id=0, lessema='i', token=43, varType=Type{value='int'}}
+
+drawGun
+
+clearMessage
+
+drawTarget
+
+missed
+
+hitTarget
+VarRow{id=0, lessema='speed', token=43, varType=Type{value='int'}}
+VarRow{id=1, lessema='row', token=43, varType=Type{value='int'}}
+VarRow{id=2, lessema='col', token=43, varType=Type{value='int'}}
+VarRow{id=3, lessema='oldRow', token=43, varType=Type{value='int'}}
+VarRow{id=4, lessema='oldCol', token=43, varType=Type{value='int'}}
+VarRow{id=5, lessema='notDone', token=43, varType=Type{value='bool'}}
+VarRow{id=6, lessema='hit', token=43, varType=Type{value='bool'}}
+
+getSpeed
+VarRow{id=0, lessema='speed', token=43, varType=Type{value='int'}}
+
+main
+VarRow{id=0, lessema='speed', token=43, varType=Type{value='int'}}
+VarRow{id=1, lessema='notDone', token=43, varType=Type{value='bool'}}
+
