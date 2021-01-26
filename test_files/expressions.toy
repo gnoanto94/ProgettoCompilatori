@@ -16,7 +16,8 @@ proc main() void:
     float f_left, f_right, f_result;
 
 while
-  write("Scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
+  write("Premere 0 per chiudere il programma oppure\n");
+  write("scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
   readln(op);
 -> op <> 0 /*condizione del while*/
 
@@ -40,8 +41,6 @@ while
             write("Il risultato è ", f_result, "\n");
 
         fi;
-        write("Premere 0 per chiudere il programma oppure 1 per continuare\n");
-        readln(op);
     od;
 ->
 corp;

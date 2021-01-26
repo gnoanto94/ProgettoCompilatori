@@ -49,7 +49,12 @@
             <StatList>
               <WriteOp>
                 <ExprList>
-                  <StringConst>Scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione</StringConst>
+                  <StringConst>Premere 0 per chiudere il programma oppure</StringConst>
+                </ExprList>
+              </WriteOp>
+              <WriteOp>
+                <ExprList>
+                  <StringConst>scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione</StringConst>
                 </ExprList>
               </WriteOp>
               <ReadOp>
@@ -164,16 +169,6 @@
                     </StatList>
                   </ElseOp>
                 </IfOp>
-                <WriteOp>
-                  <ExprList>
-                    <StringConst>Premere 0 per chiudere il programma oppure 1 per continuare</StringConst>
-                  </ExprList>
-                </WriteOp>
-                <ReadOp>
-                  <IdList>
-                    <id>op</id>
-                  </IdList>
-                </ReadOp>
               </StatList>
             </DoOp>
           </WhileOp>

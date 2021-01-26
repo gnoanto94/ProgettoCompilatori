@@ -11,7 +11,8 @@ int i_expr(int left, int right);
 int main(){ 
 int i_left, i_right, i_result, opType;
 float f_left, f_right, f_result;
-	printf("Scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
+	printf("Premere 0 per chiudere il programma oppure\n");
+	printf("scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
 	scanf("%d",&op);
 
 while(op != 0){
@@ -32,9 +33,8 @@ else{
 	f_result = f_expr(f_left, f_right);
 	printf("Il risultato è %f\n", f_result);
 }
-	printf("Premere 0 per chiudere il programma oppure 1 per continuare\n");
-	scanf("%d",&op);
-	printf("Scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
+	printf("Premere 0 per chiudere il programma oppure\n");
+	printf("scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
 	scanf("%d",&op);
 
 }
