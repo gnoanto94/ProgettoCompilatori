@@ -37,7 +37,7 @@
         <StatList>
           <WriteOp>
             <ExprList>
-              <StringConst>Inserire temperatura in Â°C (-273.15 = fine)</StringConst>
+              <StringConst>Inserire temperatura in gradi centigradi (-273.15 = fine):</StringConst>
             </ExprList>
           </WriteOp>
           <ReadOp>

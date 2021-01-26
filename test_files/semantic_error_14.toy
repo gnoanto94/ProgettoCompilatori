@@ -1,0 +1,14 @@
+/*
+ * viene mostrato l'errore semantico inerente l'utilizzo di tipi non validi
+ * all'interno di operatori logici.
+ * L'errore è analogo nel caso di operatori aritmetici e relazionali, sia binari che unari.
+ */
+
+int a := 1;
+string b := "b";
+
+proc main() void:
+   bool prova;
+   prova := a || b;
+   ->
+corp;

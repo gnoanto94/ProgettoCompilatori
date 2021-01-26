@@ -49,12 +49,13 @@
             <StatList>
               <WriteOp>
                 <ExprList>
-                  <StringConst>Premere 0 per chiudere il programma oppure</StringConst>
+                  <StringConst>Premere 0 per chiudere il programma oppure scegli l'operazione da effettuare:</StringConst>
                 </ExprList>
               </WriteOp>
               <WriteOp>
                 <ExprList>
-                  <StringConst>scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione</StringConst>
+                  <StringConst>2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione
+Scelta:</StringConst>
                 </ExprList>
               </WriteOp>
               <ReadOp>
@@ -71,7 +72,8 @@
               <StatList>
                 <WriteOp>
                   <ExprList>
-                    <StringConst>Tipo di operazione: 0 = operazione tra int, 1 = operazione tra float</StringConst>
+                    <StringConst>Tipo di operazione: 0 = operazione tra int, 1 = operazione tra float
+Scelta:</StringConst>
                   </ExprList>
                 </WriteOp>
                 <ReadOp>
@@ -81,7 +83,7 @@
                 </ReadOp>
                 <WriteOp>
                   <ExprList>
-                    <StringConst>Scegli il primo valore</StringConst>
+                    <StringConst>Scegli il primo valore:</StringConst>
                   </ExprList>
                 </WriteOp>
                 <IfOp>
@@ -97,7 +99,7 @@
                     </ReadOp>
                     <WriteOp>
                       <ExprList>
-                        <StringConst>Scegli il secondo valore</StringConst>
+                        <StringConst>Scegli il secondo valore:</StringConst>
                       </ExprList>
                     </WriteOp>
                     <ReadOp>
@@ -121,7 +123,7 @@
                     </MultipleAssignOp>
                     <WriteOp>
                       <ExprList>
-                        <StringConst>Il risultato è</StringConst>
+                        <StringConst>Il risultato e'</StringConst>
                         <id>i_result</id>
                         <StringConst />
                       </ExprList>
@@ -137,7 +139,7 @@
                       </ReadOp>
                       <WriteOp>
                         <ExprList>
-                          <StringConst>Scegli il secondo valore</StringConst>
+                          <StringConst>Scegli il secondo valore:</StringConst>
                         </ExprList>
                       </WriteOp>
                       <ReadOp>
@@ -161,7 +163,7 @@
                       </MultipleAssignOp>
                       <WriteOp>
                         <ExprList>
-                          <StringConst>Il risultato è</StringConst>
+                          <StringConst>Il risultato e'</StringConst>
                           <id>f_result</id>
                           <StringConst />
                         </ExprList>

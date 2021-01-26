@@ -1,0 +1,26 @@
+/*
+ * viene mostrato l'errore sintattico
+ * inerente la mancata condizione del while
+ */
+
+int i := 0;
+
+proc main()void:
+
+    while
+        if i = 0 then
+             write("text1");
+        else
+             write("text2");
+        fi;
+
+    /*qui manca la condizione del while, scritta nella forma ->condizione */
+
+    do
+        if i = 0 then
+             write("text1");
+        else
+             write("text2");
+        fi;
+    od;
+corp;

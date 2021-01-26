@@ -1,0 +1,13 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * la condizione (non booleana) all'interno dell'if
+ */
+
+string condizione := "text";
+
+proc main()void:
+   if condizione then
+   write("qualcosa");
+   fi;
+   ->
+corp;

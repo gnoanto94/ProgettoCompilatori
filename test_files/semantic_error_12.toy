@@ -1,0 +1,20 @@
+/*
+ * viene mostrato l'errore semantico inerente la definizione di una procedura
+ * in cui i tipi di ritorno sono stati definiti, ma non viene indicato il valore
+ * di ritorno alla fine del corpo procedura
+ */
+
+int a := 1;
+
+proc main()void:
+   if a > 0 then
+   nome();
+   fi;
+   ->
+corp;
+
+proc nome() int, int, int:
+   write("Alessio");
+   /*il return è vuoto ma la procedura indica che ha tipi di ritorno int int int*/
+   ->
+corp;

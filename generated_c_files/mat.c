@@ -27,19 +27,19 @@ int int_result;
 while(scelta != 0){
 	if(scelta == 1){
 	flt_result = sum();
-	printf("La somma dei due numeri è: %f\n", flt_result);
+	printf("La somma dei due numeri e': %f\n", flt_result);
 }
 	else if(scelta == 2){
 	int_result = multiply();
-	printf("La moltiplicazione di due numeri usando la somma è: %d\n", int_result);
+	printf("La moltiplicazione di due numeri usando la somma e': %d\n", int_result);
 }
 	else if(scelta == 3){
 	int_result = divide();
-	printf("La divisione intera fra i due numeri è: %d\n", int_result);
+	printf("La divisione intera fra i due numeri e': %d\n", int_result);
 }
 	else if(scelta == 4){
 	int_result = my_pow();
-	printf("L'elevamento a potenza è: %d\n", int_result);
+	printf("L'elevamento a potenza e': %d\n", int_result);
 }
 else{
 	printf("SUCCESSIONE di FIBONACCI\n");
@@ -91,7 +91,7 @@ printf("DIVISIONE tra INTERI POSITIVI\n");
 	scanf("%d",&a);
 
 while(a < 0){
-	printf("Il valore inserito è negativo. Riprovare\n");
+	printf("Il valore inserito e' negativo. Riprovare\n");
 	printf("Inserire il primo operando: ");
 	scanf("%d",&a);
 
@@ -100,7 +100,7 @@ while(a < 0){
 	scanf("%d",&b);
 
 while(b < 0){
-	printf("Il valore inserito è negativo. Riprovare\n");
+	printf("Il valore inserito e' negativo. Riprovare\n");
 	printf("Inserire il secondo operando: ");
 	scanf("%d",&b);
 

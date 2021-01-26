@@ -1,0 +1,12 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * il type mismatch in un'assegnazione
+ */
+
+
+int n := 249.232;
+
+proc main() void:
+    write("qualcosa");
+    ->
+corp;

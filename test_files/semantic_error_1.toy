@@ -1,0 +1,16 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * l'utilizzo di procedure non dichiarate all'interno del codice
+ */
+
+int n := 0;
+proc main()void:
+    while
+	write("Enter n, or >= 10 to exit:");
+	readln(n);
+	->n < 10
+    do
+	factorial(n);
+    od;
+    ->
+corp;

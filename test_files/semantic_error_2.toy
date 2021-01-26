@@ -1,0 +1,16 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * l'utilizzo di variabili non dichiarate all'interno del codice
+ */
+
+/* int n := 0 non viene definita */
+proc main()void:
+    while
+	write("Enter n, or >= 10 to exit:");
+	readln(n);
+	->n < 10
+    do
+		write("text");
+    od;
+    ->
+corp;

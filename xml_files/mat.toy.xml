@@ -113,7 +113,7 @@
                     </MultipleAssignOp>
                     <WriteOp>
                       <ExprList>
-                        <StringConst>La somma dei due numeri Ã¨:</StringConst>
+                        <StringConst>La somma dei due numeri e':</StringConst>
                         <id>flt_result</id>
                         <StringConst />
                       </ExprList>
@@ -139,7 +139,7 @@
                         </MultipleAssignOp>
                         <WriteOp>
                           <ExprList>
-                            <StringConst>La moltiplicazione di due numeri usando la somma Ã¨:</StringConst>
+                            <StringConst>La moltiplicazione di due numeri usando la somma e':</StringConst>
                             <id>int_result</id>
                             <StringConst />
                           </ExprList>
@@ -165,7 +165,7 @@
                         </MultipleAssignOp>
                         <WriteOp>
                           <ExprList>
-                            <StringConst>La divisione intera fra i due numeri Ã¨:</StringConst>
+                            <StringConst>La divisione intera fra i due numeri e':</StringConst>
                             <id>int_result</id>
                             <StringConst />
                           </ExprList>
@@ -191,7 +191,7 @@
                         </MultipleAssignOp>
                         <WriteOp>
                           <ExprList>
-                            <StringConst>L'elevamento a potenza Ã¨:</StringConst>
+                            <StringConst>L'elevamento a potenza e':</StringConst>
                             <id>int_result</id>
                             <StringConst />
                           </ExprList>
@@ -447,7 +447,7 @@
               <StatList>
                 <WriteOp>
                   <ExprList>
-                    <StringConst>Il valore inserito Ã¨ negativo. Riprovare</StringConst>
+                    <StringConst>Il valore inserito e' negativo. Riprovare</StringConst>
                   </ExprList>
                 </WriteOp>
               </StatList>
@@ -474,7 +474,7 @@
               <StatList>
                 <WriteOp>
                   <ExprList>
-                    <StringConst>Il valore inserito Ã¨ negativo. Riprovare</StringConst>
+                    <StringConst>Il valore inserito e' negativo. Riprovare</StringConst>
                   </ExprList>
                 </WriteOp>
               </StatList>

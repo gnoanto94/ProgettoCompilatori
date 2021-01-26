@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProgramOp>
+  <VarDeclList>
+    <VarDeclOp>
+      <TypeOp>int</TypeOp>
+      <IdListInitOp>
+        <IdList>
+          <id>n</id>
+          <id>c</id>
+        </IdList>
+      </IdListInitOp>
+    </VarDeclOp>
+  </VarDeclList>
+  <ProcOpList>
+    <ProcOp>
+      <id>main</id>
+      <ParamDeclList>null</ParamDeclList>
+      <ResultTypeList>
+        <ResultTypeOp>void</ResultTypeOp>
+      </ResultTypeList>
+      <ProcBodyOp>
+        <VarDeclList>null</VarDeclList>
+        <StatList>
+          <MultipleAssignOp>
+            <IdList>
+              <id>n</id>
+              <id>c</id>
+            </IdList>
+            <ExprList>
+              <IntConst>10</IntConst>
+              <FloatConst>10.1</FloatConst>
+            </ExprList>
+          </MultipleAssignOp>
+          <WriteOp>
+            <ExprList>
+              <StringConst>qualcosa</StringConst>
+            </ExprList>
+          </WriteOp>
+        </StatList>
+        <ReturnExprs>null</ReturnExprs>
+      </ProcBodyOp>
+    </ProcOp>
+  </ProcOpList>
+</ProgramOp>

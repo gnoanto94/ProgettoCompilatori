@@ -107,6 +107,9 @@ CommentString = [^\*\/]*
     \\r         { string.append('\r');}
     \\\"        { string.append('\"'); }
     \\          { string.append('\\'); }
+    \n          {/*viene ignorato perchè fa parte del sorgente originale*/}
+    \r          {/*viene ignorato perchè fa parte del sorgente originale*/}
+    \t          {/*viene ignorato perchè fa parte del sorgente originale*/}
 }
 
 <COMMENT,COMMENT2> <<EOF>> {throw new IOException("Commento non chiuso");}

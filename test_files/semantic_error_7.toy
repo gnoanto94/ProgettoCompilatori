@@ -1,0 +1,16 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * la condizione (non booleana) all'interno dell'elif
+ */
+
+string condizione := "text";
+int a := 1;
+
+proc main()void:
+   if a > 0 then
+   write("qualcosa");
+   elif condizione then
+   write("altro");
+   fi;
+   ->
+corp;

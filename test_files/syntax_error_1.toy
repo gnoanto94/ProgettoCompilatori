@@ -1,0 +1,14 @@
+/*
+ * viene mostrato l'errore sintattico
+ * inerente la mancata chiusura di uno statement if
+ */
+
+int i := 0;
+
+proc main()void:
+    if i = 0 then
+         write("errore, manca fi; prima del return");
+    else
+         write("errore");
+    ->
+corp;

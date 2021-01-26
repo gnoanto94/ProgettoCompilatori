@@ -1,0 +1,18 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * l'utilizzo di procedure con valore di ritorno void all'interno di una write
+ */
+
+int a := 1;
+
+proc main()void:
+   if a > 0 then
+   write(nome());
+   fi;
+   ->
+corp;
+
+proc nome() void:
+   write("Alessio");
+   ->
+corp;

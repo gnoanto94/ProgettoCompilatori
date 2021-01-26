@@ -1,0 +1,13 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * il numero di argomenti in un'assegnazione multipla
+ */
+
+
+int n, c;
+
+proc main() void:
+    n, c := 10; /*c'è solo un valore nella parte destra*/
+    write("qualcosa");
+    ->
+corp;

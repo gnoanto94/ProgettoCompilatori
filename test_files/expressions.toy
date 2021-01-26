@@ -16,29 +16,29 @@ proc main() void:
     float f_left, f_right, f_result;
 
 while
-  write("Premere 0 per chiudere il programma oppure\n");
-  write("scegli l'operazione da effettuare: 2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\n");
+  write("Premere 0 per chiudere il programma oppure scegli l'operazione da effettuare:\n");
+  write("2 = somma, 3 = sottrazione, 4 = moltiplicazione, 5 = divisione\nScelta: ");
   readln(op);
 -> op <> 0 /*condizione del while*/
 
     do
-        write("Tipo di operazione: 0 = operazione tra int, 1 = operazione tra float \n");
+        write("Tipo di operazione: 0 = operazione tra int, 1 = operazione tra float\nScelta: ");
         readln(opType);
-        write("Scegli il primo valore\n");
+        write("Scegli il primo valore: ");
 
         if opType = 0 then
             readln(i_left);
-            write("Scegli il secondo valore\n");
+            write("Scegli il secondo valore: ");
             readln(i_right);
             i_result := i_expr(i_left, i_right);
-            write("Il risultato è ", i_result, "\n");
+            write("Il risultato e' ", i_result, "\n");
 
         else
             readln(f_left);
-            write("Scegli il secondo valore\n");
+            write("Scegli il secondo valore: ");
             readln(f_right);
             f_result := f_expr(f_left, f_right);
-            write("Il risultato è ", f_result, "\n");
+            write("Il risultato e' ", f_result, "\n");
 
         fi;
     od;

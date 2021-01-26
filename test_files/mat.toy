@@ -19,16 +19,16 @@ proc main() void:
 
     if scelta = 1 then
         flt_result := sum();
-        write("La somma dei due numeri è: ", flt_result, "\n");
+        write("La somma dei due numeri e': ", flt_result, "\n");
     elif scelta = 2 then
         int_result := multiply();
-        write("La moltiplicazione di due numeri usando la somma è: ", int_result, "\n");
+        write("La moltiplicazione di due numeri usando la somma e': ", int_result, "\n");
     elif scelta = 3 then
         int_result := divide();
-        write("La divisione intera fra i due numeri è: ", int_result, "\n");
+        write("La divisione intera fra i due numeri e': ", int_result, "\n");
     elif scelta = 4 then
         int_result := my_pow();
-        write("L'elevamento a potenza è: ",  int_result, "\n");
+        write("L'elevamento a potenza e': ",  int_result, "\n");
     else
         write("SUCCESSIONE di FIBONACCI\n");
         write("Fino a che punto della successione? ");
@@ -78,16 +78,16 @@ proc divide() int:
         readln(a);
         ->a < 0
     do
-        write("Il valore inserito è negativo. Riprovare\n");
+        write("Il valore inserito e' negativo. Riprovare\n");
     od;
 
-    /* a questo punto il primo operando è corretto */
+    /* a questo punto il primo operando e' corretto */
     while
             write("Inserire il secondo operando: ");
             readln(b);
             ->b < 0
         do
-            write("Il valore inserito è negativo. Riprovare\n");
+            write("Il valore inserito e' negativo. Riprovare\n");
         od;
 
     result := a / b;

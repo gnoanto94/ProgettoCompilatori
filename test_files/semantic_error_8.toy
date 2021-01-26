@@ -1,0 +1,15 @@
+/*
+ * viene mostrato l'errore semantico inerente
+ * l'utilizzo di variabili non dichiarate all'interno di una readln.
+ * Lo stesso errore viene generato per un qualsiasi utilizzo di variabile non dichiarata
+ * all'interno di write e chiamate a procedure (definite nel programma)
+ */
+
+int a := 1;
+
+proc main()void:
+   if a > 0 then
+   readln(b);
+   fi;
+   ->
+corp;

@@ -1,0 +1,10 @@
+/*
+ * viene mostrato l'errore semantico inerente l'utilizzo di
+ * una divisione di un intero per 0 all'interno del programma.
+ */
+
+proc main() void:
+   int prova;
+   prova := 100/0;
+   ->
+corp;

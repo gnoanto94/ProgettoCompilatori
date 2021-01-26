@@ -1,0 +1,17 @@
+/*
+ * viene mostrato l'errore semantico inerente la definizione di due procedure main.
+ */
+
+int a := 1;
+
+proc main() void:
+   if a > 0 then
+   write("qualcosa");
+   fi;
+   ->
+corp;
+
+proc main() void:
+   write("Alessio");
+   ->
+corp;

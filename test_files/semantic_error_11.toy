@@ -1,0 +1,19 @@
+/*
+ * viene mostrato l'errore semantico inerente la definizione di una procedura
+ * in cui i tipi di ritorno restituiti non corrispondono a quelli nella firma
+ */
+
+int a := 1;
+
+proc main()void:
+   if a > 0 then
+   nome();
+   fi;
+   ->
+corp;
+
+proc nome() int, int, int:
+   write("Alessio");
+   /*vengono restituiti int int float invece di int int int*/
+   ->1,2, 3.3
+corp;
