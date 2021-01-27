@@ -313,7 +313,6 @@ public class TypeCheckingVisitor implements Visitor {
     @Override
     public Object visit(CallProcOp c) throws Exception {
         //Bisogna verificare che la procedura chiamata sia stata definita.
-
         SymbolTable.ProcRow procRow = null;
         //Si recupera la symbol table entry riferita alla procedura
         SymbolTable.SymbolTableRow row = c.getId().getTableEntry();
@@ -323,12 +322,48 @@ public class TypeCheckingVisitor implements Visitor {
             procRow = (SymbolTable.ProcRow) row;
         }
 
-        //Se è definita, bisogna recuperare l'array con i tipi di ritorno dalla
-        //entry della symbol table
+        ArrayList<Type> formalParametersTypes = null;
+        ArrayList<String> actualParametersTypes = new ArrayList<>();
+        ArrayList<Type> procRetTypes;
+        String type1, type2;
+
         if(procRow != null){
+            //È necessario verificare che i tipi dei parametri attuali corrispondano a quelli dei parametri formali
+            formalParametersTypes = procRow.getParamTypes(); //tipi dei parametri formali
+
+            //Calcoliamo il numero di parametri attuali passati alla procedura
+            if(c.getExprList() != null){ //verifico che la procedura abbia parametri
+                for(Expr e: c.getExprList()){
+                    if(e instanceof CallProcOp){ //se alla procedura viene passato come parametro un'altra procedura
+                        procRetTypes = ((ArrayList<Type>) ((CallProcOp) e).accept(this));
+                        for(Type t: procRetTypes){
+                            actualParametersTypes.add(t.getValue());
+                        }
+                    } else {
+                        actualParametersTypes.add((String) ((Visitable) e).accept(this));
+                    }
+                }
+            }
+
+            if(formalParametersTypes != null) {//viene eseguito solo se la procedura prevede parametri
+                if (formalParametersTypes.size() != actualParametersTypes.size()) {
+                    throw new Exception("Errore Semantico: il numero di parametri passato alla procedura non coincide con " +
+                            "con quello della firma.");
+                }
+
+                for (int i = 0; i < formalParametersTypes.size(); i++) {
+                    type1 = formalParametersTypes.get(i).getValue();
+                    type2 = actualParametersTypes.get(i);
+                    if (!(type1.equals(type2))) {
+                        throw new Exception("Errore Semantico: i tipi dei parametri attuali non coincidono con quelli " +
+                                "dei parametri formali");
+                    }
+                } //end for
+                //Se è definita, alla fine bisogna recuperare l'array con i tipi di ritorno dalla
+                //entry della symbol table
+            }
             return procRow.getReturnTypes();
         }
-
         //Se NON è definita si lancia un'eccezione.
         throw new Exception("Errore Semantico: Procedura non definita");
     }
@@ -386,7 +421,7 @@ public class TypeCheckingVisitor implements Visitor {
                             "i tipi di ritorno non coincidono con quelli della firma");
                 }
             }
-        }else{
+        } else {
             if(!(resultTypeList.size() == 1 && resultTypeList.get(0).getValue().equals(ResultTypeOp.VOID))){
                 throw new Exception("Errore Semantico: valore di ritorno mancante per la procedura");
             }

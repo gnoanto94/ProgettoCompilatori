@@ -1,0 +1,31 @@
+SYMBOL TABLE 
+ =====================
+Taglia dello stack: 3
+global
+ID: 0	 | Lessema: int
+ID: 1	 | Lessema: string
+ID: 2	 | Lessema: float
+ID: 3	 | Lessema: bool
+ID: 4	 | Lessema: proc
+ID: 5	 | Lessema: corp
+ID: 6	 | Lessema: void
+ID: 7	 | Lessema: if
+ID: 8	 | Lessema: then
+ID: 9	 | Lessema: elif
+ID: 10	 | Lessema: fi
+ID: 11	 | Lessema: else
+ID: 12	 | Lessema: while
+ID: 13	 | Lessema: do
+ID: 14	 | Lessema: od
+ID: 15	 | Lessema: readln
+ID: 16	 | Lessema: write
+ProcRow{id=17, lessema='prova', token=43, fref=false, paramTypes=[Type{value='int'}], returnTypes=[Type{value='int'}]}
+ProcRow{id=18, lessema='main', token=43, fref=false, paramTypes=[], returnTypes=[Type{value='void'}]}
+
+main
+VarRow{id=0, lessema='a', token=43, varType=Type{value='int'}}
+VarRow{id=1, lessema='b', token=43, varType=Type{value='int'}}
+
+prova
+VarRow{id=0, lessema='x', token=43, varType=Type{value='int'}}
+

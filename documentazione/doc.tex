@@ -196,9 +196,11 @@
 	\]
     \subsubsection{write}
     \[
-        \frac{\Gamma \vdash \mi{e} \colon \tau}%
+        \frac{\Gamma \vdash \mi{e} \colon \tau \quad (\tau \neq \resw{void})\footnotemark}%
         {\Gamma \vdash \resw{write(} \mi{e} \colon \tau \resw{)}}
     \]
+    \footnotetext{Si vuole intendere che il tipo di $e$ deve essere diverso da \texttt{void}. Per ulteriori 
+    informazioni consultare le scelte di sviluppo del compilatore.}
     \subsubsection{simple-assign}
     \[
         \frac{(\mi{x} \colon \tau) \, \in \, \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
@@ -250,10 +252,66 @@
 	\end{tabular}
 	}
 	\caption{Relazioni di tipo per gli operatori primitivi. Gli operatori aritmetici lavorano sia su numeri interi sia su numeri in virgola mobile.
-	              Gli operatori logiri ! \&\& || (not, and e or) lavorano su boolean. Gli operatori di comparazione lavorano su tipi primitivi diversi da boolean.}
+	              Gli operatori logici ! \&\& || (not, and e or) lavorano su boolean. Gli operatori di comparazione lavorano su tipi primitivi diversi da boolean.}
 \end{figure}
     
+% Note sul Lexer:
+% - sono stati usati i singoli casi per gli operatori di comparazione (LT, GT, ecc.) al posto del singolo RELOP
+% - abbiamo usato tre stati di Jflex per gestire i commenti (stati COMMENT e COMMENT2) e per le stringhe (stato STRING)
+%	per la rilevazione agevole degli errori.
+% - In un primo momento (es4 e es3) si era deciso di non permettere di avere numeri in virgola mobile di questo tipo:
+% 	34.0; ci si è resi conto poi che era troppo limitante e quindi è stata modificata la reg exp.
+% -	Nel caso di stringhe, si è dovuto gestire caso per caso i simboli non stampabili \n \r \t in quanto venivano
+%	riconosciuti anche quelli naturalmente presenti nel file sorgente.
+%
+% Note sul Parser:
+% - Le modifiche apportate alla grammatica non modificano il linguaggio generato rispetto alla grammatica fornita
+%	Ciò è stato fatto per gestire in maniera più agevole le azioni semantiche da svolgere.
+% - Si è deciso di gestire gli scope già nel parser (azioni semantiche nel corpo di una produzione e non solo alla fine)
+% 	--> Grammatica non post-fissa
+%
+% Analisi Sintattica:
+% - è stato generato l'AST tramite patter Visitor (creato il file xml)
+% 	Per la gestione delle componenti dell'albero sintattico, si è optato per l'utilizzo di una classe padre
+%	(la classe Node.java) contenente l'elemento nome in quanto comune a tutte le componenti. Ogni classe
+%	rappresentante una componente diversa dell'albero, quindi, estende la classe Node.java
+% 	Ragionamento analogo al punto precedente, è stato fatto per le classi che rappresentano gli Statement del
+%	linguaggio di programmazione Toy. In questo caso, la classe padre è StatOp.java
+%	Siccome ci sono alcune componenti dell'albero sintattico che sono comuni a più produzioni della grammatica,
+%	si è scelto di avere, Expr e IdListInit come interfacce. Questo perché, ad esempio, ID (che corrisponde ad
+%	una foglia dell'albero) può essere sia visto come Expr sia come un elemento di IdListInit.
+%	Ciò è stato fatto per ottenere, ad esempio, una lista di Expr i cui elementi sono eterogenei (e anche perché in
+%	Java non esiste l'ereditarietà multipla).
+%	Per applicare il pattern Visitor, si è utilizzata l'interfaccia Visitor.java che, per nostra scelta,
+%	contiene le firme distinte dei vari metodi visit(), ognuno dei quali è specifico per una componente
+%	dell'albero sintattico.
+%
+%	Per la generazione del file XML si è utilizzata la libreria jdom
+%	(v 2.0.6) inserita come external library
 
+% Analizzatore Semantico:
+% - L'analisi semantica viene effettuata utilizzando due visite dell'AST
+% - La prima serve ad aggiungere informazioni che servono per il type checking alla symbol table
+% - La seconda esegue il type checking + controllo del singolo main + dichiarazioni nei diversi scope
+% - è stata utilizzata la forward reference per le procedure quindi non è strettamente necessario
+%	dichiararle prima del loro uso
 
-
+% Generazione del codice intermedio:
+% - gestione dei ritorni multipli
+% - assegnazione multipla (e con procedure con ritorni multipli)
+% - main che restituisce int (firma del main fissa in toy)
+% - trasformazione del while
+%    * Nel caso 1, il codice C risultante è il seguente:
+%         *
+%         * statements1
+%         * while(expr){
+%         *    statements2
+%         *    statements1
+%         * }
+%         * Nel caso 2, il codice C risultante è il seguente:
+%         *
+%         * while(condizione){
+%         *  statements
+%         * }s
+% La Symbol Table viene riportata anche in un file di testo
 \end{document}

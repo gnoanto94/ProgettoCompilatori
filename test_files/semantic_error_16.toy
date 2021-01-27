@@ -1,0 +1,13 @@
+/* Errore generato: il numero di parametri formali e attuali non coincide
+ *
+ */
+
+proc main() void:
+    int a, b;
+    prova(a, b);
+    ->
+corp;
+
+proc prova(int x) int:
+    ->1
+corp;

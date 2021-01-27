@@ -1,0 +1,13 @@
+/* Errore generato: i parametri attuali non hanno lo stesso tipo di quelli formali
+ *
+ */
+
+proc main() void:
+    int a, b;
+    prova(a, b);
+    ->
+corp;
+
+proc prova(int x; float y) int:
+    ->1
+corp;
