@@ -2,9 +2,7 @@ package semanticanalysis;
 
 import syntaxanalysis.SymbolTable;
 import tree_nodes.*;
-
 import java.util.ArrayList;
-
 
 public class TableAmplifierVisitor implements Visitor {
 
@@ -13,7 +11,7 @@ public class TableAmplifierVisitor implements Visitor {
         ArrayList<VarDeclOp> varDeclList = p.getVarDeclList();
         ArrayList<ProcOp> procList = p.getProcOpList();
 
-        //Bisogna verificare che non sia null in quanto potrebbero non esserci variabili globali.
+        //Bisogna verificare che varDeclList non sia null in quanto potrebbero non esserci variabili globali.
         if(varDeclList != null) {
             for (VarDeclOp v : varDeclList) {
                 v.accept(this);
@@ -62,6 +60,8 @@ public class TableAmplifierVisitor implements Visitor {
         //Ciclo per inserire correttamente i tipi dei parametri nelle entry a loro associate
         if(paramDeclList != null){
             for(ParamDeclOp par : paramDeclList){
+                //non si verifica se si ha a che fare con un ArrayList di Type poichè il metodo
+                //visit(chiamato da accept)di VarDeclOp lo restituisce sempre
                 paramTypes.addAll((ArrayList<Type>)par.accept(this));
             }
         }
@@ -154,6 +154,9 @@ public class TableAmplifierVisitor implements Visitor {
     }
 
     /***************************************************************************************************/
+
+    //I seguenti metodi non vengono utilizzati in quanto non sono utili al fine di arricchire la tabella
+    //dei simboli. Vengono inseriti all'interno di questa classe solo perché previsti dall'interfaccia Visitor
     @Override
     public Object visit(PlusOp p) {
         return null;

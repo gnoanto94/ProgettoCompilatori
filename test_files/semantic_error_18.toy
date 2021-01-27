@@ -1,0 +1,13 @@
+/* Errore generato: non è possibile effettuare un'operazione con operando void
+ *
+ */
+
+proc main() void:
+    int a, b, c;
+    c := 1+prova();
+    ->
+corp;
+
+proc prova() void:
+    ->
+corp;

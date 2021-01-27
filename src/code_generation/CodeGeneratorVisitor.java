@@ -18,16 +18,15 @@ public class CodeGeneratorVisitor implements Visitor {
     private static final String FALSE = "0";
 
     public CodeGeneratorVisitor(String programName) throws FileNotFoundException {
-        //si elimina il .toy dal nome del file e lo si trasforma in .c
+        //si elimina l'estensione .toy dal nome del file e la si trasforma in .c
         this.programName = (programName.substring(0, programName.indexOf('.'))) + ".c";
         String temp[] = this.programName.split("/");
         this.programName = "generated_c_files/" + temp[1];
         this.ps = new PrintStream(this.programName);
-        //verrà sempre inclusa
+        //verranno sempre inclusi nel file C generato:
         ps.println("/* Auto-generated code from Toy Compiler */");
-        ps.println("#include<stdio.h>"); //I/O
+        ps.println("#include<stdio.h>");
         ps.println("#include<stdlib.h>");
-//        ps.println("#include<string.h>"); //per lavorare con le stringhe
         ps.println();
     }
 
@@ -50,15 +49,18 @@ public class CodeGeneratorVisitor implements Visitor {
     public Object visit(StringConstLeaf s) {
         String res = "";
 
+        //Nel caso in cui all'interno della stringa costante siano presenti caratteri di escape
+        //verranno aggiunti letteralmente in essa
         res = s.getValue().replace("\n", "\\" + "n");
         res = res.replace("\t", "\\" + "t");
 
+        //Si aggiungono i doppi apici di inizio e fine stringa costante
         return ("\"" + res + "\"");
     }
 
     @Override
     public Object visit(NullLeaf n) {
-        return "null";
+        return "NULL";
     }
 
     @Override
@@ -538,7 +540,7 @@ public class CodeGeneratorVisitor implements Visitor {
     @Override
     public Object visit(ProcOpBody p) throws Exception {
         /*Return solo del primo valore di ritorno (o dell'unico valore)
-         * e assegnazione dei valori di ritorno successivo al primo alle variabili globali create precedentemente */
+         *e assegnazione dei valori di ritorno successivi al primo alle variabili globali create precedentemente */
 
         String str = "", ret = "";
 

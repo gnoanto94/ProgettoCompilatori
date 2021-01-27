@@ -9,6 +9,9 @@ import java.util.ArrayList;
 public class TypeCheckingVisitor implements Visitor {
 
     private boolean singleMainDeclaration = false; //flag per controllare se viene usata più di una procedura main
+    //Si utilizza nullType nelle occorrenze del valore null in maniera da potergli attribuire un valore
+    //così da poter semplificare la fase di Type Checking in presenza di null
+    private String nullType;
 
     /* Le visit dei nodi foglia ritornano sempre il loro type*/
     @Override
@@ -33,7 +36,7 @@ public class TypeCheckingVisitor implements Visitor {
             return ((SymbolTable.ProcRow) row).getReturnTypes();
         }
 
-        throw new Exception("Errore Semantico: Utilizzo di variabile non dichiarata");
+        throw new Exception("Errore Semantico: variabile " +i.getIdEntry()+ " non dichiarata");
     }
 
     @Override
@@ -43,7 +46,7 @@ public class TypeCheckingVisitor implements Visitor {
 
     @Override
     public Object visit(NullLeaf n) {
-        return null;
+        return "null";
     }
 
     @Override
@@ -133,10 +136,10 @@ public class TypeCheckingVisitor implements Visitor {
         type1 = (String) s.getId().accept(this);
         type2 = (String) ((Visitable) s.getExpr()).accept(this);
         if(!type1.equals(type2)){
-            throw new Exception("Errore Semantico: Type Mismatch in Simple Assign");
+            throw new Exception("Errore Semantico: Type Mismatch in assegnazione");
         }
 
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
+        return null; //si restituisce null in quanto SimpleAssign non ha un tipo di ritorno
     }
 
     @Override
@@ -161,7 +164,9 @@ public class TypeCheckingVisitor implements Visitor {
                 e.accept(this);
             }
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement if non ha un tipo di ritorno
+        //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo dell'else
+        i.getElseOp().accept(this);
+        return null; //si restituisce null in quanto lo statement if non ha un tipo di ritorno
     }
 
     @Override
@@ -179,7 +184,7 @@ public class TypeCheckingVisitor implements Visitor {
             s.accept(this);
         }
 
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement elif non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement elif non ha un tipo di ritorno
     }
 
     @Override
@@ -189,7 +194,7 @@ public class TypeCheckingVisitor implements Visitor {
         for(StatOp s : statList){
             s.accept(this);
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement else non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement else non ha un tipo di ritorno
     }
 
     @Override
@@ -199,11 +204,10 @@ public class TypeCheckingVisitor implements Visitor {
         ArrayList<StatOp> statList = w.getStatList();
 
         if(!(type.equals(ResultTypeOp.BOOL))){
-            throw new Exception("Errore Semantico: la condizione dell'if deve essere un'espressione booleana ");
+            throw new Exception("Errore Semantico: la condizione del while deve essere un'espressione booleana ");
         }
 
         //si deve chiamare la accept per effettuare il type checking a tutti gli statement nel corpo del while
-
         if(statList != null){ //while potrebbe non avere una statlist
             for(StatOp s : statList){
                 s.accept(this);
@@ -211,7 +215,7 @@ public class TypeCheckingVisitor implements Visitor {
         }
         //si effettua il type checking anche per il corpo del do
         w.getDoOp().accept(this);
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement while non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement while non ha un tipo di ritorno
     }
 
     @Override
@@ -222,20 +226,20 @@ public class TypeCheckingVisitor implements Visitor {
         for(StatOp s : statList){
             s.accept(this);
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement do non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement do non ha un tipo di ritorno
     }
 
     @Override
     public Object visit(ReadOp r) throws Exception {
-        //Si va a verificare che i parametri passati alla readln siano stati dichiarati prima del loro utilizzo
+        //Si verifica che i parametri passati alla readln siano stati dichiarati prima del loro utilizzo
         for(IdLeaf i: r.getIdList()){
             //Si effettua il controllo con null, in quanto il parser metterà null come entry della symbol table
             //se non trova la dichiarazione della variabile.
             if(i.getTableEntry() == null){
-                throw new Exception("Errore Semantico: utilizzo di variabile non dichiarata in readln");
+                throw new Exception("Errore Semantico: variabile " +i.getIdEntry()+ " non dichiarata in readln");
             }
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement readln non ha un tipo di ritorno
     }
 
     @Override
@@ -250,23 +254,22 @@ public class TypeCheckingVisitor implements Visitor {
                 //Si effettua il controllo con null, in quanto il parser metterà null come entry della symbol table
                 //se non trova la dichiarazione della variabile.
                 if (((IdLeaf) e).getTableEntry() == null) {
-                    throw new Exception("Errore Semantico: utilizzo di variabile non dichiarata in write");
+                    throw new Exception("Errore Semantico: variabile " +((IdLeaf)e).getIdEntry()+ " non dichiarata in write");
                 }
             }
             if(e instanceof CallProcOp){
-                // Bisogna controllare se si ha a che fare con una chiamata a procedura
-                // per verificare che non restituisca VOID
+                //Bisogna controllare se si ha a che fare con una chiamata a procedura
+                //per verificare che non restituisca VOID
                 resultTypeList = (ArrayList<ResultTypeOp>) ((CallProcOp) e).accept(this);
                 if(resultTypeList.size() == 1){
                     //Si ha una procedura con un solo valore di ritorno, bisogna verificare che non sia void
                     if(resultTypeList.get(0).equals(ResultTypeOp.VOID)){
-                        throw new Exception("Errore Semantico: Write non accetta valore void");
+                        throw new Exception("Errore Semantico: write non accetta valore void");
                     }
                 }
-            }
-                //negli altri casi non è necessario effettuare alcun controllo
+            }//negli altri casi (valori costanti) non è necessario effettuare alcun controllo
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement write non ha un tipo di ritorno
+        return null; //si restituisce null in quanto lo statement write non ha un tipo di ritorno
     }
 
     @Override
@@ -276,13 +279,13 @@ public class TypeCheckingVisitor implements Visitor {
         ArrayList<String> rightSideTypes = new ArrayList<>();
         ArrayList<Type> procTypes;
         ArrayList<IdLeaf> idList = m.getIdList();
-        ArrayList<Expr> exprList = m.getExprList();
+        ArrayList<Expr> exprList = m.getExprList();//exprList corrisponde ai valori nella parte destra dell'assegnazione
         int exprListSize = 0;
 
         for(Expr e : exprList){
             if(e instanceof CallProcOp){
                 //Nel caso in cui la exprList contiene delle chiamate a procedure bisogna aumentare la size
-                //in base al numero di valori di ritorno ritornati dalle procedure in questione
+                //in base al numero di valori di ritorno restituiti dalle procedure in questione
                 procTypes = (ArrayList<Type>) ((CallProcOp) e).accept(this);
                 exprListSize += procTypes.size();
                 for(Type t : procTypes){
@@ -303,11 +306,11 @@ public class TypeCheckingVisitor implements Visitor {
             type2 = rightSideTypes.get(i);
 
             if(!(type1.equals(type2))){
-                throw new Exception("Errore Semantico: Type Mismatch in MultipleAssign");
+                throw new Exception("Errore Semantico: type mismatch in assegnazione multipla");
             }
         }
 
-        return ResultTypeOp.VOID; //si restituisce void in quanto lo statement readln non ha un tipo di ritorno
+        return null; //si restituisce null in quanto MultipleAssignOp non ha un tipo di ritorno
     }
 
     @Override
@@ -322,33 +325,42 @@ public class TypeCheckingVisitor implements Visitor {
             procRow = (SymbolTable.ProcRow) row;
         }
 
-        ArrayList<Type> formalParametersTypes = null;
+        ArrayList<Type> formalParametersTypes;
         ArrayList<String> actualParametersTypes = new ArrayList<>();
         ArrayList<Type> procRetTypes;
         String type1, type2;
+        int j = 0; //indice usato per attribuire un tipo al valore null per type mismatch
 
         if(procRow != null){
             //È necessario verificare che i tipi dei parametri attuali corrispondano a quelli dei parametri formali
             formalParametersTypes = procRow.getParamTypes(); //tipi dei parametri formali
-
-            //Calcoliamo il numero di parametri attuali passati alla procedura
+            //Si calcola il numero di parametri attuali passati alla procedura
             if(c.getExprList() != null){ //verifico che la procedura abbia parametri
                 for(Expr e: c.getExprList()){
+
                     if(e instanceof CallProcOp){ //se alla procedura viene passato come parametro un'altra procedura
                         procRetTypes = ((ArrayList<Type>) ((CallProcOp) e).accept(this));
                         for(Type t: procRetTypes){
                             actualParametersTypes.add(t.getValue());
                         }
+                    }
+                    //Nel caso in cui all'interno della exprList è presente null, dobbiamo attribuirgli un tipo adatto
+                    //altrimenti si avrebbe type mismatch
+                    else if(e instanceof NullLeaf){
+                        nullType = formalParametersTypes.get(j).getValue();
+                        actualParametersTypes.add(nullType);
                     } else {
                         actualParametersTypes.add((String) ((Visitable) e).accept(this));
                     }
-                }
+
+                    j++;
+                }//end for
             }
 
             if(formalParametersTypes != null) {//viene eseguito solo se la procedura prevede parametri
                 if (formalParametersTypes.size() != actualParametersTypes.size()) {
-                    throw new Exception("Errore Semantico: il numero di parametri passato alla procedura non coincide con " +
-                            "con quello della firma.");
+                    throw new Exception("Errore Semantico: il numero di parametri passato alla procedura" +
+                            c.getId().getIdEntry() + "non coincide con con quello della firma.");
                 }
 
                 for (int i = 0; i < formalParametersTypes.size(); i++) {
@@ -356,16 +368,16 @@ public class TypeCheckingVisitor implements Visitor {
                     type2 = actualParametersTypes.get(i);
                     if (!(type1.equals(type2))) {
                         throw new Exception("Errore Semantico: i tipi dei parametri attuali non coincidono con quelli " +
-                                "dei parametri formali");
+                                "dei parametri formali nella procedura "+c.getId().getIdEntry());
                     }
                 } //end for
-                //Se è definita, alla fine bisogna recuperare l'array con i tipi di ritorno dalla
-                //entry della symbol table
             }
+            //Se la procedura è definita, alla fine bisogna recuperare l'array
+            //con i tipi di ritorno dalla entry della symbol table
             return procRow.getReturnTypes();
         }
         //Se NON è definita si lancia un'eccezione.
-        throw new Exception("Errore Semantico: Procedura non definita");
+        throw new Exception("Errore Semantico: Procedura "+c.getId().getIdEntry()+" non definita");
     }
 
     @Override
@@ -373,14 +385,15 @@ public class TypeCheckingVisitor implements Visitor {
         for(IdListInit id : i.getIdListInit()){
             ((Visitable) id).accept(this);
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto idListInit non ha un tipo di ritorno
+        return null; //si restituisce null in quanto idListInitOp non ha un tipo di ritorno
     }
 
     @Override
     public Object visit(ParamDeclOp p) {
         //non viene effettuato alcun controllo perchè si ha a che fare con dichiarazioni di parametri
-        //e conseguentemente il metodo visit in questione non viene mai chiamato
-        return null;
+        //e conseguentemente il metodo visit in questione non viene mai chiamato perchè i tipi di ritorno
+        //vengono recuperati dalla tabella dei simboli
+        return null; //si restituisce null in quanto ParamDeclOp non ha un tipo di ritorno
     }
 
     @Override
@@ -391,10 +404,24 @@ public class TypeCheckingVisitor implements Visitor {
     @Override
     public Object visit(ProcOp p) throws Exception{
 
+        //Salvo il nome della procedura corrente per i messaggi di errore
+        String currentProcName = p.getId().getIdEntry();
+
+        //resultTypeList fa riferimento ai tipi di ritorno nella firma della procedura
+        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
+
         //Controllo dell'unicità della procedura main
         if(!(singleMainDeclaration)){
             if(p.getId().getIdEntry().equals("main")){
                 singleMainDeclaration = true;
+                //In Toy si è deciso che la procedura main ha la seguente firma:
+                //proc main() void
+                if(resultTypeList.size() == 1){
+                    if(!(resultTypeList.get(0).equals(ResultTypeOp.VOID))){
+                        throw new Exception("Errore Semantico: la procedura main deve avere la seguente " +
+                                "firma:\nproc main() void");
+                    }
+                }
             }
         }else{
             if(p.getId().getIdEntry().equals("main")){
@@ -402,33 +429,34 @@ public class TypeCheckingVisitor implements Visitor {
             }
         }
 
-        //resultTypeList fa riferimento ai tipi di ritorno nella firma della procedura
-        ArrayList<ResultTypeOp> resultTypeList = p.getResultTypeList();
 
+        //returnTypes fa riferimento ai tipi di ritorno delle espressioni alla fine della procedura
         if(p.getProcBody().getReturnExprs() != null){
-
-            //returnTypes fa riferimento ai tipi di ritorno delle espressioni alla fine della procedura
+            //non viene verificato se si ha a che fare con un ArrayList<String> perché il metodo
+            //visit(ReturnExprs) (chiamato da accept) in questo visitor lo restituisce sempre
             ArrayList<String> returnTypes = (ArrayList<String>) p.getProcBody().getReturnExprs().accept(this);
 
             if(returnTypes.size() != resultTypeList.size()){
                 throw new Exception("Errore Semantico: I valori restituiti dalla procedura non sono in numero eguale " +
-                        "a quelli definiti nella firma della procedura");
+                        "a quelli definiti nella firma della procedura "+currentProcName);
             }
 
             for(int i = 0; i < returnTypes.size(); i++){
+                //returnTypes fa riferimento ai tipi di ritorno delle espressioni alla fine della procedura
+                //resultTypeList fa riferimento ai tipi di ritorno nella firma della procedura
                 if(!(returnTypes.get(i).equals(resultTypeList.get(i).accept(this)))){
-                    throw new Exception("Errore Semantico: Type Mismatch in procedure - " +
-                            "i tipi di ritorno non coincidono con quelli della firma");
+                    throw new Exception("Errore Semantico: Type Mismatch nella procedura "+currentProcName+
+                            " - i tipi di ritorno non coincidono con quelli della firma");
                 }
             }
         } else {
             if(!(resultTypeList.size() == 1 && resultTypeList.get(0).getValue().equals(ResultTypeOp.VOID))){
-                throw new Exception("Errore Semantico: valore di ritorno mancante per la procedura");
+                throw new Exception("Errore Semantico: valore di ritorno mancante per la procedura "+currentProcName);
             }
         }
 
         p.getProcBody().accept(this);
-        return ResultTypeOp.VOID; //si restituisce void in quanto una procedura non ha un tipo di ritorno
+        return null; //si restituisce null in quanto una procedura non ha un tipo di ritorno
     }
 
     @Override
@@ -448,7 +476,7 @@ public class TypeCheckingVisitor implements Visitor {
             }
         }
 
-        return ResultTypeOp.VOID; //si restituisce void in quanto ProcOpBody non ha un tipo di ritorno
+        return null; //si restituisce null in quanto ProcOpBody non ha un tipo di ritorno
     }
 
     @Override
@@ -474,11 +502,11 @@ public class TypeCheckingVisitor implements Visitor {
             if(s instanceof SymbolTable.ProcRow){
                 current = (SymbolTable.ProcRow) s;
                 if(current.isFref()){
-                    throw new Exception("Errore Semantico: Utilizzo di procedura non definita.");
+                    throw new Exception("Errore Semantico: Procedura "+current.getLessema()+" non definita");
                 }
             }
         }
-        return ResultTypeOp.VOID; //si restituisce void in quanto program non ha un tipo di ritorno
+        return null; //si restituisce null in quanto Program non ha un tipo di ritorno
     }
 
     @Override
@@ -500,7 +528,7 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(VarDeclOp v) throws Exception{
 
         v.getIdListInit().accept(this);
-        return ResultTypeOp.VOID; //si restituisce void in quanto varDeclOp non ha un tipo di ritorno
+        return null; //si restituisce null in quanto varDeclOp non ha un tipo di ritorno
     }
 
     private Object optype1(Operator op, Expr first) throws Exception{
@@ -515,13 +543,12 @@ public class TypeCheckingVisitor implements Visitor {
             type = (String) ((Visitable) first).accept(this);
         }
 
-
         switch (op) {
             case UMINUS:
                 //Per poter utilizzare il meno unario, è necessario che l'operando sia di tipo integer o float.
-
-                //Se l'operando NON è di tipo integer o float, lancia eccezione.
+                //Se l'operando NON è di tipo integer o float, si lancia un'eccezione.
                 //È implicito il controllo su null
+
                 if (!(type.equals(ResultTypeOp.INT) || type.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
@@ -531,7 +558,6 @@ public class TypeCheckingVisitor implements Visitor {
 
             case NOT:
                 //Per poter utilizzare il not logico, è necessario che l'operando sia di tipo bool.
-
                 //Se l'operando NON è di tipo bool, lancia eccezione
                 //È implicito il controllo su null
                 if(!type.equals(ResultTypeOp.BOOL)) {
@@ -542,13 +568,12 @@ public class TypeCheckingVisitor implements Visitor {
                 return type;
         }
         //caso generale, non dovrebbe mai accadere.
-        throw new Exception("Errore Semantico");
+        throw new Exception("Errore Semantico in operatore unario");
     }
 
 
     private Object optype2(Operator op, Expr first, Expr second) throws Exception {
 
-        ArrayList<ResultTypeOp> resultTypeOp; //tipi di ritorno di CallProcOp
         String type1, type2;
 
         //Si ricavano i tipi degli operandi
@@ -573,21 +598,21 @@ public class TypeCheckingVisitor implements Visitor {
                 //Per poter effettuare un'operazione aritmetica è necessario che i due operandi
                 //siano integer o float
 
-                //Se il primo operando NON è di tipo integer o un float, lancia eccezione
+                //Se il primo operando NON è di tipo integer o float, si lancia un'eccezione
                 //È implicito il controllo su null
                 if (!(type1.equals(ResultTypeOp.INT) || type1.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
                 //Il primo operando è del tipo corretto, si passa a verificare il secondo.
-                //Se il secondo operando NON è di tipo integer o un float, lancia eccezione
+                //Se il secondo operando NON è di tipo integer o float, si lancia un'eccezione
                 //È implicito il controllo su null
                 if (!(type2.equals(ResultTypeOp.INT) || type2.equals(ResultTypeOp.FLOAT))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
                 }
 
                 //Prima di procedere oltre, è necessario effettuare una verifica solo per l'operando DIV
-                //per escludere che si stia tentando una divisione per zero (costante).
+                //per escludere che si stia tentando una divisione intera per zero (costante, e.g. 100/0).
                 if (op == Operator.DIV) {
                     if ((type1.equals(ResultTypeOp.INT)) && (type2.equals(ResultTypeOp.INT))) {
                         //se second non è una variabile (il cui valore è noto solo a runtime) allora, verifichiamo
@@ -604,28 +629,27 @@ public class TypeCheckingVisitor implements Visitor {
 
                 //Ora è possibile procedere per tutte le altre operazioni.
                 //A questo punto i due operandi sono del tipo corretto e quindi è necessario solo verificare
-                //se abbiano lo stesso tipo oppure no
+                //se abbiano lo stesso tipo o meno
                 if (type1.equals(type2)) {
-                    return type1; //si restituisce il primo in quanto uno vale l'altro in quanto uguali
+                    return type1; //si restituisce il primo in quanto uguali
                 }
 
                 //nel caso in cui i tipi del primo e del secondo operando sono diversi,
-                // vale quello "più grande", ossia float
+                //vale quello "più grande", ossia float
                 return ResultTypeOp.FLOAT;
 
             //operazioni logiche
             case AND, OR:
 
                 //Per poter effettuare un'operazione logica è necessario che i due operandi siano di tipo bool
-
-                //Se il primo operando NON è di tipo bool, lancia eccezione
+                //Se il primo operando NON è di tipo bool, si lancia un'eccezione
                 //È implicito il controllo su null
                 if(!type1.equals(ResultTypeOp.BOOL)){
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
                 //Il primo operando è del tipo corretto, si passa a verificare il secondo.
-                //Se il secondo operando NON è di tipo bool, lancia eccezione.
+                //Se il secondo operando NON è di tipo bool, si lancia un'eccezione
                 //È implicito il controllo su null
                 if(!type2.equals(ResultTypeOp.BOOL)){
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
@@ -637,14 +661,14 @@ public class TypeCheckingVisitor implements Visitor {
 
                 //Per poter effettuare una comparazione, è necessario che i due operandi siano di tipo integer, float
                 //oppure string.
-                //Se il primo operando NON è di tipo integer, float o string, lancia eccezione
+                //Se il primo operando NON è di tipo integer, float o string, si lancia un'eccezione
                 //È implicito il controllo su null
                 if (!(type1.equals(ResultTypeOp.INT) || type1.equals(ResultTypeOp.FLOAT) || type1.equals(ResultTypeOp.STRING))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + first);
                 }
 
                 //A questo punto il primo operando è del tipo corretto, si passa a verificare il secondo.
-                //Se il secondo operando NON è di tipo integer, float o string, lancia eccezione
+                //Se il secondo operando NON è di tipo integer, float o string, si lancia un'eccezione
                 //È implicito il controllo su null
                 if (!(type2.equals(ResultTypeOp.INT) || type2.equals(ResultTypeOp.FLOAT) || type1.equals(ResultTypeOp.STRING))) {
                     throw new Exception("Errore Semantico: tipo non valido per l'operando " + second);
@@ -657,13 +681,13 @@ public class TypeCheckingVisitor implements Visitor {
                     if (type2.equals(ResultTypeOp.STRING)) {
                         return ResultTypeOp.BOOL;
                     }
-                    //altrimenti lancia eccezione
+                    //altrimenti si lancia un'eccezione
                     throw new Exception("Errore Semantico: Type Mismatch in operazione binaria");
                 }
 
                 //Se il primo operando non è di tipo string, allora effettuiamo il controllo sul secondo
                 if (type2.equals(ResultTypeOp.STRING)) {
-                    //in questo lancia eccezione in questo non sono entrambi string
+                    //in questo caso si lancia un'eccezione in quanto non sono entrambi string
                     throw new Exception("Errore Semantico: Type Mismatch in operazione binaria");
                 }
 
@@ -672,7 +696,7 @@ public class TypeCheckingVisitor implements Visitor {
 
         }//end switch
         //caso generale, non dovrebbe mai accadere.
-        throw new Exception("Errore Semantico");
+        throw new Exception("Errore Semantico in operazione binaria");
     }
 
     private String getCpReturnType(CallProcOp p) throws Exception {
@@ -681,30 +705,16 @@ public class TypeCheckingVisitor implements Visitor {
         ResultTypeOp rt;
         //si può effettuare la somma solo se la procedura ha un unico tipo di ritorno
         if(resultTypeOp.size() != 1){
-            throw new Exception("Errore Semantico: la procedura restituisce più tipi di ritorno");
+            throw new Exception("Errore Semantico: la procedura "+p.getId().getIdEntry()+" restituisce più tipi di ritorno");
         }
         rt = resultTypeOp.get(0);
 
-        if(rt.equals(ResultTypeOp.INT)){
-            return ResultTypeOp.INT;
-        }
-
-        if(rt.equals(ResultTypeOp.FLOAT)){
-            return ResultTypeOp.FLOAT;
-        }
-
-        if(rt.equals(ResultTypeOp.STRING)){
-            return ResultTypeOp.STRING;
-        }
-
-        if(rt.equals(ResultTypeOp.BOOL)){
-            return ResultTypeOp.BOOL;
-        }
-
+        //Non è possibile effettuare operazioni in cui uno degli operandi è void
         if(rt.equals(ResultTypeOp.VOID)){
-            return ResultTypeOp.VOID;
+            throw new Exception("Errore Semantico: non è possibile effettuare un'operazione con operando void");
         }
 
-        throw new Exception("Errore Semantico: il tipo di ritorno della procedura non è valido");
+        //In tutti gli altri casi viene semplicemente restituito il valore di ritorno della procedura
+        return rt.getValue();
     }
 }

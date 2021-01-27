@@ -5,7 +5,7 @@ import tree_nodes.*;
 
 import java.util.ArrayList;
 
-public class TreeVisitor implements Visitor {
+public class XmlVisitor implements Visitor {
 
     public Object visit(ProgramOp v) throws Exception {
         Element programOp = new Element(Components.PROGRAM_OP);

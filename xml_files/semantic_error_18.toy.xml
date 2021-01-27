@@ -16,49 +16,40 @@
               <IdList>
                 <id>a</id>
                 <id>b</id>
+                <id>c</id>
               </IdList>
             </IdListInitOp>
           </VarDeclOp>
         </VarDeclList>
         <StatList>
-          <CallProcOp>
-            <id>prova</id>
+          <MultipleAssignOp>
+            <IdList>
+              <id>c</id>
+            </IdList>
             <ExprList>
-              <id>a</id>
-              <id>b</id>
+              <PlusOp>
+                <IntConst>1</IntConst>
+                <CallProcOp>
+                  <id>prova</id>
+                  <ExprList>null</ExprList>
+                </CallProcOp>
+              </PlusOp>
             </ExprList>
-          </CallProcOp>
+          </MultipleAssignOp>
         </StatList>
         <ReturnExprs>null</ReturnExprs>
       </ProcBodyOp>
     </ProcOp>
     <ProcOp>
       <id>prova</id>
-      <ParamDeclList>
-        <ParamDeclOp>
-          <TypeOp>int</TypeOp>
-          <IdList>
-            <id>x</id>
-          </IdList>
-        </ParamDeclOp>
-        <ParamDeclOp>
-          <TypeOp>float</TypeOp>
-          <IdList>
-            <id>y</id>
-          </IdList>
-        </ParamDeclOp>
-      </ParamDeclList>
+      <ParamDeclList>null</ParamDeclList>
       <ResultTypeList>
-        <ResultTypeOp>int</ResultTypeOp>
+        <ResultTypeOp>void</ResultTypeOp>
       </ResultTypeList>
       <ProcBodyOp>
         <VarDeclList>null</VarDeclList>
         <StatList>null</StatList>
-        <ReturnExprs>
-          <ExprList>
-            <IntConst>1</IntConst>
-          </ExprList>
-        </ReturnExprs>
+        <ReturnExprs>null</ReturnExprs>
       </ProcBodyOp>
     </ProcOp>
   </ProcOpList>

@@ -25,12 +25,14 @@ public class Compiler {
         p.parse();
 
         //Chiamata al visitor per la costruzione dell'albero
-        TreeVisitor treeVisitor = new TreeVisitor();
+        XmlVisitor treeVisitor = new XmlVisitor();
         Element root = (Element) p.root.accept(treeVisitor);
         Document doc = new Document();
         doc.setRootElement(root);
 
+        //Generazione del file xml
         XMLOutputter xmlOut = new XMLOutputter();
+        //Usando getPrettyFormat non vengono inseriti i caratteri di escape all'interno del file xml (e.g. \n)
         xmlOut.setFormat(Format.getPrettyFormat());
         String xml = xmlOut.outputString(doc);
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
