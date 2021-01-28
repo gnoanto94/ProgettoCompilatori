@@ -13,3 +13,4 @@ java -jar out/artifacts/ToyCompiler/ToyCompiler.jar test_files/$1 2>&1
 echo "" # stampo una riga vuota
 echo "Compilo il file "$name.c
 clang -pthread -lm -o compiler_output/$name generated_c_files/$name.c 2>&1
+echo ""

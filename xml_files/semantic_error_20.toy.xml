@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProgramOp>
+  <VarDeclList>null</VarDeclList>
+  <ProcOpList>
+    <ProcOp>
+      <id>main</id>
+      <ParamDeclList>null</ParamDeclList>
+      <ResultTypeList>
+        <ResultTypeOp>void</ResultTypeOp>
+      </ResultTypeList>
+      <ProcBodyOp>
+        <VarDeclList>null</VarDeclList>
+        <StatList>
+          <IfOp>
+            <GtOp>
+              <null />
+              <null />
+            </GtOp>
+            <StatList>
+              <WriteOp>
+                <ExprList>
+                  <StringConst>Hi</StringConst>
+                  <StringConst />
+                </ExprList>
+              </WriteOp>
+            </StatList>
+            <ElifList>null</ElifList>
+            <ElseOp>null</ElseOp>
+          </IfOp>
+        </StatList>
+        <ReturnExprs>null</ReturnExprs>
+      </ProcBodyOp>
+    </ProcOp>
+  </ProcOpList>
+</ProgramOp>

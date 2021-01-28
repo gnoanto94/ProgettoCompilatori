@@ -1,0 +1,7 @@
+/* Errore: l'operazione unaria NON accetta come operando un valore null */
+
+proc main()void:
+int i;
+i := -null;
+->
+corp;

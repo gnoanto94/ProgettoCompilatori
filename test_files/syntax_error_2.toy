@@ -1,6 +1,6 @@
 /*
  * viene mostrato l'errore sintattico
- * inerente la mancata condizione del while
+ * inerente la mancanza della condizione nel while
  */
 
 int i := 0;

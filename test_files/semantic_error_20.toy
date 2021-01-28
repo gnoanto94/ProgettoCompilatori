@@ -1,0 +1,8 @@
+/* Errore: impossibile eseguire operazione binaria con entrambi gli operandi null */
+
+proc main()void:
+if null > null then
+    write("Hi", "\n");
+fi;
+->
+corp;

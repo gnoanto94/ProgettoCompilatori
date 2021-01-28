@@ -1,0 +1,464 @@
+Exp: Compilazione Corretta
+Cancello i file precedenti
+
+Traduco il sorgente factorial.toy in C
+
+Compilo il file factorial.c
+Cancello i file precedenti
+
+Traduco il sorgente expressions.toy in C
+
+Compilo il file expressions.c
+Cancello i file precedenti
+
+Traduco il sorgente hanoi.toy in C
+
+Compilo il file hanoi.c
+Cancello i file precedenti
+
+Traduco il sorgente mat.toy in C
+
+Compilo il file mat.c
+Cancello i file precedenti
+
+Traduco il sorgente multAddDiff.toy in C
+
+Compilo il file multAddDiff.c
+Cancello i file precedenti
+
+Traduco il sorgente shoot.toy in C
+
+Compilo il file shoot.c
+Cancello i file precedenti
+
+Traduco il sorgente temperatures.toy in C
+
+Compilo il file temperatures.c
+***************************************************************************************
+Exp: Commento non chiuso
+Cancello i file precedenti
+
+Traduco il sorgente lexical_error_1.toy in C
+Exception in thread "main" java.io.IOException: Commento non chiuso
+	at syntaxanalysis.Lexer.next_token(Lexer.java:739)
+	at syntaxanalysis.parser.scan(parser.java:401)
+	at java_cup.runtime.lr_parser.parse(lr_parser.java:664)
+	at compiler.Compiler.main(Compiler.java:25)
+
+Compilo il file lexical_error_1.c
+clang: error: no such file or directory: 'generated_c_files/lexical_error_1.c'
+Exp: Stringa costante non chiusa
+Cancello i file precedenti
+
+Traduco il sorgente lexical_error_2.toy in C
+Exception in thread "main" java.io.IOException: Stringa costante non completata
+	at syntaxanalysis.Lexer.next_token(Lexer.java:735)
+	at syntaxanalysis.parser.scan(parser.java:401)
+	at java_cup.runtime.lr_parser.parse(lr_parser.java:693)
+	at compiler.Compiler.main(Compiler.java:25)
+
+Compilo il file lexical_error_2.c
+clang: error: no such file or directory: 'generated_c_files/lexical_error_2.c'
+Exp: Mancata chiusura di uno statement if
+Cancello i file precedenti
+
+Traduco il sorgente syntax_error_1.toy in C
+Syntax error
+instead expected token classes are []
+Couldn't repair and continue parse
+Exception in thread "main" java.lang.Exception: Can't recover from previous error(s)
+	at java_cup.runtime.lr_parser.report_fatal_error(lr_parser.java:392)
+	at java_cup.runtime.lr_parser.unrecovered_syntax_error(lr_parser.java:539)
+	at java_cup.runtime.lr_parser.parse(lr_parser.java:731)
+	at compiler.Compiler.main(Compiler.java:25)
+
+Compilo il file syntax_error_1.c
+clang: error: no such file or directory: 'generated_c_files/syntax_error_1.c'
+Exp: Condizione del while mancante
+Cancello i file precedenti
+
+Traduco il sorgente syntax_error_2.toy in C
+Syntax error
+instead expected token classes are [WHILE, READ, WRITE, RETURN, ID]
+Couldn't repair and continue parse
+Exception in thread "main" java.lang.Exception: Can't recover from previous error(s)
+	at java_cup.runtime.lr_parser.report_fatal_error(lr_parser.java:392)
+	at java_cup.runtime.lr_parser.unrecovered_syntax_error(lr_parser.java:539)
+	at java_cup.runtime.lr_parser.parse(lr_parser.java:731)
+	at compiler.Compiler.main(Compiler.java:25)
+
+Compilo il file syntax_error_2.c
+clang: error: no such file or directory: 'generated_c_files/syntax_error_2.c'
+Exp: utilizzo di procedure non dichiarate all'interno del codice
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_1.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: Procedura factorial non definita
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:559)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_1.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_1.c'
+Exp: utilizzo di variabili non dichiarate all'interno del codice
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_2.toy in C
+Exception in thread "main" java.lang.Exception: Errore - Utilizzo di variabile non dichiarata
+	at syntaxanalysis.parser$CUP$parser$actions.CUP$parser$do_action_part00000000(parser.java:1635)
+	at syntaxanalysis.parser$CUP$parser$actions.CUP$parser$do_action(parser.java:1673)
+	at syntaxanalysis.parser.do_action(parser.java:382)
+	at java_cup.runtime.lr_parser.parse(lr_parser.java:699)
+	at compiler.Compiler.main(Compiler.java:25)
+
+Compilo il file semantic_error_2.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_2.c'
+Exp: type mismatch in un'assegnazione
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_3.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: Type Mismatch in assegnazione
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:140)
+	at tree_nodes.SimpleAssignOp.accept(SimpleAssignOp.java:31)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:428)
+	at tree_nodes.IdListInitOp.accept(IdListInitOp.java:28)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:584)
+	at tree_nodes.VarDeclOp.accept(VarDeclOp.java:32)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:544)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_3.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_3.c'
+Exp: numero di argomenti in un'assegnazione multipla
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_4.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: il numero di argomenti nell'assegnazione multipla non coincide
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:339)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_4.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_4.c'
+Exp: type mismatch in un'assegnazione multipla
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_5.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: type mismatch in assegnazione multipla
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:351)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_5.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_5.c'
+Exp: condizione (non booleana) all'interno dell'if
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_6.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: la condizione dell'if deve essere un'espressione booleana 
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:170)
+	at tree_nodes.IfOp.accept(IfOp.java:54)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_6.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_6.c'
+Exp: condizione (non booleana) all'interno dell'elif
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_7.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: la condizione dell'elif deve essere un'espressione booleana 
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:204)
+	at tree_nodes.ElifOp.accept(ElifOp.java:34)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:181)
+	at tree_nodes.IfOp.accept(IfOp.java:54)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_7.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_7.c'
+Exp: utilizzo di variabili non dichiarate all'interno di una readln
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_8.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: variabile b non dichiarata in readln
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:270)
+	at tree_nodes.ReadOp.accept(ReadOp.java:24)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:175)
+	at tree_nodes.IfOp.accept(IfOp.java:54)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_8.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_8.c'
+Exp: utilizzo di procedure con valore di ritorno void all'interno di una write
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_9.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: write non accetta valore void
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:298)
+	at tree_nodes.WriteOp.accept(WriteOp.java:24)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:175)
+	at tree_nodes.IfOp.accept(IfOp.java:54)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_9.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_9.c'
+Exp: numero di argomenti dopo il return diverso da quello definiti nella firma della procedura stessa
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_10.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: I valori restituiti dalla procedura non sono in numero eguale a quelli definiti nella firma della procedura nome
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:483)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_10.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_10.c'
+Exp: definizione di una procedura in cui i tipi di ritorno restituiti non corrispondono a quelli nella firma
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_11.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: Type Mismatch nella procedura nome - i tipi di ritorno non coincidono con quelli della firma
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:502)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_11.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_11.c'
+Exp: procedura in cui i tipi di ritorno sono stati definiti, ma non viene indicato il valore di ritorno alla fine del corpo procedura
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_12.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: valore di ritorno mancante per la procedura nome
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:508)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_12.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_12.c'
+Exp: definizione di due procedure main
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_13.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: la procedura main deve essere unica
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:470)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_13.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_13.c'
+Exp: utilizzo di tipi non validi all'interno di operatori logici.
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_14.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: tipo non valido per l'operando IdLeaf{idEntry='a'}
+	at semanticanalysis.TypeCheckingVisitor.optype2(TypeCheckingVisitor.java:710)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:95)
+	at tree_nodes.OrOp.accept(OrOp.java:32)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:333)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_14.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_14.c'
+Exp: divisione di un intero per 0 all'interno del programma.
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_15.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: Divisione intera per zero sconosciuta.
+	at semanticanalysis.TypeCheckingVisitor.optype2(TypeCheckingVisitor.java:686)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:85)
+	at tree_nodes.DivOp.accept(DivOp.java:31)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:333)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_15.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_15.c'
+Exp: il numero di parametri formali e attuali non coincide
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_16.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: il numero di parametri passato alla proceduraprovanon coincide con con quello della firma.
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:405)
+	at tree_nodes.CallProcOp.accept(CallProcOp.java:34)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_16.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_16.c'
+Exp: i parametri attuali non hanno lo stesso tipo di quelli formali
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_17.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: i tipi dei parametri attuali non coincidono con quelli dei parametri formali nella procedura prova
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:413)
+	at tree_nodes.CallProcOp.accept(CallProcOp.java:34)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_17.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_17.c'
+Exp: non è possibile effettuare un'operazione con operando void
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_18.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: non è possibile effettuare un'operazione con operando void
+	at semanticanalysis.TypeCheckingVisitor.getCpReturnType(TypeCheckingVisitor.java:781)
+	at semanticanalysis.TypeCheckingVisitor.optype2(TypeCheckingVisitor.java:647)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:65)
+	at tree_nodes.PlusOp.accept(PlusOp.java:32)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:333)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_18.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_18.c'
+Exp: write non accetta valori null
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_19.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: write non accetta valori null
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:305)
+	at tree_nodes.WriteOp.accept(WriteOp.java:24)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_19.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_19.c'
+Exp: impossibile eseguire operazione binaria con entrambi gli operandi null
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_20.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: impossibile eseguire operazione binaria con entrambi gli operandi null
+	at semanticanalysis.TypeCheckingVisitor.optype2(TypeCheckingVisitor.java:653)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:115)
+	at tree_nodes.GtOp.accept(GtOp.java:32)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:163)
+	at tree_nodes.IfOp.accept(IfOp.java:54)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_20.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_20.c'
+Exp: tipo non valido per l'operando (null)
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_21.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: tipo non valido per l'operando NullLeaf{value=null}
+	at semanticanalysis.TypeCheckingVisitor.optype2(TypeCheckingVisitor.java:673)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:65)
+	at tree_nodes.PlusOp.accept(PlusOp.java:32)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:333)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_21.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_21.c'
+Exp: l'operazione unaria NON accetta come operando un valore null
+Cancello i file precedenti
+
+Traduco il sorgente semantic_error_22.toy in C
+Exception in thread "main" java.lang.Exception: Errore Semantico: l'operazione unaria NON accetta come operando un valore null
+	at semanticanalysis.TypeCheckingVisitor.optype1(TypeCheckingVisitor.java:601)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:75)
+	at tree_nodes.UMinusOp.accept(UMinusOp.java:21)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:333)
+	at tree_nodes.MultipleAssignOp.accept(MultipleAssignOp.java:37)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:529)
+	at tree_nodes.ProcOpBody.accept(ProcOpBody.java:44)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:512)
+	at tree_nodes.ProcOp.accept(ProcOp.java:68)
+	at semanticanalysis.TypeCheckingVisitor.visit(TypeCheckingVisitor.java:549)
+	at tree_nodes.ProgramOp.accept(ProgramOp.java:34)
+	at compiler.Compiler.main(Compiler.java:63)
+
+Compilo il file semantic_error_22.c
+clang: error: no such file or directory: 'generated_c_files/semantic_error_22.c'

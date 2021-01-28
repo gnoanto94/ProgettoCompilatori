@@ -1,0 +1,7 @@
+/* Errore: tipo non valido per l'operando (null) */
+
+proc main()void:
+int i;
+i := 10 + null;
+->
+corp;

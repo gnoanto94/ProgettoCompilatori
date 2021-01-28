@@ -1,0 +1,6 @@
+/* Errore: write non accetta valori null */
+
+proc main()void:
+write(null);
+->
+corp;

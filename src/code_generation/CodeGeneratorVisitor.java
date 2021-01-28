@@ -327,6 +327,7 @@ public class CodeGeneratorVisitor implements Visitor {
             str += getPlaceHolders(type);
             vars += "&" + id.getIdEntry()+",";
         }
+        //si rimuove l'ultima virgola perché altrimenti il codice è sbagliato
         vars = vars.substring(0,vars.lastIndexOf(","));
         return "scanf(\""+str+"\","+vars+");\n";
     }
@@ -343,24 +344,28 @@ public class CodeGeneratorVisitor implements Visitor {
 
                 SymbolTable.VarRow row = (SymbolTable.VarRow) ((IdLeaf) e).getTableEntry();
                 String type = row.getVarType().getValue();
-
+                //Si aggiunge in text il placeholder corretto per la stringa
                 text += getPlaceHolders(type);
             } else if(e instanceof CallProcOp){
                     String[] info = (String[])((CallProcOp) e).accept(this);
+                    //Si aggiungono in text i placeholders corretti per i tipi di ritorno della procedura
                     text += info[0];
                     vars += info[1] + ",";
             } else {
                 //Nel caso in cui siano costanti
                 if(e instanceof StringConstLeaf){
                     String str = (String) ((Visitable) e).accept(this);
+                    //Si rimuovono i doppi apici dalla stringa costante perché ci si trova già all'interno di una stringa
                     text += str.replace("\"", "");
                 } else {
                     text += ((Visitable) e).accept(this);
                 }
             }
         }
-        if(!vars.equals("")) {
+        if(!vars.equals("")) {//se vars non è vuota
+            //si rimuove l'ultima virgola
             vars = vars.substring(0, vars.lastIndexOf(","));
+            //Si aggiunge la virgola per separare i parametri della printf
             vars = ", " + vars;
         }
         return "printf(\"" + text + "\"" + vars + ");\n";
@@ -397,23 +402,31 @@ public class CodeGeneratorVisitor implements Visitor {
         for(Expr e: exprList){
             if(e instanceof CallProcOp){
                 String[] info = (String[]) ((CallProcOp) e).accept(this);
+                //in info[0] ci sono i placeholders, in info[1] ci sono le variabili
+                //ad es. info[1] = "prova(a, b), prova_1, prova_2"
+                //Si recupera l'indice della parentesi chiusa poiché non è possibile effettuare
+                //direttamente lo split sulle virgole perché presenti anche tra gli argomenti della chiamata a
+                //procedura
                 int parIndex = info[1].indexOf(")");
                 String[] proc = new String[2];
-                proc[0] = info[1].substring(0, parIndex);
-                proc[1] = info[1].substring(parIndex+1);
-                //proc[0] = prova(parametro1, parametro2
-                proc[0] += ")";
-                String[] info2 = proc[1].split(",");
+                //proc[0] = prova(parametro_1, ..., paramentro_n
+                //Si aggiunge la parentesi di chiusura
+                proc[0] = info[1].substring(0, parIndex) + ")";
                 values.add(proc[0]);
+                //proc[1] = variabili globali che rappresentano i ritorni multipli (successivi al primo) di una procedura
+                proc[1] = info[1].substring(parIndex+1);
+                //Si acquisiscono le singole variabili effettuando uno split della stringa in proc[1] sulla virgola.
+                String[] globalVars = proc[1].split(",");
 
-               for(int i = 0; i < info2.length; i++){
-                   values.add(info2[i]);
+               for(int i = 0; i < globalVars.length; i++){
+                   values.add(globalVars[i]);
                }
-            } else {
+            } else { //in tutti gli altri casi
                 values.add((String) ((Visitable) e).accept(this));
             }
         }
 
+        //Si effettua l'assegnazione
         for(int i = 0; i < idList.size(); i++){
             str += idList.get(i).getIdEntry() + " = " + values.get(i)+";\n";
         }
@@ -429,10 +442,6 @@ public class CodeGeneratorVisitor implements Visitor {
         for(ResultTypeOp t: p_row.getReturnTypes()){
             types.add(t.getValue());
         }
-
-//        for(String s: types){
-//            text += getPlaceHolders(s);
-//        }
 
         String proc_name = c.getId().getIdEntry();
         ArrayList<Expr> actualParam = c.getExprList();
@@ -454,12 +463,17 @@ public class CodeGeneratorVisitor implements Visitor {
             text += getPlaceHolders(types.get(0));
         } else { //la procedura ha più tipi di ritorno
             text += getPlaceHolders(types.get(0));
+            //il for parte da indice 1 in quanto i tipi di ritorno di una procedura, successivi al primo,
+            //vengono memorizzati in variabili globali il cui nome è nella seguente forma: nomeProcedura_indice
+            //e l'indice parte da 1.
             for(int i = 1; i<types.size(); i++){
                 text += getPlaceHolders(types.get(i));
                 vars += proc_name + "_" + i + ", ";
             }
+            //Si rimuove l'ultima virgola
             vars = vars.substring(0,vars.lastIndexOf(","));
         }
+        //in text ci sono i placeholders e in vars i nomi delle variabili
         String[] result = {text, vars};
         return result;
     }
@@ -492,7 +506,7 @@ public class CodeGeneratorVisitor implements Visitor {
         for(IdLeaf id: idList){
             var += type + " " + id.accept(this) + ", ";
         }
-
+        //si rimuove l'ultima virgola
         var = var.substring(0, var.lastIndexOf(','));
 
         return var;
@@ -523,6 +537,7 @@ public class CodeGeneratorVisitor implements Visitor {
         str += results.get(0) + " " + currentProcName+"(";
 
         for(int i = 1; i < results.size(); i++){
+            //In multipleReturnVars sono presenti le variabili globali usate per i ritorni multipli delle procedure
             multipleReturnVars += results.get(i)+" "+currentProcName+"_"+i+";\n";
         }
 
@@ -531,6 +546,7 @@ public class CodeGeneratorVisitor implements Visitor {
                 str += param.accept(this);
             }
         }
+        //In procedurePrototypes sono presenti i prototipi delle funzioni
         procedurePrototypes += str+");\n";
         str += "){ \n" + p.getProcBody().accept(this)+"\n}\n";
 
@@ -552,6 +568,9 @@ public class CodeGeneratorVisitor implements Visitor {
 
         if(p.getStatList() != null) {
             for (StatOp s : p.getStatList()) {
+                //Viene chiamato il metodo getCodeForStmt(s) perché è necessario distinguere
+                //il caso in cui uno Statement è una chiamata a procedura dagli altri casi.
+                //Ciò è stato fatto per la gestione dei multipli valori di ritorno.
                 str += getCodeForStmt(s);
             }
         }
@@ -559,15 +578,15 @@ public class CodeGeneratorVisitor implements Visitor {
         if(currentProcName.equals("main")) {
             ret = "return 0;";
         }else{
+            //Le procedure con tipo di ritorno void hanno le ReturnExprs a null
             if (p.getReturnExprs() != null) {
                 ArrayList<String> exprs = (ArrayList<String>) p.getReturnExprs().accept(this);
-                int counter = 1;
                 for (int i = 0; i < exprs.size(); i++) {
-                    if (i == 0) {
+                    if (i == 0) {//return della procedura (o primo valore di ritorno)
                         ret = "return " + exprs.get(i)+";";
                     } else {
-                        str += currentProcName +"_"+ counter + " = " + exprs.get(i) + ";\n";//assegnazione variabili
-                        counter++;
+                        //Assegnazione dei valori di ritorno successivi al primo alle variabili globali
+                        str += currentProcName +"_"+ i + " = " + exprs.get(i) + ";\n";//assegnazione variabili
                     }
                 }
             }
@@ -607,10 +626,11 @@ public class CodeGeneratorVisitor implements Visitor {
            str += pr.accept(this);
         }
 
-        ps.println(multipleReturnVars);
+        ps.println(multipleReturnVars); //variabili globali per i valori di ritorno multipli delle procedure
+        //prototipi delle funzioni (siccome viene aggiunto anche il prototipo del main, lo si cancella).
         procedurePrototypes = procedurePrototypes.replace("int main();","");
-        ps.println(procedurePrototypes);
-        ps.println(str);
+        ps.println(procedurePrototypes); //prototipi corretti
+        ps.println(str); //procedure
         return null;
     }
 
@@ -638,9 +658,13 @@ public class CodeGeneratorVisitor implements Visitor {
     }
 
     private String getCodeForStmt(StatOp s) throws Exception{
-
+        //Questo metodo serve a distinguere il caso in cui uno statement è
+        //una chiamata a procedura da tutti gli altri statement
+        //in quanto il visit di CallProcOp non restituisce una Stringa ma un array {placeholders, variabili}
         String str = "";
         if(s instanceof CallProcOp){
+            //Si recuperano solo le variabili, ossia le informazioni presenti all'indice 1 dell'array restituito
+            //dal visit di CallProcOp
             str += ((String[]) s.accept(this))[1] + "; \n";
         } else {
             str += s.accept(this);
