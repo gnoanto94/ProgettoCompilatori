@@ -61,3 +61,5 @@ echo "Exp: tipo non valido per l'operando (null)"
 ./Toy2C.sh semantic_error_21.toy
 echo "Exp: l'operazione unaria NON accetta come operando un valore null"
 ./Toy2C.sh semantic_error_22.toy
+echo "Exp: Procedura già dichiarata"
+./Toy2C.sh semantic_error_23.toy

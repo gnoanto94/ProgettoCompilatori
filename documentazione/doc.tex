@@ -46,50 +46,56 @@
 	\section{Scelte progettuali}
 	\subsection{Analizzatore Lessicale - JFlex}
 	
-	
 	Per gestire gli errori "Commento non chiuso" e "Stringa costante non completata", sono stati utilizzati gli stati in JFlex:
-	\state{COMMENT} e \state{COMMENT2} per i commenti, \state{STRING} per le stringhe costanti per rendere più agevole la rilevazione degli errori.\newline
+	\state{COMMENT} e \state{COMMENT2} per i commenti, \state{STRING} per le stringhe costanti per rendere più agevole 
+	la rilevazione degli errori.\newline
 
 	Il procedimento per i commenti è il seguente:
 	\begin{itemize}
-    	\item Si accede allo stato \state{COMMENT} all'inizio di un commento (/*).
-        \item Se nello stato \state{COMMENT} si legge un asterisco (*) si passa nello stato \state{COMMENT2} poichè potrebbe corrispondere all'asterisco
-		 		che precede il simbolo di fine commento
-		\item Se in \state{COMMENT2} si legge il simbolo di fine commento (/) si ritorna nello stato iniziale \state{YYINITIAL}. In tutti gli altri casi si torna in \state{COMMENT}
-		\item Se si raggiunge la fine del file (\state{EOF}) mentre ci si trova in \state{COMMENT} o \state{COMMENT2} viene generato l'errore "Commento non chiuso"
+    	\item Si accede allo stato \state{COMMENT} all'inizio di un commento (\term{/*}).
+        \item Se nello stato \state{COMMENT} si legge un asterisco (\term{*}) si passa nello stato \state{COMMENT2} poiché 
+        potrebbe corrispondere all'asterisco che precede il simbolo di fine commento.
+		\item Se in \state{COMMENT2} si legge il simbolo di fine commento (\term{/}) si ritorna nello stato iniziale \state{YYINITIAL}. 
+			  In tutti gli altri casi si torna in \state{COMMENT}.
+		\item Se si raggiunge la fine del file (\state{EOF}) mentre ci si trova in \state{COMMENT} o \state{COMMENT2} viene generato 
+			  l'errore "Commento non chiuso".
 	\end{itemize}
 
 	Il procedimento per le stringhe è il seguente:
 	\begin{itemize}
-	\item Si accede allo stato \state{STRING} quando si leggono i doppi apici (")
-	\item All'interno dello stato, tutto i caratteri letti vengono aggiunti in una variabile di tipo StringBuffer che rappresenta la stringa costante in questione
+	\item Si accede allo stato \state{STRING} quando si leggono i doppi apici (\term{"})
+	\item All'interno dello stato, tutto i caratteri letti vengono aggiunti in una variabile di tipo \texttt{StringBuffer} 
+		  che rappresenta la stringa costante in questione.
 	\item Sono stati gestiti in maniera specifica tutti i caratteri di escape (e.g. \verb!\n!, \verb!\t!, \verb!\r!) in modo da
-            inserirli letteralmente nella variabile precedentemente menzionata
-	\item A causa della naturale presenza dei caratteri di escape nel sorgente analizzato, si sono dovuti distinguere i caratteri di escape espliciti, inseriti in una stringa costante,  				da quelli impliciti nel sorgente i quali dovranno essere ignorati
+          inserirli letteralmente nella variabile precedentemente menzionata.
+	\item A causa della naturale presenza dei caratteri di escape nel sorgente analizzato, si sono dovuti distinguere i caratteri 
+		  di escape espliciti, inseriti in una stringa costante, da quelli impliciti nel sorgente i quali dovranno essere ignorati.
 	\end{itemize}
 
-   Nelle precedenti esercitazioni (es3 e es4) si era deciso di non permettere che i numeri in virgola mobile potessero avere solo zeri dopo la virgola (e.g. 34.0).
+   Nelle precedenti esercitazioni (es.3 e es.4) si era deciso di \textbf{non permettere} che i numeri in virgola mobile potessero 
+   avere zeri come ultima cifra decimale dopo la virgola (e.g. $34.0$).
 
-   In un secondo momento ci si è accorti che, in molti linguaggi di programmazione, quali il C, è possibile utilizzare numeri nella precedente forma in maniera tale da 
-   usare una rappresentazione in virgola mobile di un numero intero per evitare troncamenti nelle operazioni.
+   In un secondo momento ci si è accorti che, in molti linguaggi di programmazione, quali il C, è possibile utilizzare 
+   numeri nella precedente forma in maniera tale da usare una rappresentazione in virgola mobile di un numero intero 
+   per evitare troncamenti nelle operazioni aritmetiche.
    Di conseguenza, l'espressione regolare per il riconoscimento dei numeri in virgola mobile è stata semplificata.
 
-	
-	\subsection{Analizzatore Sintattico - CUP}
+   \subsection{Analizzatore Sintattico - CUP}
 
 	\subsubsection{Grammatica Utilizzata}
 	La grammatica fornita nelle specifiche del linguaggio Toy è stata modificata accertandosi di non modificare il linguaggio generato.
-	Sono stati introdotti due \emph{nuovi} non-terminali, \textcolor{blue}{ProcBody} e \textcolor{blue}{ParIdList}
+	Sono stati introdotti due \emph{nuovi} non-terminali, \textcolor{blue}{\texttt{ProcBody}} e \textcolor{blue}{\texttt{ParIdList}}
 	in modo da semplificare le produzioni di Proc, in particolare:
 	
     \begin{itemize}
-	\item \textcolor{blue}{ProcBody} è stato aggiunto per semplificare lo sviluppo del parser tramite CUP
-	\item \textcolor{blue}{ParIdList} (le cui produzioni sono equivalenti a quelle di IdList) è stato aggiunto perché è stato deciso che gli elementi della tabella dei simboli
-            venissero creati dal parser. Conseguentemente, è necessario distinguere il tipo di lookup da effettuare nella tabella dei simboli nel caso dei parametri
-            di una procedura (lookup fatta solo nello scope corrente creato dalla procedura e non in tutti gli scope).
+	\item \textcolor{blue}{\texttt{ProcBody}} è stato aggiunto per semplificare lo sviluppo del parser tramite CUP;
+	\item \textcolor{blue}{\texttt{ParIdList}} (le cui produzioni sono equivalenti a quelle di \texttt{IdList}) è stato aggiunto perché si è  
+		  deciso che gli elementi della tabella dei simboli venissero creati dal parser. Conseguentemente, si è reso necessario distinguere 
+		  il tipo di lookup da effettuare nella tabella dei simboli nel caso dei parametri di una procedura. 
+		  Cioè, la lookup viene effettuata solo nello scope corrente creato dalla procedura e non in tutti gli scope.
 	\end{itemize}
 	La grammatica risultante è la seguente:\newline
-
+	
 	\begin{tabular}{rl}
     \production{Program}     & \nonterm{VarDeclList} \nonterm{ProcList} \\
 	\production{VarDeclList} & \nonterm{VarDecl} \nonterm{VarDeclList} \\
@@ -135,8 +141,8 @@
    \production{Elif}			 & \term{ELIF} \nonterm{Expr} \term{THEN} \nonterm{StatList} \\
    \production{Else}   			 & \term{ELSE} \nonterm{StatList} \\
    						|& \emptyprod \\
-   \production{WhileStat}             & \term{WHILE} \nonterm{StatList} \term{RETURN} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
-   						|& \term{WHILE} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
+   \production{WhileStat} & \term{WHILE} \nonterm{StatList} \term{RETURN} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
+   						 |& \term{WHILE} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} \\
   \production{ReadlnStat}           & \term{READ} \term{LPAR} \nonterm{IdList} \term{RPAR} \\
   \production{IdList}                    & \term{ID} \\
 					        |& \nonterm{IdList} \term{COMMA} \term{ID} \\
@@ -149,9 +155,12 @@
 	\production{ExprList}           & \nonterm{Expr} \\
 						 |& \nonterm{Expr} \term{COMMA} \nonterm{ExprList} \\
    \end{tabular}
-
+   	\vspace{1.5cm}
+	\begin{center}
+		\textit{continua nella pagina successiva \dots}
+	\end{center}
   \begin{tabular}{rl}
-   \production{Expr}                    & \term{NULL} \\
+   \production{Expr}    & \term{NULL} \\
 						|& \term{TRUE} \\
 						|& \term{FALSE} \\
 						|& \term{INT\_CONST} \\
@@ -176,112 +185,156 @@
     \end{tabular}
 
 	\subsubsection{Parser}
-	In fase di progettazione del compilatore, già a partire dall'analizzatore sintattico, si è deciso di gestire la gerarchia di tabelle dei simboli tramite uno stack.
-	Sarà quindi il parser a creare le singole tabelle e a collegarle tra di loro ogni volta che un costrutto del linguaggio definisce un nuovo scope.
-	Di conseguenza, nelle azioni semantiche delle produzioni dei non terminali che definiscono un nuovo scope, si è inserito il codice per la gestione
-	dello stack di tabelle.
+	In fase di progettazione del compilatore, già a partire dall'analizzatore sintattico, si è deciso di gestire la 
+	gerarchia di tabelle dei simboli tramite uno stack.
+	Sarà quindi il parser a creare le singole tabelle (e le loro righe) e a collegarle tra di loro ogni volta che effettua una riduzione
+	per i non terminali \nonterm{Program} e \nonterm{Proc}.
+	Di conseguenza, nelle loro azioni semantiche, si è inserito il codice per la gestione dello stack di tabelle.
 	
-	\subsubsection{Generazione Abstract Syntax Tree}
+	\subsubsection{Generazione dell'Abstract Syntax Tree}
 
  	Per la gestione delle componenti dell'albero sintattico, si è optato per l'utilizzo di una classe padre
-	\texttt{Node.java} contenente l'attributo nome in quanto comune a tutte le componenti.
-    Ogni classe rappresentante una componente diversa dell'albero, quindi, estende la classe \texttt{Node.java}.
+	\texttt{Node.java} contenente l'attributo nome comune a tutte le componenti, dunque,
+    ogni classe rappresentante una componente diversa dell'albero estende la classe \texttt{Node.java}.
 
 	Ragionamento analogo al punto precedente, è stato fatto per le classi che rappresentano gli Statement del
     linguaggio di programmazione Toy. In questo caso, la classe padre è \texttt{StatOp.java}.
 
-   Siccome ci sono alcune componenti dell'albero sintattico che sono comuni a più produzioni della grammatica,
-   si è scelto di avere, \nonterm{Expr} e \nonterm{IdListInit} come interfacce. Questo perché, ad esempio, \term{ID} (che corrisponde ad
-   una foglia dell'albero) può essere sia visto come \nonterm{Expr} sia come un elemento di \nonterm{IdListInit}.
+   Siccome alcune componenti dell'AST svolgono ruoli diversi a seconda della produzione della grammatica
+   dalla quale derivano, si è scelto di avere, \nonterm{Expr} e \nonterm{IdListInit} come interfacce.
+   Questo perché, ad esempio, \term{ID} (che corrisponde ad una foglia dell'albero) può essere sia visto come 
+   \nonterm{Expr} sia come un elemento di \nonterm{IdListInit}.
    Ciò è stato fatto per ottenere, ad esempio, una lista di \nonterm{Expr} i cui elementi sono eterogenei (e anche perché in
    Java non esiste l'ereditarietà multipla).
    Per applicare il pattern Visitor, si è utilizzata l'interfaccia \texttt{Visitor.java} che, per nostra scelta,
-   contiene le firme distinte dei vari metodi \texttt{visit()}, ognuno dei quali è specifico per una componente
-   dell'albero sintattico.
+   contiene un metodo \texttt{visit()} distinto per ogni componente dell'AST.
 
-   Una visualizzazione in XML dell'AST è stata ottenuta tramite un visitor (\texttt{XmlVisitor.java}) 
-   Per la generazione del file xml si è utilizzata la libreria jdom (v 2.0.6) inserita come external library
+   Una visualizzazione in XML dell'AST è stata ottenuta tramite il visitor (\texttt{XmlVisitor.java}) 
+   Per la generazione del file xml si è utilizzata la libreria jdom (v 2.0.6) inserita come external library.
 
 	\subsection{Analizzatore Semantico}
 	L'analisi semantica viene effettuata utilizzando due visite dell'AST:
 	\begin{itemize}
-		\item La prima serve ad aggiungere informazioni alla symbol table necessarie per il type checking. In particolare, vengono aggiunti:
+		\item La prima serve ad aggiungere informazioni necessarie per il type checking alla symbol table. In particolare, vengono aggiunti:
 			\begin{itemize}
 				\item I tipi delle variabili all'interno dello specifico scope;
 				\item I tipi di ritorno delle procedure (eventualmente multipli) nello scope del chiamante;
 				\item I tipi dei parametri delle procedure all'interno dello scope della procedura;
 			\end{itemize}
 
-		\item La seconda esegue il type checking, e altri controlli semantici, quali i seguenti:
+		\item La seconda esegue il type checking così come definito dalle regole di inferenza nella sezione~\ref{sec:InferenceRules},
+		      e altri controlli semantici, quali i seguenti:
 			\begin{itemize}
 				\item Controllo della dichiarazione di una singola procedura main;
-				\item Controllo del tipo di ritorno della procedura main (deve avere forma \texttt{proc main() void});
+				\item Controllo del tipo di ritorno della procedura main (che per scelta progettuale 
+					  deve avere la forma \texttt{proc main() void});
 				\item Controllo degli utilizzi di procedure non dichiarate all'interno del codice;
 				\item Controllo degli utilizzi di variabili non dichiarate all'interno del codice;
 				\item Controllo dei parametri della procedura write (non accetta valori null);
 			\end{itemize}
 	\end{itemize}
 	
-	Nota: A differenza di quanto indicato nelle specifiche, è stata utilizzata la forward reference (fref) per le procedure. Di conseguenza, non è strettamente necessario dichiarare ogni procedura prima del suo uso\newpage
+	Nota: A differenza di quanto indicato nelle specifiche, è stata utilizzata la \textit{forward reference} (fref) per le procedure. 
+	Di conseguenza, non è strettamente necessario dichiarare ogni procedura prima del suo uso.\newpage
 
 	\subsection{Generazione del codice intermedio}
 
 	\subsubsection{Gestione dei valori di ritorno multipli per una procedura}\label{cg:procMultipleRet}
 		In fase di progettazione del compilatore si è deciso di gestire i valori di ritorno multipli per una procedura nel seguente modo:
 			\begin{enumerate}
-				\item Il tipo di ritorno nella firma della funzione in C corrisponderà al primo valore di ritorno nella firma della procedura in Toy.
-                        Questa scelta è dovuta al fatto che il linguaggio C non permette l'utilizzo di valori di ritorno multipli per una funzione.
-				\item Per i valori di ritorno successivi al primo, vengono definite delle variabili globali
-						i cui nomi sono nella forma "procedureName\_number" dove number parte da 1.
+				\item Il tipo di ritorno nella firma della funzione in C corrisponderà al primo valore di ritorno nella firma 
+				      della procedura in Toy.
+                      Questa scelta è dovuta al fatto che il linguaggio C non permette l'utilizzo di valori di ritorno multipli 
+                      per una funzione.
+				\item Per i valori di ritorno successivi al primo, vengono definite $k$ variabili globali, con $k$ pari
+					  al numero di valori di ritorno totale meno uno.
+					  Tali variabili globali saranno identificate da \emph{procedureName}\_$i$ dove $i \, \in \, \{1, \dots, k\}$.
 				\item Si assegnano i valori di ritorno successivi al primo alle variabili definite al punto precedente.
 				\item Si aggiunge la clausola \texttt{return} seguita dal primo valore di ritorno della corrispondente procedura in Toy.
 			\end{enumerate}
 
 	\subsubsection{Gestione di assegnazioni multiple}
 
-		In fase di progettazione del compilatore si è deciso di gestire le assegnazioni multiple secondo il seguente procedimento:
+		In fase di progettazione del compilatore si è deciso di gestire le assegnazioni multiple secondo il procedimento
+		descritto di seguito.
+		
 		Si distinguono due possibili casi:
 
 		\begin{enumerate}
-			\item Nel lato destro dell'assegnazione multipla non sono presenti chiamate a procedure con valori di ritorno multipli
-			\item Nel lato destro dell'assegnazione multipla sono presenti chiamate a procedure con valori di ritorno multipli
+			\item Nel lato destro dell'assegnazione multipla non sono presenti chiamate a procedure con valori di ritorno multipli.
+			\item Nel lato destro dell'assegnazione multipla sono presenti chiamate a procedure con valori di ritorno multipli.
 		\end{enumerate}
 		
-		In entrambi i casi, l'assegnazione multipla in Toy è la seguente: $var_1, \dots, var_n\, := \, val_1, \dots, val_n;$ 			
+		In entrambi i casi, l'assegnazione multipla in Toy è la seguente: 
+		\[var_1, \dots, var_n\, := \, val_1, \dots, val_n;\] 			
 		Il codice C generato, è ottenuto rispettivamente come segue:
 		\begin{enumerate}
-			\item Nel primo caso, il codice generato, è $var_i = val_i; \, \forall i \in \{1, \dots, n\}$
+			\item Nel primo caso, il codice generato, è 
+			 	  \[var_i = val_i; \quad \forall i \in \{1, \dots, n\}\]
 					
 			\item	Nel secondo caso, in Toy, è possibile che i valori $val_i$ nella parte destra dell'assegnazione multipla siano in numero
-					minore rispetto a quelli della parte sinistra. Di conseguenza, all'intervallo $var_i \, \dots \, var_k$ corrisponde un solo valore $val_i$ corrispondente
-					ad una chiamata a procedura con $k$ valori di ritorno (denotata come \texttt{procName()}).
-					In questo caso, il codice generato è $var_i = procName(); var_j = procName\_j \, \forall j \in \{i+1, \dots, k\}$\newline
+					minore rispetto a quelli della parte sinistra. Di conseguenza, all'intervallo $var_i \, \dots \, var_k$ corrisponde 
+					un solo valore $val_i$ corrispondente ad una chiamata a procedura con $k$ valori di ritorno 
+					(denotata nel seguito come \texttt{procName()}).
+					In questo caso, il codice generato è 
+					\begin{align*}
+						var_i & = procName(); \\
+						var_j & = procName\_j; \quad \forall j \in \{i+1, \dots, k\} \\
+					\end{align*}
 					Il motivo di questo approccio è descritto nella sezione \ref{cg:procMultipleRet}
 		\end{enumerate}
 	
-	\subsubsection{Gestione della procedura main}
-	In fase di progettazione del compilatore, per la gestione della procedura main, si è deciso di permetterne una firma unica
-	poiché il linguaggio C, per la funzione main, non prevede valore di ritorno diverso da int.
-	In altri termini, la procedura main in Toy sarà sempre nella forma:\newline
-	\texttt{proc main() void} \, $vardecl_1 \, \dots \, vardecl_n; \, stat_1, \, \dots \, stat_n;$ \texttt{->corp;} \newline
-	Il corrispondente codice C generato per la funzione main (a causa della limitazione introdotta dal linguaggio) sarà sempre nella forma:\newline
-	\texttt{int main()}\{$stat_1, \, \dots, \, stat_n;$ \texttt{return 0;}\}
-	
-
+	\subsubsection{Gestione della procedura \texttt{main}}
+	In fase di progettazione del compilatore, per la gestione della procedura main, si è deciso di permettere un'unica firma 
+	poiché il linguaggio C, per la funzione \texttt{main}, non prevede valore di ritorno diverso da int.
+	In altri termini, la procedura \texttt{main} in Toy sarà sempre nella forma: 
+	\begin{align*}
+		& \text{\texttt{proc main() void}} \\
+		& vardecl_1 \\
+		& \vdots \\
+		& vardecl_n; \\
+		& stat_1; \\
+		& \vdots  \\
+		& stat_n; \\
+		& \text{\texttt{->}} \\
+		& \text{\texttt{corp;}}
+	\end{align*}
+	Il corrispondente codice C generato per la funzione main (a causa della limitazione introdotta dal linguaggio) sarà sempre nella forma:
+	\begin{align*}
+		& \text{\texttt{int main()}}\{ \\
+		& stat_1; \\
+		& \vdots  \\
+		& stat_n; \\
+		& \text{\texttt{return 0;}} \\
+		& \}
+	\end{align*}
+		
 	\subsubsection{Gestione del costrutto while}
 	Le specifiche sintattiche del linguaggio Toy prevedono le due seguenti produzioni per il costrutto while:
 	\begin{enumerate}
-		\item 	\texttt{while statlist1 return expr do statlist2 od} 
-		\item 	\texttt{while expr do statlist od}
+		\item  \term{WHILE} \nonterm{StatList$_1$} \term{RETURN} \nonterm{Expr} \term{DO} \nonterm{StatList$_2$} \term{OD} 
+   		\item  \term{WHILE} \nonterm{Expr} \term{DO} \nonterm{StatList} \term{OD} 
 	\end{enumerate}
 	In C, il costrutto while corrispondente sarà, rispettivamente:
 	\begin{enumerate}
-		\item 	\texttt{statlist1 while(expr)\{statlist2; statlist1;\}} 
-		\item 	\texttt{while(expr)\{statlist;\}}
+		\item 	
+			\begin{align*}
+				& \text{\texttt{StatList$_1$}} \\
+				& \text{\texttt{while(expr)\{}} \\
+				& \text{\texttt{StatList$_{2}$;}} \\
+				& \text{\texttt{StatList$_{1}$;}} \\
+				& \text{\texttt{\}}} \\
+			\end{align*}
+		\item 	
+		\begin{align*}
+				& \text{\texttt{while(expr)\{}} \\
+				& \text{\texttt{StatList;}} \\
+				& \text{\texttt{\}}} \\
+			\end{align*}
 	\end{enumerate}
 	
 	\newpage
-    \section{Regole di Type Checking implementate}
+    \section{Regole di Type Checking implementate}\label{sec:InferenceRules}
     \subsection{Tipi Primitivi}
     \[
         \Gamma \vdash null \colon null \qquad
@@ -371,10 +424,13 @@
     \]
     \subsubsection{return}
     \[
-    	\frac{(\$\mi{ret} \colon \tau) \in \Gamma \quad \Gamma \vdash \mi{e} \colon \tau}%
-	{\Gamma \vdash \resw{-\!\!>} \mi{e}}
+    	\frac{(\$\mi{ret}_{i}^{\, i \, \in \, 0 \, \dots \, n} \colon \tau_{i}^{\, i \, \in \, 0 \, \dots \, n}) \in %
+	\Gamma \quad \Gamma \vdash \mi{e}_{i}^{\, i \, \in \, 0 \, \dots \, n} \colon \tau_{i}^{\, i \, \in \, 0 \, \dots \, n}}%
+	{\Gamma \vdash \resw{-\!\!>} \mi{e}_{i}^{\, i \, \in \, 0 \, \dots \, n}}
     \]
-
+	$\$ret$ nell'environment $\Gamma$ rappresenta i tipi dei valori di ritorno nella firma della procedura e non è un identificatore
+	valido del linguaggio Toy e pertanto compare solo in queste regole di inferenza.
+	Per $i\, = \, 0$ si intende che il tipo di ritorno della procedura è $\resw{void}$.
 	\newpage
     \subsection{Tabelle di Compatibilità}
     \begin{figure}[ht]

@@ -8,6 +8,7 @@ package syntaxanalysis;
 import java.util.ArrayList;
 import tree_nodes.*;
 import java.lang.Exception;
+import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
   */
@@ -606,6 +607,10 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
              if(temp == null){ //la procedura non è stata ancora dichiarata
                  temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
              } else {
+                if(!(((SymbolTable.ProcRow) temp).isFref())){ //se fref è falso
+                    //se fref è già a false significa che la procedura è già stata dichiarata
+                    throw new Exception("Errore Semantico: Procedura " + temp.getLessema() + " già dichiarata");
+                }
                 //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
                 //ora invece la dichiarazione è stata trovata
                 ((SymbolTable.ProcRow) temp).setFref(false);
@@ -651,6 +656,10 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
               if(temp == null){ //la procedura non è stata ancora dichiarata
                   temp = currentTable.getPrev().add(i, sym.ID, Kind.PROCEDURE);
               } else {
+                if(!(((SymbolTable.ProcRow) temp).isFref())){ //se fref è falso
+                    //se fref è già a false significa che la procedura è già stata dichiarata
+                    throw new Exception("Errore Semantico: Procedura " + temp.getLessema() + " già dichiarata");
+                }
                  //la entry era stata inserita da qualcun altro ma la procedura non era stata ancora dichiarata
                  //ora invece la dichiarazione è stata trovata
                  ((SymbolTable.ProcRow) temp).setFref(false);
@@ -672,12 +681,13 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 ArrayList<IdListInit> list = new ArrayList<>();
                                                                SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
-                                                               IdLeaf temp = new IdLeaf(i,row);
+                                                               IdLeaf temp;
                                                                if(row == null){
                                                                   row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                   temp = new IdLeaf(i,row);
+                                                               } else {
+                                                                  throw new Exception("Errore Semantico:  Variabile " + row.getLessema() + " già dichiarata");
                                                                }
-                                                               else{throw new Exception("Errore variabile già dichiarata");}
                                                                list.add(temp);
                                                                RESULT = new IdListInitOp(list);
                                                             
@@ -697,12 +707,13 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                                                               SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
-                                                              IdLeaf temp = new IdLeaf(i,row);
+                                                              IdLeaf temp;
                                                               if(row == null){
                                                                  row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                  temp = new IdLeaf(i,row);
-                                                              }
-                                                              else{throw new Exception("Errore variabile già dichiarata");}
+                                                              } else {
+                                                                throw new Exception("Errore Semantico:  Variabile " + row.getLessema() + " già dichiarata");
+                                                             }
                                                               list.add(temp);
                                                               RESULT = list;
                                                             
@@ -722,13 +733,13 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		ArrayList<IdListInit> list = new ArrayList<>();
                                                               SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
-                                                              IdLeaf temp = new IdLeaf(i,row);
+                                                              IdLeaf temp;
                                                               if(row == null){
                                                                 row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                                 temp = new IdLeaf(i,row);
-                                                              }else{
-                                                               throw new Exception("Errore variabile già dichiarata");
-                                                               }
+                                                              } else {
+                                                                throw new Exception("Errore Semantico:  Variabile " + row.getLessema() + " già dichiarata");
+                                                             }
                                                               list.add(new SimpleAssignOp(temp, e));
                                                               RESULT = new IdListInitOp(list);
                                                             
@@ -750,13 +761,13 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Expr e = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
-                                                             IdLeaf temp = new IdLeaf(i,row);
+                                                             IdLeaf temp;
                                                              if(row == null){
                                                              row =  currentTable.add(i, sym.ID, Kind.VARIABLE);
                                                              temp = new IdLeaf(i,row);
-                                                             }else{
-                                                              throw new Exception("Errore variabile già dichiarata");
-                                                             }
+                                                             } else {
+                                                               throw new Exception("Errore Semantico:  Variabile " + row.getLessema() + " già dichiarata");
+                                                            }
                                                              list.add(new SimpleAssignOp(temp, e));
                                                              RESULT = list;
                                                             
@@ -1200,9 +1211,8 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
                                       SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
                                       if(row == null){
                                          list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
-                                      }
-                                      else{
-                                        throw new Exception("Errore: Variabile già dichiarata");
+                                      } else {
+                                        throw new Exception("Errore Semantico:  Parametro " + row.getLessema() + " già dichiarato");
                                       }
                                       RESULT = list;
                                      
@@ -1223,9 +1233,8 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		SymbolTable.SymbolTableRow row = currentTable.currentLookup(i);
                                      if(row == null){
                                         list.add(new IdLeaf(i, currentTable.add(i, sym.ID, Kind.VARIABLE)));
-                                     }
-                                     else{
-                                       throw new Exception("Errore: Variabile già dichiarata");
+                                     } else {
+                                       throw new Exception("Errore Semantico:  Parametro " + row.getLessema() + " già dichiarato");
                                      }
                                      RESULT = list;
                                      
@@ -1632,9 +1641,8 @@ currentTable = StackEnv.push(new Env(StackEnv.top(), i));
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 SymbolTable.SymbolTableRow row = currentTable.lookup(i);
                                                 if(row == null){
-                                                    throw new Exception("Errore - Utilizzo di variabile non dichiarata");
-                                                }
-                                                else{
+                                                    throw new Exception("Errore Semantico: Variabile "+ i + " non dichiarata");
+                                                } else {
                                                     RESULT = new IdLeaf(i,row);
                                                 }
                                              
