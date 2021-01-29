@@ -12,3 +12,5 @@ echo Traduco il sorgente %str% in C
 java -jar out/artifacts/ToyCompiler/ToyCompiler.jar test_files/%1
 echo Compilo il file %str%.c
 clang -pthread -lm -o compiler_output/%str%.exe generated_c_files/%str%.c
+:: echo: stampa riga vuota
+echo:
