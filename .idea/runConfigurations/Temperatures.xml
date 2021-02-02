@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Temperatures" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="compiler.Compiler" />
-    <module name="Romano-Antonucci_es5_scg" />
+    <module name="ProgettoCompilatori" />
     <option name="PROGRAM_PARAMETERS" value="test_files/temperatures.toy" />
     <method v="2">
       <option name="Make" enabled="true" />
