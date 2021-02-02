@@ -20,3 +20,5 @@ con lo stesso nome di quelle usate per i ritorni successivi al primo. Bisognereb
 6. Verificare meglio cosa accade quando si annidano istruzioni dello stesso tipo: ad es. un **if** in un **if** ed un **while** in un **while**
 
 7. Revisione generale e utilizzo di ComplexSymbolFactory per i simboli.
+
+Nota: Le librerie esterne utilizzate sono jdom 2.0.6 e java-cup-11b-runtime
