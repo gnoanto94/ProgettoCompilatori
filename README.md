@@ -1,7 +1,7 @@
 # ProgettoCompilatori
 Progetto delle prime fasi di un compilatore (Fasi di Analisi) svolto con il collega Alessio Romano.
 
-## Miglioramenti da poter fare
+## Sviluppi Futuri
 1. Gestire meglio i caratteri di escape nelle stringhe costanti. Se ad esempio si inserisce un ritorno a capo nel sorgente, questo viene aggiunto erroneamente nella stringa.
 Stesso discorso vale anche per le tabulazioni e altri caratteri di escape.
 
